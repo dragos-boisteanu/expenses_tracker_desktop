@@ -3,4 +3,6 @@ export type Expense = {
   value: number
   currency?: null | string
   date: string
+  dayLimiterText?: string
+  showDayLimiter?: boolean
 }

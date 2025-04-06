@@ -10,10 +10,12 @@ const expenses = ref<Expense[]>([])
 const expensesService = new ExpensesService()
 
 expenses.value = expensesService.getExpenses()
+
 const addExpense = () => {
   expensesService.addExpense(value.value)
   expenses.value = expensesService.getExpenses()
   value.value = 0
+  console.log('expenses', expenses.value)
 }
 </script>
 
@@ -27,6 +29,8 @@ const addExpense = () => {
           :value="expense.value"
           v-for="expense in expenses"
           :key="expense.id"
+          :show-day-limiter="expense.showDayLimiter"
+          :day-limiter-text="expense.dayLimiterText"
         />
         <!--        <div class="mt-2 flex w-full items-center justify-between gap-1.5 text-xs text-indigo-600">
           <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600"></div>
