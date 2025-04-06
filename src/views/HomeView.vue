@@ -21,9 +21,11 @@ const addExpense = () => {
 
 <template>
   <div class="flex size-full">
-    <div class="h-full w-1/3 border-r-[1px] border-r-neutral-200 bg-neutral-50 py-4 shadow-2xl">
+    <div
+      class="h-full w-1/3 overflow-hidden border-r-[1px] border-r-neutral-200 bg-neutral-50 py-4 shadow-2xl"
+    >
       <div class="mb-8 w-full text-center text-3xl text-gray-800">Expenses</div>
-      <div class="overflow-y-auto bg-transparent p-4">
+      <div class="h-full overflow-y-auto bg-transparent p-4">
         <expense-component
           :date="expense.date"
           :value="expense.value"
