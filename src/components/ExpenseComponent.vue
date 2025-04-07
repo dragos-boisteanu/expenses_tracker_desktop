@@ -11,7 +11,7 @@ const props = defineProps({
 <template>
   <div class="mt-3 flex w-full items-baseline justify-between gap-1.5 text-sm text-gray-700">
     <div class="flex items-center gap-x-1">
-      <div class="">
+      <div class="max-w-20 overflow-hidden text-ellipsis">
         {{ props.value }}
       </div>
       <div>
