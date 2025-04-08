@@ -5,7 +5,7 @@ import { inject, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses.ts'
 import type { ExpensesService } from '@/services/expensesService.ts'
 
-const value = ref(1)
+const value = ref(0)
 const expensesStore = useExpensesStore()
 const expensesService = inject<ExpensesService>('expensesService')!
 

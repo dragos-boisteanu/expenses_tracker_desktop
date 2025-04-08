@@ -19,19 +19,18 @@ const dayLimiter = computed<string>((): string => {
   let dayLimiter = ''
 
   const previousExpenseDate = dayjs(props.previousDate, 'DD/MM/YY HH:mm')
-  const yesterday = dayjs(timeStore.now)
   const expenseDate = dayjs(props.date, 'DD/MM/YY HH:mm')
 
   if (
     previousExpenseDate &&
     !expenseDate.startOf('day').isSame(previousExpenseDate.startOf('day'))
   ) {
-    const yesterdayStartOfDay = yesterday.startOf('day')
+    const yesterday = dayjs(timeStore.now).subtract(1, 'day').startOf('day')
     const previousExpenseDateStartOfDay = previousExpenseDate.startOf('day')
 
-    if (previousExpenseDateStartOfDay.isSame(yesterdayStartOfDay)) {
+    if (previousExpenseDateStartOfDay.isSame(yesterday)) {
       dayLimiter = 'Yesterday'
-    } else if (previousExpenseDateStartOfDay.isBefore(yesterdayStartOfDay)) {
+    } else if (previousExpenseDateStartOfDay.isBefore(yesterday)) {
       dayLimiter = `${previousExpenseDate.format('DD/MM/YYYY')}`
     }
   }

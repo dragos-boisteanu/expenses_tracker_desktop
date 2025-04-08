@@ -8,7 +8,7 @@ export const useTimeStore = defineStore('time', () => {
   const startTimer = () => {
     interval.value = setInterval(() => {
       now.value = new Date().getTime()
-    }, 1000)
+    }, 60000)
 
     // 60000
   }
