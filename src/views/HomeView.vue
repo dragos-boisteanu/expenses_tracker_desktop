@@ -1,21 +1,30 @@
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import ExpenseComponent from '@/components/ExpenseComponent.vue'
-import type { Expense } from '@/types/expense.ts'
-import { ref } from 'vue'
-import { ExpensesService } from '@/services/expensesService.ts'
+import { inject, onMounted, ref } from 'vue'
+import { useExpensesStore } from '@/stores/expenses.ts'
+import type { ExpensesService } from '@/services/expensesService.ts'
 
-const value = ref(0)
-const expenses = ref<Expense[]>([])
-const expensesService = new ExpensesService()
+const value = ref(1)
+const expensesStore = useExpensesStore()
+const expensesService = inject<ExpensesService>('expensesService')!
 
-expenses.value = expensesService.getExpenses()
+onMounted(() => {
+  expensesService.getExpenses()
+})
 
+const getPreviousDate = (index: number) => {
+  let date
+
+  if (expensesStore.list[index + 1]) {
+    date = expensesStore.list[index + 1].date
+  }
+
+  return date
+}
 const addExpense = () => {
   expensesService.addExpense(value.value)
-  expenses.value = expensesService.getExpenses()
   value.value = 0
-  console.log('expenses', expenses.value)
 }
 </script>
 
@@ -40,16 +49,15 @@ const addExpense = () => {
         </button>
       </div>
       <div
-        v-if="expenses.length > 0"
+        v-if="expensesStore.list.length > 0"
         class="w-full overflow-y-auto rounded-2xl bg-neutral-50 p-4 shadow"
       >
         <expense-component
           :date="expense.date"
           :value="expense.value"
-          v-for="expense in expenses"
+          :previousDate="getPreviousDate(index)"
+          v-for="(expense, index) in expensesStore.list"
           :key="expense.id"
-          :show-day-limiter="expense.showDayLimiter"
-          :day-limiter-text="expense.dayLimiterText"
         />
       </div>
     </div>

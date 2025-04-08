@@ -1,21 +1,22 @@
-import {defineStore} from "pinia";
-import {ref} from "vue";
-import {type  Expense} from "../types/expense.ts"
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import type { ViewExpense } from '@/types/viewExpense.ts'
 
-export const expensesStore = defineStore('expenses', () => {
-  const list  = ref<Expense[]>([])
+export const useExpensesStore = defineStore('expenses', () => {
+  const list = ref<ViewExpense[]>([])
 
-  const add = (expense: Expense) => {
+  const setList = (expenses: ViewExpense[]) => (list.value = expenses)
+  const add = (expense: ViewExpense) => {
     list.value.unshift(expense)
   }
 
   const remove = (expenseId: string) => {
-    const index: number = list.value.findIndex((expense: Expense) => expenseId === expense.id)
+    const index: number = list.value.findIndex((expense: ViewExpense) => expenseId === expense.id)
 
-    if(index > -1) {
+    if (index > -1) {
       list.value.splice(index, 1)
     }
   }
 
-  return {list, add, remove}
+  return { list, setList, add, remove }
 })
