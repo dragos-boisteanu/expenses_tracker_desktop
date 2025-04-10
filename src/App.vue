@@ -7,19 +7,27 @@ const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
 timeStore.startTimer()
+const theme = localStorage.getItem('theme')
 
-onBeforeUnmount(() => timeStore.stopTimer())
+if (theme) {
+  themeStore.setTheme(theme)
+}
 
 const expensesService = new ExpensesService()
 onMounted(() => {
   expensesService.getExpenses()
 })
+onBeforeUnmount(() => timeStore.stopTimer())
 
 provide('expensesService', expensesService)
 </script>
 
 <template>
-  <div class="size-full" :class="{ dark: themeStore.theme === 'dark' }">
+  <div id="app-container" class="size-full" :class="{ dark: themeStore.theme === 'dark' }">
     <RouterView />
   </div>
 </template>
+
+<style>
+@import './assets/fonts.css';
+</style>

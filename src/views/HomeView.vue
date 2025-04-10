@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import ExpenseComponent from '@/components/ExpenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses.ts'
 import AddExpenseComponent from '@/components/addExpenseComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
+import ExpensesList from '@/components/expensesList.vue'
 
 const expensesStore = useExpensesStore()
-
-const getPreviousDate = (index: number) => {
-  let date
-
-  if (expensesStore.list[index + 1]) {
-    date = expensesStore.list[index + 1].date
-  }
-
-  return date
-}
 </script>
 
 <template>
@@ -32,17 +22,7 @@ const getPreviousDate = (index: number) => {
         v-if="expensesStore.list.length > 0"
         class="w-full flex-1 basis-0 overflow-hidden rounded-2xl px-6 pb-4"
       >
-        <div
-          class="h-fit max-h-full w-full overflow-y-auto rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
-        >
-          <expense-component
-            :date="expense.date"
-            :value="expense.value"
-            :previousDate="getPreviousDate(index)"
-            v-for="(expense, index) in expensesStore.list"
-            :key="expense.id"
-          />
-        </div>
+        <expenses-list />
       </div>
     </div>
   </div>

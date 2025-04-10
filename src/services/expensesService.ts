@@ -14,13 +14,17 @@ export class ExpensesService {
     { id: '6', value: 946345.05, currency: 'RON', date: dayjs().subtract(3, 'day').toString() },
   ]
 
+  store
+
   daysToAdd: number = 1
+
+  constructor() {
+    this.store = useExpensesStore()
+  }
 
   getExpenses() {
     //   TODO: call api or local db
     //   placeholder logic for now
-
-    const expenseStore = useExpensesStore()
 
     const expenses: ViewExpense[] = this.expenses.map((expense) => {
       const expenseDate = dayjs(expense.date)
@@ -28,29 +32,29 @@ export class ExpensesService {
       return {
         id: expense.id,
         value: currencyFormat(expense.value),
-        currency: '',
+        currency: expense.currency || '',
         date: expenseDate.format('DD/MM/YY HH:mm'),
       }
     })
 
-    expenseStore.setList(expenses)
+    this.store.setList(expenses)
   }
 
   addExpense(value: number) {
-    const expenseStore = useExpensesStore()
     const expenseDate = dayjs().add(this.daysToAdd, 'day')
     this.daysToAdd++
     const expense: Expense = {
       id: `${this.expenses.length + 1}`,
       value,
+      currency: 'RON',
       date: expenseDate.toISOString(),
     }
     this.expenses.unshift(expense)
 
-    expenseStore.add({
+    this.store.add({
       id: expense.id,
       value: currencyFormat(value),
-      currency: '',
+      currency: expense.currency || '',
       date: expenseDate.format('DD/MM/YY HH:mm'),
     })
 
@@ -61,6 +65,8 @@ export class ExpensesService {
     const expenseIndex = this.expenses.findIndex((expense) => expense.id === id)
     if (expenseIndex > -1) {
       this.expenses.splice(expenseIndex, 1)
+
+      this.store.remove(id)
     }
   }
 }
