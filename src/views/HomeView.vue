@@ -23,17 +23,17 @@ const getPreviousDate = (index: number) => {
       <theme-toggle-component />
     </div>
 
-    <div class="flex size-full flex-col items-center gap-6 pt-16 pb-4 lg:w-2/5 xl:w-1/4">
-      <div class="w-full px-4">
+    <div class="flex size-full flex-col items-center gap-6 pt-16 pb-2 lg:w-2/5 xl:w-1/4">
+      <div class="w-full px-6">
         <add-expense-component />
       </div>
 
       <div
         v-if="expensesStore.list.length > 0"
-        class="w-full flex-1 basis-0 overflow-hidden rounded-2xl px-4"
+        class="w-full flex-1 basis-0 overflow-hidden rounded-2xl px-6 pb-4"
       >
         <div
-          class="h-fit max-h-full w-full overflow-y-auto rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800"
+          class="h-fit max-h-full w-full overflow-y-auto rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
         >
           <expense-component
             :date="expense.date"

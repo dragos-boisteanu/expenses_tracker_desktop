@@ -43,6 +43,7 @@ const dayLimiter = computed<string>((): string => {
   <div>
     <div
       class="mt-1 flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 dark:text-gray-200 dark:hover:bg-neutral-700"
+      class="flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow dark:text-gray-200 dark:hover:bg-neutral-700 dark:hover:text-gray-100"
     >
       <div class="flex items-center gap-x-1">
         <div class="max-w-20 overflow-hidden text-ellipsis">
@@ -59,7 +60,7 @@ const dayLimiter = computed<string>((): string => {
     </div>
     <div
       v-if="dayLimiter"
-      class="mt-2 flex w-full items-center justify-between gap-1.5 text-xs text-indigo-600 dark:text-indigo-500"
+      class="flex w-full items-center justify-between gap-1.5 py-2 text-xs text-indigo-600 dark:text-indigo-500"
     >
       <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600 dark:border-b-indigo-500"></div>
       <div>{{ dayLimiter }}</div>
