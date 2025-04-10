@@ -42,7 +42,7 @@ const dayLimiter = computed<string>((): string => {
 <template>
   <div>
     <div
-      class="mt-1 flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100"
+      class="mt-1 flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 dark:text-gray-200 dark:hover:bg-neutral-700"
     >
       <div class="flex items-center gap-x-1">
         <div class="max-w-20 overflow-hidden text-ellipsis">
@@ -52,16 +52,18 @@ const dayLimiter = computed<string>((): string => {
           {{ props.currency }}
         </div>
       </div>
-      <div class="h-fit flex-1 border-b-[1px] border-dashed border-b-gray-800"></div>
+      <div
+        class="h-fit flex-1 border-b-[1px] border-dashed border-b-gray-800 dark:border-b-gray-500"
+      ></div>
       <div>{{ props.date }}</div>
     </div>
     <div
       v-if="dayLimiter"
-      class="mt-2 flex w-full items-center justify-between gap-1.5 text-xs text-indigo-600"
+      class="mt-2 flex w-full items-center justify-between gap-1.5 text-xs text-indigo-600 dark:text-indigo-500"
     >
-      <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600"></div>
+      <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600 dark:border-b-indigo-500"></div>
       <div>{{ dayLimiter }}</div>
-      <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600"></div>
+      <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600 dark:border-b-indigo-500"></div>
     </div>
   </div>
 </template>
