@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDayjs } from '@/composable/useDayjs.ts'
-import { useTimeStore } from '@/stores/time.ts'
+import { useDayjs } from '@/composable/useDayjs'
+import { useTimeStore } from '@/stores/time'
+
 const props = defineProps({
   value: { type: String, required: true },
   currency: { type: String, required: false, default: 'RON' },

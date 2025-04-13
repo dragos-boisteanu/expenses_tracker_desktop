@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { ViewExpense } from '@/types/viewExpense.ts'
+import type { ViewExpense } from '@/types/viewExpense'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])

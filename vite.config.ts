@@ -7,14 +7,14 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    tailwindcss(),
-    vue(),
-    vueDevTools(),
-  ],
+  base: './',
+  plugins: [tailwindcss(), vue(), vueDevTools()],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+  },
+  define: {
+    __LIFECYCLE__: JSON.stringify(process.env.npm_lifecycle_event),
   },
 })

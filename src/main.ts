@@ -2,7 +2,7 @@ import './assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import dayjs from '@/plugins/dayjs.ts'
+import dayjs from '@/plugins/dayjs'
 import { DayjsKey } from './plugins/dayjsKey'
 
 import App from './App.vue'
@@ -15,4 +15,5 @@ app.provide(DayjsKey, dayjs)
 app.use(createPinia())
 app.use(router)
 
+console.log('main', app)
 app.mount('#app')

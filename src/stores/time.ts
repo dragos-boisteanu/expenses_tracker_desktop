@@ -6,7 +6,7 @@ export const useTimeStore = defineStore('time', () => {
   const interval = ref<number | null>(0)
 
   const startTimer = () => {
-    interval.value = setInterval(() => {
+    interval.value = window.setInterval(() => {
       now.value = new Date().getTime()
     }, 60000)
 

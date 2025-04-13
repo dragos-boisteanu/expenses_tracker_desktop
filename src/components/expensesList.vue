@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import ExpenseComponent from '@/components/ExpenseComponent.vue'
-import { useExpensesStore } from '@/stores/expenses.ts'
+import ExpenseComponent from '@/components/expenseComponent.vue'
+import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
 import { ref } from 'vue'
-import type { Expense } from '@/types/expense.ts'
-import type { ViewExpense } from '@/types/viewExpense.ts'
+import type { ViewExpense } from '@/types/viewExpense'
 
 const expensesStore = useExpensesStore()
 const getPreviousDate = (index: number) => {

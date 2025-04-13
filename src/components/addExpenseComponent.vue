@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import { inject, ref } from 'vue'
-import type { ExpensesService } from '@/services/expensesService.ts'
+import type { ExpensesService } from '@/services/expensesService'
 
 const expensesService = inject<ExpensesService>('expensesService')!
 const value = ref(0)

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
 import { inject, ref } from 'vue'
-import type { ExpensesService } from '@/services/expensesService.ts'
-import type { ViewExpense } from '@/types/viewExpense.ts'
+import type { ExpensesService } from '@/services/expensesService'
+import type { ViewExpense } from '@/types/viewExpense'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 

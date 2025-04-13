@@ -1,11 +1,15 @@
 {
   "name": "expenses_tracker_desktop",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
+  "author": "Dragos",
   "type": "module",
+  "main": "dist/electron/main.js",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
+    "desktop:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
+    "desktop:build": "cross-env VITE_TARGET=desktop npm run build && tsc && electron-builder",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
@@ -22,12 +26,17 @@
     "vue-router": "^4.5.0"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
+    "concurrently": "^9.1.2",
+
     "@tsconfig/node22": "^22.0.0",
     "@types/node": "^22.13.9",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/tsconfig": "^0.7.0",
+    "electron": "^35.1.5",
+    "electron-builder": "^26.0.12",
     "eslint": "^9.21.0",
     "eslint-plugin-vue": "~10.0.0",
     "jiti": "^2.4.2",

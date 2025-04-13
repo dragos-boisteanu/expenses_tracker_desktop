@@ -1,0 +1,25 @@
+{
+  "appId": "expensesTracker",
+  "asar": false,
+  "directories": {
+    "buildResources": "assets",
+    "output": "release"
+  },
+  "buildDependenciesFromSource": true,
+  "files": ["dist"],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "artifactName": "${productName}_${version}.${ext}"
+  },
+  "nsis": {
+    "oneClick": true,
+    "perMachine": true,
+    "allowToChangeInstallationDirectory": false,
+    "deleteAppDataOnUninstall": true
+  }
+}

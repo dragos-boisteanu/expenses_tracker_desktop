@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, provide } from 'vue'
-import { ExpensesService } from '@/services/expensesService.ts'
-import { useTimeStore } from '@/stores/time.ts'
-import { useThemeStore } from '@/stores/theme.ts'
+import { ExpensesService } from '@/services/expensesService'
+import { useTimeStore } from '@/stores/time'
+import { useThemeStore } from '@/stores/theme'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 

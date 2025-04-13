@@ -1,8 +1,8 @@
-import type { Expense } from '@/types/expense.ts'
-import type { ViewExpense } from '@/types/viewExpense.ts'
-import currencyFormat from '@/helpers/currencyFormat.ts'
+import type { Expense } from '@/types/expense'
+import type { ViewExpense } from '@/types/viewExpense'
+import currencyFormat from '@/helpers/currencyFormat'
 import { useExpensesStore } from '@/stores/expenses'
-import dayjs from '@/plugins/dayjs.ts'
+import dayjs from '@/plugins/dayjs'
 
 export class ExpensesService {
   expenses: Expense[] = [

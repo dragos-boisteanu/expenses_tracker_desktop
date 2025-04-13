@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useExpensesStore } from '@/stores/expenses.ts'
+import { useExpensesStore } from '@/stores/expenses'
 import AddExpenseComponent from '@/components/addExpenseComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import ExpensesList from '@/components/expensesList.vue'
