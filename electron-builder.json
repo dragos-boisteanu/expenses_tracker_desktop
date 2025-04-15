@@ -1,6 +1,6 @@
 {
   "appId": "expensesTracker",
-  "asar": false,
+  "asar": true,
   "directories": {
     "buildResources": "assets",
     "output": "release"
