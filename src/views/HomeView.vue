@@ -13,8 +13,8 @@ const closeApp = () => {
 </script>
 
 <template>
-  <div class="flex size-full flex-1 flex-col items-center bg-neutral-100 dark:bg-neutral-900">
-    <div class="drag flex h-12 w-full items-center justify-between gap-x-4 p-6">
+  <div class="flex size-full flex-1 flex-col items-center bg-neutral-100 pt-0 dark:bg-neutral-900">
+    <div class="drag flex h-12 w-full items-center justify-between gap-x-4 px-6 pt-8 pb-4">
       <theme-toggle-component class="drag--disabled" />
       <button class="drag--disabled group size-6 cursor-pointer" @click="closeApp">
         <XMarkIcon
@@ -23,14 +23,14 @@ const closeApp = () => {
       </button>
     </div>
 
-    <div class="flex size-full flex-col items-center gap-6 pt-6 pb-2 lg:w-2/5 xl:w-1/4">
-      <div class="w-full px-6">
+    <div class="flex size-full flex-col items-center gap-4 p-6 lg:w-2/5 xl:w-1/4">
+      <div class="w-full">
         <add-expense-component />
       </div>
 
       <div
         v-if="expensesStore.list.length > 0"
-        class="w-full flex-1 basis-0 overflow-hidden rounded-2xl px-6 pb-4"
+        class="w-full flex-1 basis-0 overflow-hidden rounded-2xl"
       >
         <expenses-list />
       </div>
@@ -38,13 +38,4 @@ const closeApp = () => {
   </div>
 </template>
 
-<style scoped>
-.drag {
-  -webkit-user-select: none;
-  -webkit-app-region: drag;
-}
-
-.drag--disabled {
-  -webkit-app-region: no-drag;
-}
-</style>
+<style scoped></style>

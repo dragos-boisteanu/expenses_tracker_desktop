@@ -14,3 +14,12 @@
   @apply bg-neutral-500
 }
 
+.drag {
+  -webkit-user-select: none;
+  -webkit-app-region: drag;
+}
+
+.drag--disabled {
+  -webkit-app-region: no-drag;
+}
+
