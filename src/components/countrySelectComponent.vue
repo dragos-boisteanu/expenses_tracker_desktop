@@ -2,6 +2,8 @@
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 import { computed, onMounted, ref } from 'vue'
 import type { Country } from '@/types/country'
+import { onClickOutside } from '@vueuse/core'
+const countriesListRef = ref<HTMLInputElement | null>(null)
 
 const emits = defineEmits(['countrySelected'])
 
@@ -49,6 +51,7 @@ const toggleCountriesList = () => {
 }
 onMounted(() => {
   getCountries()
+  onClickOutside(countriesListRef, () => (showCountriesList.value = false))
 })
 </script>
 
@@ -59,6 +62,7 @@ onMounted(() => {
       <ChevronDownIcon class="size-4 shrink-0 grow-0 text-neutral-800 dark:text-neutral-300" />
     </button>
     <div
+      ref="countriesListRef"
       v-if="showCountriesList"
       class="absolute top-0 -left-12 z-10 w-24 overflow-hidden rounded-2xl bg-neutral-100 shadow dark:bg-neutral-700"
     >
