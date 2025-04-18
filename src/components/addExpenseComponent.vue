@@ -9,7 +9,6 @@ const expensesService = inject<ExpensesService>('expensesService')!
 const value = ref(0)
 
 const addExpense = () => {
-  console.log('selectedCountry', selectedCountry)
   expensesService.addExpense(value.value, selectedCountry.value.code)
   value.value = 0
 }
@@ -49,9 +48,9 @@ onMounted(() => {
     </div>
     <button
       @click="addExpense"
-      class="group flex size-18 cursor-pointer items-center justify-center rounded-full bg-indigo-600 p-4 text-2xl text-neutral-50 shadow hover:bg-indigo-700 active:bg-indigo-500 active:inset-shadow-sm"
+      class="group flex size-16 cursor-pointer items-center justify-center rounded-full bg-indigo-600 p-4 text-2xl text-neutral-50 shadow hover:bg-indigo-700 active:bg-indigo-500 active:inset-shadow-sm"
     >
-      <PlusIcon class="size-12 text-neutral-50 group-hover:text-neutral-100" />
+      <PlusIcon class="size-10 text-neutral-50 group-hover:text-neutral-100" />
     </button>
   </div>
 </template>

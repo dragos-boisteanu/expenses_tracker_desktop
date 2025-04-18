@@ -1,4 +1,16 @@
 @import "tailwindcss";
 
-
 @custom-variant dark (&:where(.dark, .dark *));
+
+.dark .os-scrollbar-handle {
+  @apply bg-gray-200
+}
+
+.dark .os-scrollbar-vertical:hover .os-scrollbar-handle {
+  @apply bg-neutral-400
+}
+
+.dark .os-scrollbar-vertical:active .os-scrollbar-handle {
+  @apply bg-neutral-500
+}
+

@@ -4,6 +4,7 @@ import { computed, onMounted, ref } from 'vue'
 import type { Country } from '@/types/country'
 import { onClickOutside } from '@vueuse/core'
 const countriesListRef = ref<HTMLInputElement | null>(null)
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 
 const emits = defineEmits(['countrySelected'])
 
@@ -58,8 +59,8 @@ onMounted(() => {
 <template>
   <div class="h-ful relative" v-if="selectedCountry">
     <button class="flex cursor-pointer items-center gap-2" @click="toggleCountriesList">
-      <img :src="selectedCountry.flag" class="size-6 flex-1" />
-      <ChevronDownIcon class="size-4 shrink-0 grow-0 text-neutral-800 dark:text-neutral-300" />
+      <img :src="selectedCountry.flag" class="size-6" />
+      <ChevronDownIcon class="size-5 text-neutral-800 dark:text-neutral-300" />
     </button>
     <div
       ref="countriesListRef"
@@ -74,7 +75,12 @@ onMounted(() => {
           class="sticky w-full rounded-md border-neutral-600 bg-neutral-50 p-1 text-sm shadow outline-none dark:bg-neutral-600 dark:text-gray-100"
         />
       </div>
-      <div class="max-h-64 overflow-y-auto">
+      <OverlayScrollbarsComponent
+        class="max-h-64"
+        defer
+        element="div"
+        :options="{ scrollbars: { autoHide: 'never' } }"
+      >
         <button
           @click="selectCountry(country)"
           v-for="country in filteredCountries"
@@ -89,7 +95,7 @@ onMounted(() => {
           </div>
           <img :src="country.flag" class="size-6" />
         </button>
-      </div>
+      </OverlayScrollbarsComponent>
     </div>
   </div>
 </template>

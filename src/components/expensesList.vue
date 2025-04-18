@@ -4,6 +4,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
 import { ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 
 const expensesStore = useExpensesStore()
 const getPreviousDate = (index: number) => {
@@ -40,24 +41,28 @@ const closeDeleteDialog = () => {
 </script>
 
 <template>
-  <div
-    class="h-fit max-h-full w-full overflow-y-auto rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
-  >
+  <div class="size-full rounded-2xl bg-transparent">
     <delete-expense-dialog
       v-if="showDeleteDialog"
       @close="closeDeleteDialog"
       :expense="selectedExpense"
     />
-
-    <expense-component
-      :date="expense.date"
-      :value="expense.value"
-      :currency="expense.currency"
-      :previousDate="getPreviousDate(index)"
-      v-for="(expense, index) in expensesStore.list"
-      :key="expense.id"
-      @select="handleExpenseSelected(expense)"
-    />
+    <OverlayScrollbarsComponent
+      class="h-fit max-h-full overflow-y-auto rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
+      defer
+      element="div"
+      :options="{ scrollbars: { autoHide: 'never' } }"
+    >
+      <expense-component
+        :date="expense.date"
+        :value="expense.value"
+        :currency="expense.currency"
+        :previousDate="getPreviousDate(index)"
+        v-for="(expense, index) in expensesStore.list"
+        :key="expense.id"
+        @select="handleExpenseSelected(expense)"
+      />
+    </OverlayScrollbarsComponent>
   </div>
 </template>
 

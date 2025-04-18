@@ -17,9 +17,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
-    "@vueuse/core": "^13.1.0"
   },
   "devDependencies": {
+    "@vueuse/core": "^13.1.0",
+    "overlayscrollbars-vue": "^0.5.9",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.0.17",
     "@tsconfig/node22": "^22.0.0",
