@@ -90,7 +90,7 @@ onMounted(() => {
             'bg-neutral-100 dark:bg-neutral-600/50': selectedCountry.code === country.code,
           }"
         >
-          <div class="min-w-9 shrink-0 text-left text-gray-700 dark:text-neutral-300">
+          <div class="min-w-9 shrink-0 text-left text-sm text-gray-700 dark:text-neutral-300">
             {{ country.code }}
           </div>
           <img :src="country.flag" class="size-6" />
