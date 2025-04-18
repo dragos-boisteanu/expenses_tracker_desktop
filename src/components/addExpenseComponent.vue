@@ -16,7 +16,7 @@ const countries = ref<Country[]>([])
 const selectedCountry = ref<Country | null>(null)
 const getCountries = async () => {
   try {
-    const response = await fetch('/data/countries.json')
+    const response = await fetch('data/countries.json')
     countries.value = await response.json()
     selectedCountry.value = countries.value.find((country) => country.code === 'RON')
   } catch (error) {
