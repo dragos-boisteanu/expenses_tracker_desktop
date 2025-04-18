@@ -31,7 +31,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex w-full shrink-0 grow-0 flex-col items-center gap-6">
+  <div class="flex w-full shrink-0 grow-0 flex-col items-center gap-4">
     <div
       class="flex h-fit w-full items-center gap-x-4 rounded-2xl border-2 border-transparent bg-neutral-50 p-4 shadow dark:bg-neutral-800"
       :class="{ 'border-b-indigo-600 dark:border-b-indigo-500': isInputFocused }"
