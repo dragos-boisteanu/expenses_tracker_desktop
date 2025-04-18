@@ -1,39 +1,27 @@
 <script setup lang="ts">
-import { PlusIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon } from '@heroicons/vue/24/outline'
 import { inject, onMounted, ref } from 'vue'
 import type { ExpensesService } from '@/services/expensesService'
 import type { Country } from '@/types/country'
+import CountrySelectComponent from '@/components/countrySelectComponent.vue'
 
 const expensesService = inject<ExpensesService>('expensesService')!
 const value = ref(0)
 
 const addExpense = () => {
+  console.log('selectedCountry', selectedCountry)
   expensesService.addExpense(value.value, selectedCountry.value.code)
   value.value = 0
 }
 
-const countries = ref<Country[]>([])
 const selectedCountry = ref<Country | null>(null)
-const getCountries = async () => {
-  try {
-    const response = await fetch('data/countries.json')
-    countries.value = await response.json()
-    selectedCountry.value = countries.value.find((country) => country.code === 'RON')
-  } catch (error) {
-    console.error('Failed to load countries', error)
-  }
-}
-const selectCountry = (country: Country) => {
+const handleCountrySelected = (country: Country) => {
   selectedCountry.value = country
-  toggleCountriesList()
 }
-
 const isInputFocused = ref<boolean>(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
-  getCountries()
-
   inputRef.value.addEventListener('focus', () => {
     isInputFocused.value = true
   })
@@ -41,11 +29,6 @@ onMounted(() => {
     isInputFocused.value = false
   })
 })
-
-const showCountriesList = ref<boolean>(false)
-const toggleCountriesList = () => {
-  showCountriesList.value = !showCountriesList.value
-}
 </script>
 
 <template>
@@ -62,27 +45,7 @@ const toggleCountriesList = () => {
         inputmode="decimal"
         placeholder="Enter value"
       />
-      <div class="h-ful relative" v-if="selectedCountry">
-        <button class="flex cursor-pointer items-center gap-2" @click="toggleCountriesList">
-          <img :src="selectedCountry.flag" class="size-6 flex-1" />
-          <ChevronDownIcon class="size-4 shrink-0 grow-0 text-neutral-800" />
-        </button>
-        <div
-          v-if="showCountriesList"
-          class="absolute top-0 -left-12 z-10 h-64 overflow-y-auto rounded-2xl bg-neutral-50 shadow"
-        >
-          <button
-            @click="selectCountry(country)"
-            v-for="country in countries"
-            :key="country.code"
-            class="flex cursor-pointer items-center gap-2 p-2 hover:bg-neutral-100"
-            :class="{ 'bg-neutral-100': selectedCountry.code === country.code }"
-          >
-            <div class="min-w-9 shrink-0 text-left">{{ country.code }}</div>
-            <img :src="country.flag" class="size-6 flex-1" />
-          </button>
-        </div>
-      </div>
+      <country-select-component @countrySelected="handleCountrySelected" />
     </div>
     <button
       @click="addExpense"
