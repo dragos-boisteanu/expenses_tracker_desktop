@@ -31,3 +31,7 @@ coverage
 
 /env.d.ts
 /release/
+/eslint.config.d.ts
+/eslint.config.js
+/vite.config.d.ts
+/vite.config.js
