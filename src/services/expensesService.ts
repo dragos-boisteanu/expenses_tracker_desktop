@@ -40,13 +40,14 @@ export class ExpensesService {
     this.store.setList(expenses)
   }
 
-  addExpense(value: number) {
+  addExpense(value: number, code: string) {
+    console.log('addExpense', value, code)
     const expenseDate = dayjs().add(this.daysToAdd, 'day')
     this.daysToAdd++
     const expense: Expense = {
       id: `${this.expenses.length + 1}`,
       value,
-      currency: 'RON',
+      currency: code,
       date: expenseDate.toISOString(),
     }
     this.expenses.unshift(expense)
