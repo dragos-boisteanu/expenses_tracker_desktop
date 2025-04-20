@@ -10,9 +10,6 @@ const getExpenseDate = (expenseDate: Dayjs, previousExpenseDate: Dayjs, yesterda
   ) {
     const yesterdayStartOfDay = yesterday.startOf('day')
     const previousExpenseDateStartOfDay = previousExpenseDate.startOf('day')
-    console.log('expenseDate', expenseDate.toString())
-    console.log('yesterday', yesterdayStartOfDay.toString())
-    console.log('previousExpenseDate', previousExpenseDateStartOfDay.toString())
 
     if (previousExpenseDateStartOfDay.isSame(yesterdayStartOfDay)) {
       showDayLimiter = true

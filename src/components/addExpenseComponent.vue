@@ -6,11 +6,13 @@ import type { Country } from '@/types/country'
 import CountrySelectComponent from '@/components/countrySelectComponent.vue'
 
 const expensesService = inject<ExpensesService>('expensesService')!
-const value = ref(0)
+const value = ref<string>('0')
 
 const addExpense = () => {
-  expensesService.addExpense(value.value, selectedCountry.value.code)
-  value.value = 0
+  const normalized = value.value.replace(',', '.')
+
+  expensesService.addExpense(parseFloat(normalized), selectedCountry.value.code)
+  value.value = '0'
 }
 
 const selectedCountry = ref<Country | null>(null)
@@ -38,10 +40,9 @@ onMounted(() => {
     >
       <input
         ref="inputRef"
-        v-model.number="value"
+        v-model.trim="value"
         class="size-full rounded-2xl bg-transparent text-xl text-gray-700 outline-none dark:text-gray-200"
         type="text"
-        inputmode="decimal"
         placeholder="Enter value"
       />
       <country-select-component @countrySelected="handleCountrySelected" />

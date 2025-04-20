@@ -15,6 +15,4 @@ app.provide(DayjsKey, dayjs)
 
 app.use(createPinia())
 app.use(router)
-
-console.log('main', app)
 app.mount('#app')

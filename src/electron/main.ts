@@ -2,13 +2,34 @@ import { join } from 'path'
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
 import path from 'path'
+import Database from 'better-sqlite3'
+import { Expense } from '@/types/expense'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-let mainWindow
+let dbPath = path.join(app.getPath('userData'), 'expenses.db')
+
+if (isDev) {
+  dbPath = 'expenses.db'
+}
+
+console.log('dbPath', dbPath)
+const db = new Database(dbPath, {})
+db.pragma('journal_mode = WAL')
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS expenses (
+      id INTEGER PRIMARY KEY,
+      value  REAL NOT NULL,
+      currency TEXT,
+      date TEXT NOT NULL
+    )
+`)
+let mainWindow: BrowserWindow
+
 const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -25,10 +46,11 @@ const createWindow = () => {
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173/') // Open the DevTools.
-    mainWindow.webContents.openDevTools()
   } else {
     mainWindow.loadFile(join(__dirname, '../index.html'))
   }
+
+  mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
     mainWindow = null
@@ -44,9 +66,34 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('closeApp', () => {
-    console.log('closeApp')
     mainWindow.close()
   })
+})
+
+ipcMain.handle('insertExpense', (event, expense: Expense) => {
+  const insertExpenseStatement = db.prepare(
+    'INSERT INTO expenses (value, currency, date) VALUES (@value, @currency, @date)',
+  )
+  const result = insertExpenseStatement.run({
+    value: expense.value,
+    currency: expense.currency,
+    date: expense.date,
+  })
+
+  return result.lastInsertRowid
+})
+
+ipcMain.handle('deleteExpense', (event, expenseId: string) => {
+  const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
+
+  const result = deleteExpenseStatement.run({ id: expenseId })
+
+  return result.changes
+})
+
+ipcMain.handle('getExpenses', () => {
+  const getExpensesListStatement = db.prepare('SELECT * FROM expenses')
+  return getExpensesListStatement.all()
 })
 
 app.on('window-all-closed', () => {

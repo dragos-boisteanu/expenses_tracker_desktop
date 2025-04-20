@@ -3,6 +3,7 @@ import { onBeforeUnmount, onMounted, provide } from 'vue'
 import { ExpensesService } from '@/services/expensesService'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
+import LocalDB from '@/repositories/LocalDB'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -13,7 +14,8 @@ if (theme) {
   themeStore.setTheme(theme)
 }
 
-const expensesService = new ExpensesService()
+// const expensesService = new ExpensesService(new MemoryDB())
+const expensesService = new ExpensesService(new LocalDB())
 onMounted(() => {
   expensesService.getExpenses()
 })

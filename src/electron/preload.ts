@@ -3,5 +3,10 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
-  // we can also expose variables, not just functions
+})
+
+contextBridge.exposeInMainWorld('db', {
+  insert: (expense) => ipcRenderer.invoke('insertExpense', expense),
+  delete: (expenseId: string) => ipcRenderer.invoke('deleteExpense', expenseId),
+  getList: () => ipcRenderer.invoke('getExpenses'),
 })
