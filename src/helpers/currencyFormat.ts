@@ -1,9 +1,11 @@
-const currencyFormat = (number: number): string => {
-  const [intPart, decimalPart = '00'] = number.toFixed(2).split('.')
+const currencyFormat = (number: number, code: string, locale: string): string => {
+  const formatter = new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: code,
+    currencyDisplay: 'symbol',
+  })
 
-  const withThousandSeparator = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-
-  return `${withThousandSeparator},${decimalPart}`
+  return formatter.format(number)
 }
 
 export default currencyFormat
