@@ -47,7 +47,7 @@ export class ExpensesService {
         date: expenseDate.format('DD/MM/YY HH:mm'),
       })
     } catch (error) {
-      console.error('addExpenseError', error)
+      throw error
     }
   }
 
