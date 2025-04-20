@@ -92,7 +92,7 @@ ipcMain.handle('deleteExpense', (event, expenseId: string) => {
 })
 
 ipcMain.handle('getExpenses', () => {
-  const getExpensesListStatement = db.prepare('SELECT * FROM expenses')
+  const getExpensesListStatement = db.prepare('SELECT * FROM expenses ORDER BY expenses.date DESC')
   return getExpensesListStatement.all()
 })
 
