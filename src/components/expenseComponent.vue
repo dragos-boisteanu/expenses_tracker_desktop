@@ -51,11 +51,8 @@ const selectExpense = () => {
     class="flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow active:bg-neutral-100/60 dark:text-gray-200 dark:hover:bg-neutral-700/50 dark:hover:text-gray-100 dark:active:bg-neutral-700/75"
   >
     <div class="flex items-center gap-x-1">
-      <div class="max-w-20 overflow-hidden text-ellipsis">
+      <div class="max-w-32 overflow-hidden text-ellipsis">
         {{ props.value }}
-      </div>
-      <div>
-        {{ props.currency }}
       </div>
     </div>
     <div
