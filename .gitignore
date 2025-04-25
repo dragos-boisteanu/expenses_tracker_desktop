@@ -35,3 +35,6 @@ coverage
 /eslint.config.js
 /vite.config.d.ts
 /vite.config.js
+/expenses.db
+/expenses.db-shm
+/expenses.db-wal

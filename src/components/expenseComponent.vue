@@ -1,26 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount } from 'vue'
 import { useDayjs } from '@/composable/useDayjs'
 import { useTimeStore } from '@/stores/time'
+import { useExpensesStore } from '@/stores/expenses'
 
 const props = defineProps({
   value: { type: String, required: true },
   currency: { type: String, required: false, default: 'RON' },
   date: { type: String, required: true },
-  previousDate: { type: String, required: false, default: '' },
+  id: { type: String, required: true },
 })
 const dayjs = useDayjs()
 const timeStore = useTimeStore()
 const emits = defineEmits(['select'])
+const expensesStore = useExpensesStore()
 
 const dayLimiter = computed<string>((): string => {
-  if (!props.previousDate) {
+  const previousDate = getPreviousDate(props.id)
+  if (!previousDate) {
     return ''
   }
 
   let dayLimiter = ''
 
-  const previousExpenseDate = dayjs(props.previousDate, 'DD/MM/YY HH:mm')
+  const previousExpenseDate = dayjs(previousDate, 'DD/MM/YY HH:mm')
   const expenseDate = dayjs(props.date, 'DD/MM/YY HH:mm')
 
   if (
@@ -40,6 +43,18 @@ const dayLimiter = computed<string>((): string => {
   return dayLimiter
 })
 
+const getPreviousDate = (id: string) => {
+  let date
+
+  const index = expensesStore.list.findIndex((expense) => expense.id === id)
+  if (index > -1) {
+    if (expensesStore.list[index + 1]) {
+      date = expensesStore.list[index + 1].date
+    }
+  }
+
+  return date
+}
 const selectExpense = () => {
   emits('select')
 }

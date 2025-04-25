@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
-import { computed, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import type { Country } from '@/types/country'
 import { onClickOutside } from '@vueuse/core'
 const countriesListRef = ref<HTMLInputElement | null>(null)
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import { useOverlayScrollbars } from 'overlayscrollbars-vue'
+import { VList } from 'virtua/vue'
 
 const emits = defineEmits(['countrySelected'])
 
@@ -19,6 +20,19 @@ const filteredCountries = computed(() => {
     country.code.includes(countrySearchInput.value.toUpperCase()),
   )
 })
+
+watch(
+  () => filteredCountries.value,
+  (value) => {
+    const valuesCount = value.length
+    if (rootRef.value)
+      if (valuesCount < 5) {
+        rootRef.value.style.height = `${valuesCount * 40}px`
+      } else {
+        rootRef.value.style.height = '200px'
+      }
+  },
+)
 const selectedCountry = ref<Country | null>(null)
 const getCountries = async () => {
   try {
@@ -43,13 +57,37 @@ const selectCountry = (country: Country) => {
   }
 }
 const showCountriesList = ref<boolean>(false)
-const toggleCountriesList = () => {
+const toggleCountriesList = async () => {
   showCountriesList.value = !showCountriesList.value
 
-  if (!showCountriesList.value) {
+  if (showCountriesList.value) {
+    await nextTick()
+
+    const root = rootRef.value
+
+    const [initialize] = useOverlayScrollbars({
+      defer: true,
+      options: {
+        overflow: {
+          x: 'hidden',
+          y: 'scroll',
+        },
+      },
+    })
+
+    initialize({
+      target: root,
+      elements: {
+        viewport: root.firstElementChild as HTMLElement,
+      },
+    })
+  } else {
     countrySearchInput.value = ''
   }
 }
+
+const rootRef = ref<HTMLDivElement | null>(null)
+
 onMounted(() => {
   getCountries()
   onClickOutside(countriesListRef, () => (showCountriesList.value = false))
@@ -75,27 +113,23 @@ onMounted(() => {
           class="sticky w-full rounded-md border-neutral-600 bg-neutral-50 p-1 text-sm shadow outline-none dark:bg-neutral-600 dark:text-gray-100"
         />
       </div>
-      <OverlayScrollbarsComponent
-        class="max-h-64"
-        defer
-        element="div"
-        :options="{ scrollbars: { autoHide: 'never' } }"
-      >
-        <button
-          @click="selectCountry(country)"
-          v-for="country in filteredCountries"
-          :key="country.code"
-          class="flex w-full cursor-pointer items-center gap-2 p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600/50"
-          :class="{
-            'bg-neutral-100 dark:bg-neutral-600/50': selectedCountry.code === country.code,
-          }"
-        >
-          <div class="min-w-9 shrink-0 text-left text-sm text-gray-700 dark:text-neutral-300">
-            {{ country.code }}
-          </div>
-          <img :src="country.flag" class="size-6" />
-        </button>
-      </OverlayScrollbarsComponent>
+
+      <div ref="rootRef" data-overlayscrollbars-initialize="" class="h-[200px]">
+        <VList :data="filteredCountries" :style="{ height: 'none' }" #default="{ item }">
+          <button
+            @click="selectCountry(item)"
+            class="flex w-full cursor-pointer items-center gap-2 p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600/50"
+            :class="{
+              'bg-neutral-100 dark:bg-neutral-600/50': selectedCountry.code === item.code,
+            }"
+          >
+            <div class="min-w-9 shrink-0 text-left text-sm text-gray-700 dark:text-neutral-300">
+              {{ item.code }}
+            </div>
+            <img :src="item.flag" class="size-6" />
+          </button>
+        </VList>
+      </div>
     </div>
   </div>
 </template>

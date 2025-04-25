@@ -5,6 +5,7 @@ import dayjs from '@/plugins/dayjs'
 import LocalDB from '@/repositories/LocalDB'
 import MemoryDB from '@/repositories/MemoryDB'
 import getLocale from '@/helpers/getLocale'
+import { ViewExpense } from '@/types/viewExpense'
 
 export class ExpensesService {
   store
@@ -20,7 +21,9 @@ export class ExpensesService {
     const locale = getLocale()
     try {
       expenses = await this.repository.getList()
-      expenses = expenses.map((expense: Expense) => this.formatExpense(expense, locale))
+      expenses = expenses.map((expense: Expense) =>
+        this.formatExpense(expense, locale),
+      ) as ViewExpense[]
       this.store.setList(expenses)
     } catch (error) {
       console.error('getExpensesError', error)
@@ -60,11 +63,11 @@ export class ExpensesService {
     }
   }
 
-  private formatExpense(expense: Expense, locale: string) {
+  private formatExpense(expense: Expense, locale: string): ViewExpense {
     const expenseDate = dayjs(expense.date).format('DD/MM/YY HH:mm')
 
     return {
-      id: expense.id,
+      id: expense.id.toString(),
       value: currencyFormat(expense.value, expense.currency, locale),
       currency: expense.currency || '',
       date: expenseDate,

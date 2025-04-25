@@ -28,10 +28,7 @@ const closeApp = () => {
         <add-expense-component />
       </div>
 
-      <div
-        v-if="expensesStore.list.length > 0"
-        class="w-full flex-1 basis-0 overflow-hidden rounded-2xl"
-      >
+      <div v-if="expensesStore.list.length > 0" class="w-full flex-1 rounded-2xl">
         <expenses-list />
       </div>
     </div>

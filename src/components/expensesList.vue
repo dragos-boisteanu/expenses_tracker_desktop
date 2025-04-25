@@ -2,20 +2,12 @@
 import ExpenseComponent from '@/components/expenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import { VList } from 'virtua/vue'
+import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 
 const expensesStore = useExpensesStore()
-const getPreviousDate = (index: number) => {
-  let date
-
-  if (expensesStore.list[index + 1]) {
-    date = expensesStore.list[index + 1].date
-  }
-
-  return date
-}
 
 const showDeleteDialog = ref<boolean>(false)
 const selectedExpense = ref<ViewExpense>({
@@ -38,6 +30,30 @@ const closeDeleteDialog = () => {
   }
   showDeleteDialog.value = false
 }
+
+// console.log('initialize', initialize)
+const rootRef = ref<HTMLDivElement | null>(null)
+
+onMounted(() => {
+  const root = rootRef.value
+
+  const [initialize] = useOverlayScrollbars({
+    defer: true,
+    options: {
+      overflow: {
+        x: 'hidden',
+        y: 'scroll',
+      },
+    },
+  })
+
+  initialize({
+    target: root,
+    elements: {
+      viewport: root.firstElementChild as HTMLElement,
+    },
+  })
+})
 </script>
 
 <template>
@@ -47,23 +63,28 @@ const closeDeleteDialog = () => {
       @close="closeDeleteDialog"
       :expense="selectedExpense"
     />
-    <OverlayScrollbarsComponent
-      class="h-fit max-h-full overflow-y-auto rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
-      defer
-      element="div"
-      :options="{ scrollbars: { autoHide: 'never' } }"
+
+    <div
+      ref="rootRef"
+      data-overlayscrollbars-initialize=""
+      class="h-full rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
     >
-      <expense-component
-        :date="expense.date"
-        :value="expense.value"
-        :currency="expense.currency"
-        :previousDate="getPreviousDate(index)"
-        v-for="(expense, index) in expensesStore.list"
-        :key="expense.id"
-        @select="handleExpenseSelected(expense)"
-      />
-    </OverlayScrollbarsComponent>
+      <VList
+        :data="expensesStore.list"
+        :style="{ height: 'none' }"
+        class="rounded-2xl"
+        #default="{ item }"
+      >
+        <expense-component
+          :date="item.date"
+          :value="item.value"
+          :currency="item.currency"
+          :id="item.id"
+          @select="handleExpenseSelected(item)"
+        />
+      </VList>
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style></style>
