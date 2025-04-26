@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 import Database from 'better-sqlite3'
 import { Expense } from '@/types/expense'
+import electronUpdater, { type AppUpdater } from 'electron-updater'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -45,20 +46,42 @@ const createWindow = () => {
   // and load the index.html of the app.
 
   if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/') // Open the DevTools.
+    mainWindow.loadURL('http://localhost:5173/')
+    // Open the DevTools.
+    mainWindow.webContents.openDevTools()
   } else {
     mainWindow.loadFile(join(__dirname, '../index.html'))
   }
-
-  mainWindow.webContents.openDevTools()
 
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 }
 
+export function getAutoUpdater(): AppUpdater {
+  const { autoUpdater } = electronUpdater
+  return autoUpdater
+}
+
 app.whenReady().then(() => {
   createWindow()
+
+  if (!isDev) {
+    const autoUpdater = getAutoUpdater()
+
+    autoUpdater.on('checking-for-update', () => console.log('checking for update'))
+    autoUpdater.on('update-available', () => console.log('update available'))
+    autoUpdater.on('update-not-available', () => console.log('update not available'))
+    autoUpdater.on('update-downloaded', () => console.log('update downloaded'))
+
+    autoUpdater.checkForUpdates().catch((error) => console.log('error', error))
+
+    setInterval(
+      () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
+      60 * 60000,
+    )
+  }
+
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.

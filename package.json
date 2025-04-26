@@ -1,10 +1,11 @@
 {
-  "name": "Expenses_Tracker",
-  "version": "0.0.1",
+  "name": "ExpensesTracker",
+  "version": "0.0.1-beta",
   "private": true,
   "author": "Dragos",
   "type": "module",
   "main": "dist/electron/main.js",
+  "repository": "https://github.com/dragos-boisteanu/expenses_tracker_desktop_release",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
@@ -15,13 +16,15 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "postinstall": "electron-builder install-app-deps"
   },
-  "postinstall": "electron-builder install-app-deps",
   "dependencies": {
-    "better-sqlite3": "^11.9.1"
+    "better-sqlite3": "^11.9.1",
+    "electron-updater": "^6.6.2"
   },
   "devDependencies": {
+    "@electron/rebuild": "^3.7.2",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.0.17",
     "@tsconfig/node22": "^22.0.0",

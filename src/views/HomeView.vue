@@ -6,6 +6,7 @@ import ExpensesList from '@/components/expensesList.vue'
 import { XMarkIcon } from '@heroicons/vue/24/outline'
 
 const expensesStore = useExpensesStore()
+const version = import.meta.env.VITE_APP_VERSION
 
 const closeApp = () => {
   window['app']?.close()
@@ -23,13 +24,17 @@ const closeApp = () => {
       </button>
     </div>
 
-    <div class="flex size-full flex-col items-center gap-4 p-6 lg:w-2/5 xl:w-1/4">
+    <div class="flex size-full flex-col items-center gap-4 px-6 py-4">
       <div class="w-full">
         <add-expense-component />
       </div>
 
       <div v-if="expensesStore.list.length > 0" class="w-full flex-1 rounded-2xl">
         <expenses-list />
+      </div>
+
+      <div class="w-full text-right text-xs text-neutral-700 dark:text-neutral-400">
+        v{{ version }}
       </div>
     </div>
   </div>
