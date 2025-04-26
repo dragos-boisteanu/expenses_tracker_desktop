@@ -29,7 +29,7 @@ const addExpense = async () => {
         throw new Error('Expense might have a value, either negative or positive')
       }
       await expensesService.addExpense(numericValue, selectedCountry.value.code)
-      value.value = '0'
+      value.value = ''
       hasError.value.show = false
       isSuccess.value.show = true
 
