@@ -16,6 +16,7 @@ if (theme) {
 
 // const expensesService = new ExpensesService(new MemoryDB())
 const expensesService = new ExpensesService(new LocalDB())
+provide('expenseServices', expensesService)
 onMounted(() => {
   expensesService.getExpenses()
 })

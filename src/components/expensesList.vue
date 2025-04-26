@@ -2,10 +2,11 @@
 import ExpenseComponent from '@/components/expenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
-import { onMounted, ref } from 'vue'
+import { inject, onMounted, ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import { VList } from 'virtua/vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
+import { ExpensesService } from '@/services/expensesService'
 
 const expensesStore = useExpensesStore()
 
@@ -54,6 +55,12 @@ onMounted(() => {
     },
   })
 })
+
+const expenseServices = inject('expenseServices') as ExpensesService
+const virtualListRef = ref<HTMLDivElement | null>(null)
+const handleOnScrollEnd = async () => {
+  await expenseServices.getExpenses(true)
+}
 </script>
 
 <template>
@@ -70,10 +77,12 @@ onMounted(() => {
       class="h-full rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
     >
       <VList
+        ref="virtualListRef"
         :data="expensesStore.list"
         :style="{ height: 'none' }"
         class="rounded-2xl"
         #default="{ item }"
+        @scrollEnd="handleOnScrollEnd"
       >
         <expense-component
           :date="item.date"

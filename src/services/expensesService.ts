@@ -10,21 +10,40 @@ import { ViewExpense } from '@/types/viewExpense'
 export class ExpensesService {
   store
   repository
+  offset: number = 0
+  limit: number = 15
+  allLoaded: boolean = false
 
   constructor(repository: LocalDB | MemoryDB) {
     this.store = useExpensesStore()
     this.repository = repository
   }
 
-  async getExpenses() {
+  async getExpenses(nextPage: boolean = false) {
     let expenses = []
     const locale = getLocale()
     try {
-      expenses = await this.repository.getList()
+      if (this.allLoaded) {
+        return
+      }
+
+      expenses = await this.repository.getList(this.offset, this.limit)
+
+      if (expenses.length < this.limit) {
+        this.allLoaded = true
+      } else {
+        this.offset += this.limit
+      }
+
       expenses = expenses.map((expense: Expense) =>
         this.formatExpense(expense, locale),
       ) as ViewExpense[]
-      this.store.setList(expenses)
+
+      if (nextPage) {
+        this.store.addExpenses(expenses)
+      } else {
+        this.store.setList(expenses)
+      }
     } catch (error) {
       console.error('getExpensesError', error)
     }

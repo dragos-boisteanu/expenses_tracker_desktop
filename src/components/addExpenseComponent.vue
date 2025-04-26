@@ -7,7 +7,7 @@ import CountrySelectComponent from '@/components/countrySelectComponent.vue'
 import { ActionResult } from '@/types/actionResult'
 
 const expensesService = inject<ExpensesService>('expensesService')!
-const value = ref<string>('0')
+const value = ref<string>('')
 const hasError = ref<ActionResult>({
   show: false,
 })

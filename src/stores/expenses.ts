@@ -9,6 +9,9 @@ export const useExpensesStore = defineStore('expenses', () => {
   const add = (expense: ViewExpense) => {
     list.value.unshift(expense)
   }
+  const addExpenses = (expenses: ViewExpense[]) => {
+    list.value.push(...expenses)
+  }
 
   const remove = (expenseId: string) => {
     const index: number = list.value.findIndex((expense: ViewExpense) => expenseId === expense.id)
@@ -18,5 +21,5 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  return { list, setList, add, remove }
+  return { list, setList, addExpenses, add, remove }
 })

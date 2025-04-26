@@ -7,8 +7,8 @@ export default class LocalDB {
     this.db = window['db']
   }
 
-  async getList() {
-    return await this.db.getList()
+  async getList(offset: number, limit: number): Promise<Expense[]> {
+    return await this.db.getList(offset, limit)
   }
 
   async add(expense: Expense) {
