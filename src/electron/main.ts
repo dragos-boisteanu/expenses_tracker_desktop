@@ -142,6 +142,7 @@ ipcMain.handle('exportExpenses', async (event, fileName) => {
     await saveFile({
       fileName,
       buffer: Buffer.from(buffer),
+      increment: 0,
     })
   } catch (error) {
     console.error('exportExpensesError', error)
@@ -154,7 +155,7 @@ app.on('window-all-closed', () => {
   }
 })
 
-const saveFile = async (data: { fileName: string; buffer: Buffer; increment?: number | null }) => {
+const saveFile = async (data: { fileName: string; buffer: Buffer; increment: number }) => {
   const fileNameWithoutExtension = path.parse(data.fileName).name
   const extension = path.parse(data.fileName).ext
 
