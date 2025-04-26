@@ -14,7 +14,7 @@ const setTheme = () => {
 </script>
 
 <template>
-  <button @click="setTheme" class="group size-6 cursor-pointer">
+  <button @click="setTheme" class="group size-5 cursor-pointer">
     <MoonIcon
       v-if="themeStore.theme === 'dark'"
       class="size-fit text-indigo-500 group-hover:text-indigo-300 group-active:text-indigo-600"
