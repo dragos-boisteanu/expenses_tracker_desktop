@@ -1,6 +1,6 @@
 {
   "name": "ExpensesTracker",
-  "version": "0.0.3",
+  "version": "0.0.3-beta",
   "private": true,
   "author": "Dragos",
   "type": "module",
