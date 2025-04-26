@@ -91,6 +91,9 @@ app.whenReady().then(() => {
   ipcMain.on('closeApp', () => {
     mainWindow.close()
   })
+  ipcMain.on('minimizeApp', () => {
+    mainWindow.minimize()
+  })
 })
 
 ipcMain.handle('insertExpense', (event, expense: Expense) => {

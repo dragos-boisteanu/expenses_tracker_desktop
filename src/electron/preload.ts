@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
+  minimizeApp: () => ipcRenderer.send('minimizeApp'),
 })
 
 contextBridge.exposeInMainWorld('db', {
