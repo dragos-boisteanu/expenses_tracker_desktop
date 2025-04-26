@@ -6,8 +6,10 @@ contextBridge.exposeInMainWorld('app', {
   minimizeApp: () => ipcRenderer.send('minimizeApp'),
 })
 
+// TODO: handle errors for all calls
 contextBridge.exposeInMainWorld('db', {
   insert: (expense) => ipcRenderer.invoke('insertExpense', expense),
   delete: (expenseId: string) => ipcRenderer.invoke('deleteExpense', expenseId),
   getList: (offset, limit) => ipcRenderer.invoke('getExpenses', { offset, limit }),
+  exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
 })

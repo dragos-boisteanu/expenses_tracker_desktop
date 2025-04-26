@@ -3,8 +3,10 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
 import path from 'path'
 import Database from 'better-sqlite3'
-import { Expense } from '@/types/expense'
+import { Expense } from '../types/expense.js'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
+import { CsvService } from '../services/csvService.js'
+import fsp from 'fs/promises'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -127,8 +129,52 @@ ipcMain.handle('getExpenses', (event, payload) => {
   })
 })
 
+ipcMain.handle('exportExpenses', async (event, fileName) => {
+  try {
+    const getExpensesListStatement = db.prepare(
+      'SELECT * FROM expenses ORDER BY expenses.date DESC',
+    )
+    const expenses = getExpensesListStatement.all() as Expense[]
+
+    const csvService = new CsvService()
+    const csvBlob = csvService.export<Expense>(expenses)
+    const buffer = await csvBlob.arrayBuffer()
+    await saveFile({
+      fileName,
+      buffer: Buffer.from(buffer),
+    })
+  } catch (error) {
+    console.error('exportExpensesError', error)
+  }
+})
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
+
+const saveFile = async (data: { fileName: string; buffer: Buffer; increment?: number | null }) => {
+  const fileNameWithoutExtension = path.parse(data.fileName).name
+  const extension = path.parse(data.fileName).ext
+
+  let fileName = ''
+  let filePath = ''
+
+  fileName = `${fileNameWithoutExtension}${
+    data.increment > 0 ? `(${data.increment})` : ''
+  }${extension}`
+  filePath = `${app.getPath('downloads')}/${fileName}`
+  try {
+    await fsp.writeFile(`${filePath}`, data.buffer, { flag: 'wx' })
+    console.log('File written successfully\n')
+  } catch (err) {
+    if (err.code === 'EEXIST') {
+      console.log('fileAlready exists')
+      data.increment++
+      await saveFile(data)
+    } else {
+      console.log('failed to write file to disk', JSON.stringify(err))
+    }
+  }
+}

@@ -11,6 +11,10 @@ export default class LocalDB {
     return await this.db.getList(offset, limit)
   }
 
+  async export(fileName: string) {
+    return await this.db.exportExpenses(fileName)
+  }
+
   async add(expense: Expense) {
     return await this.db.insert(expense)
   }

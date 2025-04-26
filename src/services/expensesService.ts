@@ -49,6 +49,15 @@ export class ExpensesService {
     }
   }
 
+  async export() {
+    try {
+      const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm')}.csv`
+      return await this.repository.export(fileName)
+    } catch (error) {
+      console.error('getAllError', error)
+    }
+  }
+
   async addExpense(value: number, code: string) {
     const expenseDate = dayjs()
     try {
