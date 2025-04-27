@@ -71,12 +71,14 @@ export class ExpensesService {
       const id = await this.repository.add(expense)
       const locale = getLocale()
 
-      this.store.add({
-        id,
+      const viewExpense: ViewExpense = {
+        id: id.toString(),
         value: currencyFormat(value, code, locale),
         currency: expense.currency || '',
         date: expenseDate.format('DD/MM/YY HH:mm'),
-      })
+      }
+
+      this.store.add(viewExpense)
     } catch (error) {
       throw error
     }
