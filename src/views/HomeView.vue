@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import { useExpensesStore } from '@/stores/expenses'
 import AddExpenseComponent from '@/components/addExpenseComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import ExpensesList from '@/components/expensesList.vue'
 import WindowControllsComponent from '@/components/windowControllsComponent.vue'
 import SettingsContainerComponent from '@/components/settings/settingsContainerComponent.vue'
 
-const expensesStore = useExpensesStore()
 const version = import.meta.env.VITE_APP_VERSION
 </script>
 
@@ -20,13 +18,16 @@ const version = import.meta.env.VITE_APP_VERSION
       <div class="w-full">
         <add-expense-component />
       </div>
-      <div v-if="expensesStore.list.length > 0" class="w-full flex-1 rounded-2xl">
+      <div class="w-full flex-1 rounded-2xl">
         <expenses-list />
       </div>
 
       <div class="flex w-full items-center justify-between">
         <settings-container-component />
-        <div class="w-full text-right text-xs text-neutral-700 dark:text-neutral-400">
+        <div
+          v-if="version"
+          class="w-full text-right text-xs text-neutral-700 dark:text-neutral-400"
+        >
           v{{ version }}
         </div>
       </div>
