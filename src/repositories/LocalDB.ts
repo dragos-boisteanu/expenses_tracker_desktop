@@ -1,6 +1,7 @@
 import { Expense } from '@/types/expense'
+import { IDb } from '@/interfaces/IDb'
 
-export default class LocalDB {
+export default class LocalDB implements IDb {
   db
 
   constructor() {

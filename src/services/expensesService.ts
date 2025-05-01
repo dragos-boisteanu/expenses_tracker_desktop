@@ -2,19 +2,19 @@ import type { Expense } from '@/types/expense'
 import currencyFormat from '@/helpers/currencyFormat'
 import { useExpensesStore } from '@/stores/expenses'
 import dayjs from '@/plugins/dayjs'
-import LocalDB from '@/repositories/LocalDB'
-import MemoryDB from '@/repositories/MemoryDB'
 import getLocale from '@/helpers/getLocale'
 import { ViewExpense } from '@/types/viewExpense'
+import { PiniaStore } from '@/types/PiniaStore'
+import { IDb } from '@/interfaces/IDb'
 
 export class ExpensesService {
-  store
-  repository
+  store: PiniaStore<typeof useExpensesStore>
+  repository: IDb
   offset: number = 0
   limit: number = 15
   allLoaded: boolean = false
 
-  constructor(repository: LocalDB | MemoryDB) {
+  constructor(repository: IDb) {
     this.store = useExpensesStore()
     this.repository = repository
   }
