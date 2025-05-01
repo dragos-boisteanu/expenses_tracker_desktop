@@ -21,5 +21,28 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  return { list, setList, addExpenses, add, remove }
+  const isExporting = ref<boolean>(false)
+  const setIsExporting = (payload: boolean) => {
+    isExporting.value = payload
+  }
+
+  const isDeletingAllData = ref<boolean>(false)
+  const deleteAllData = () => {
+    list.value = []
+  }
+  const setIsDeletingAllData = (payload: boolean) => {
+    isDeletingAllData.value = payload
+  }
+  return {
+    list,
+    setList,
+    addExpenses,
+    add,
+    remove,
+    isExporting,
+    setIsExporting,
+    deleteAllData,
+    isDeletingAllData,
+    setIsDeletingAllData,
+  }
 })

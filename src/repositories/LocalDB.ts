@@ -20,6 +20,10 @@ export default class LocalDB {
   }
 
   async delete(id: string) {
-    await this.db.delete(id)
+    return await this.db.delete(id)
+  }
+
+  async deleteAllData() {
+    return await this.db.deleteAllData()
   }
 }

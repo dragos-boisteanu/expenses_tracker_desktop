@@ -13,8 +13,9 @@ const close = () => {
   <dialog-component @close="close">
     <template #title>Settings</template>
     <template #default>
-      <div class="size-full">
-        <export-import-setting-dialog />
+      <div class="flex size-full flex-col gap-y-2">
+        <export-import-setting-component />
+        <delete-all-component />
       </div>
     </template>
   </dialog-component>

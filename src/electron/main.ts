@@ -119,6 +119,14 @@ ipcMain.handle('deleteExpense', (event, expenseId: string) => {
   return result.changes
 })
 
+ipcMain.handle('deleteAllData', () => {
+  const deleteExpenseStatement = db.prepare('DELETE FROM expenses')
+
+  const result = deleteExpenseStatement.run()
+
+  return result.changes
+})
+
 ipcMain.handle('getExpenses', (event, payload) => {
   const getExpensesListStatement = db.prepare(
     'SELECT * FROM expenses ORDER BY expenses.date DESC LIMIT @limit OFFSET @offset',

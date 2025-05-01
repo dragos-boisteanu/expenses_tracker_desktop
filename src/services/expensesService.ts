@@ -93,6 +93,17 @@ export class ExpensesService {
     }
   }
 
+  async deleteAllData() {
+    try {
+      const deletedItemsCount = await this.repository.deleteAllData()
+      this.store.deleteAllData()
+
+      return deletedItemsCount
+    } catch (error) {
+      console.error('deleteAllDataError', error)
+    }
+  }
+
   private formatExpense(expense: Expense, locale: string): ViewExpense {
     const expenseDate = dayjs(expense.date).format('DD/MM/YY HH:mm')
 
