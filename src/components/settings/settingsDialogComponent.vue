@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
-import ExportImportSettingDialog from '@/components/settings/exportImportSettingDialog.vue'
+import ExportImportSettingComponent from '@/components/settings/importExport/exportImportSettingComponent.vue'
+import DeleteAllComponent from '@/components/settings/deleteAllComponent.vue'
 
 const emits = defineEmits(['close'])
 

@@ -20,7 +20,7 @@ const emits = defineEmits(['close'])
           <close-button-component @close="emits('close')" />
         </div>
         <div
-          class="text-md px-4 py-2 text-sm text-neutral-800 dark:border-neutral-600 dark:text-gray-200"
+          class="text-md px-4 py-2 text-sm text-neutral-800 dark:border-neutral-600 dark:text-gray-300"
         >
           <slot />
         </div>
