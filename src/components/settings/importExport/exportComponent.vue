@@ -7,10 +7,10 @@ const expensesService = inject('expensesService') as ExpensesService
 
 const expensesStore = useExpensesStore()
 
-const deleteData = async () => {
+const exportData = async () => {
   try {
     expensesStore.setIsExporting(true)
-    await expensesService.deleteAllData()
+    await expensesService.export()
   } catch (error) {
     console.error('error', error)
   } finally {
@@ -23,7 +23,7 @@ const deleteData = async () => {
   <div class="flex items-center gap-x-2">
     <button
       class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
-      @click="deleteData"
+      @click="exportData"
       :class="{ 'pointer-events-none text-neutral-500': expensesStore.isExporting }"
     >
       Export data to <span class="italic">csv</span>
