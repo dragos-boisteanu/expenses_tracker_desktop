@@ -1,4 +1,6 @@
 import { Expense } from '@/types/expense'
+import { ImportedExpense } from '@/types/importedExpense'
+import { CsvImportResult } from '@/types/csvImportResult'
 
 export class CsvService {
   delimiter: string = ','
@@ -25,30 +27,62 @@ export class CsvService {
     return new Blob([csvContent], { type: 'text/csv;charset=utf-8,' })
   }
 
-  import(file: File) {
+  import(file: File): Promise<CsvImportResult> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = (event) => {
         const content = event.target.result as string
+
         const rows = content.split('\n')
         const headers = this.deserializeRow(rows.shift(), this.delimiter).map((header) =>
           header.trim(),
         )
-        const result = rows.map((row) => {
-          const values = this.deserializeRow(row, this.delimiter)
-          return headers.reduce((obj, key, index) => {
-            obj[key] = values[index]
-            return obj
-          }, {})
-        })
 
-        resolve(result)
+        if (!this.validateCSV(headers, ['value', 'currency', 'date'])) {
+          reject('Invalid CSV format: headers do not match expected format.')
+        }
+
+        const imported: ImportedExpense[] = []
+        const errors: { row: string; reason: string }[] = []
+
+        for (const [index, row] of rows.entries()) {
+          const values = this.deserializeRow(row, this.delimiter)
+
+          if (values.length != headers.length) {
+            errors.push({ row, reason: `Incorrect number of columns at row ${index + 2}` })
+          }
+
+          const obj = headers.reduce((acc, key, i) => {
+            acc[key] = values[i]
+            return acc
+          }, {})
+
+          const expense: ImportedExpense = {
+            value: Number(obj.value),
+            currency: obj.currency || null,
+            date: obj.date,
+          }
+
+          imported.push(expense)
+        }
+
+        resolve({
+          imported,
+          errors,
+          total: rows.length,
+          successful: imported.length,
+          failed: errors.length,
+        })
       }
       reader.onerror = (event) => {
         reject(event)
       }
       reader.readAsText(file)
     })
+  }
+
+  validateCSV(headers: string[], expectedHeaders: string[]): boolean {
+    return expectedHeaders.every((header) => headers.includes(header))
   }
 
   deserializeRow(row, delimiter = ',') {

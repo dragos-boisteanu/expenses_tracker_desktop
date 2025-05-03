@@ -1,5 +1,6 @@
 import { Expense } from '@/types/expense'
 import { IDb } from '@/interfaces/IDb'
+import { ImportedExpense } from '@/types/importedExpense'
 
 export default class LocalDB implements IDb {
   db
@@ -16,11 +17,16 @@ export default class LocalDB implements IDb {
     return await this.db.exportExpenses(fileName)
   }
 
+  async import(expenses: ImportedExpense[]) {
+    console.log('import', expenses)
+    return await this.db.importExpenses(expenses)
+  }
+
   async add(expense: Expense) {
     return await this.db.insert(expense)
   }
 
-  async delete(id: string) {
+  async delete(id: number) {
     return await this.db.delete(id)
   }
 

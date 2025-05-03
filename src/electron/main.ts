@@ -7,6 +7,9 @@ import { Expense } from '../types/expense.js'
 import electronUpdater, { type AppUpdater } from 'electron-updater'
 import { CsvService } from '../services/csvService.js'
 import fsp from 'fs/promises'
+import { ImportedExpense } from '@/types/importedExpense'
+import { DbImportResult } from '@/types/dbImportResult'
+import sleep from '../helpers/sleep.js'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -19,7 +22,6 @@ if (isDev) {
   dbPath = 'expenses.db'
 }
 
-console.log('dbPath', dbPath)
 const db = new Database(dbPath, {})
 db.pragma('journal_mode = WAL')
 
@@ -31,6 +33,15 @@ db.exec(`
       date TEXT NOT NULL
     )
 `)
+
+db.exec(`
+  CREATE UNIQUE INDEX IF NOT EXISTS  unique_expense ON expenses (value, currency, date);
+`)
+
+db.exec(`
+  CREATE UNIQUE INDEX IF NOT EXISTS  expense_id ON expenses (id);
+`)
+
 let mainWindow: BrowserWindow
 
 const createWindow = () => {
@@ -111,7 +122,7 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
   return result.lastInsertRowid
 })
 
-ipcMain.handle('deleteExpense', (event, expenseId: string) => {
+ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
 
   const result = deleteExpenseStatement.run({ id: expenseId })
@@ -119,10 +130,11 @@ ipcMain.handle('deleteExpense', (event, expenseId: string) => {
   return result.changes
 })
 
-ipcMain.handle('deleteAllData', () => {
+ipcMain.handle('deleteAllData', async () => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses')
 
   const result = deleteExpenseStatement.run()
+  await sleep(5000)
 
   return result.changes
 })
@@ -137,25 +149,68 @@ ipcMain.handle('getExpenses', (event, payload) => {
   })
 })
 
-ipcMain.handle('exportExpenses', async (event, fileName) => {
+ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
-    const getExpensesListStatement = db.prepare(
-      'SELECT * FROM expenses ORDER BY expenses.date DESC',
-    )
+    const getExpensesListStatement = db.prepare('SELECT value, currency, date FROM expenses')
     const expenses = getExpensesListStatement.all() as Expense[]
 
+    console.log('expenses', expenses)
+
     const csvService = new CsvService()
-    const csvBlob = csvService.export<Expense>(expenses)
+    const csvBlob = csvService.export(expenses)
     const buffer = await csvBlob.arrayBuffer()
     await saveFile({
       fileName,
       buffer: Buffer.from(buffer),
       increment: 0,
     })
+
+    await sleep(5000)
   } catch (error) {
     console.error('exportExpensesError', error)
   }
 })
+
+ipcMain.handle(
+  'importExpenses',
+  async (event, expenses: ImportedExpense[]): Promise<DbImportResult> => {
+    let duplicates = 0
+
+    const insert = db.prepare(
+      'INSERT INTO expenses (value, currency, date) VALUES(@value, @currency, @date)',
+    )
+    const transaction = db.transaction((expenses: ImportedExpense[]) => {
+      return expenses
+        .map((expense) => {
+          try {
+            const result = insert.run({
+              value: expense.value,
+              currency: expense.currency,
+              date: expense.date,
+            })
+
+            return { ...expense, id: result.lastInsertRowid as number }
+          } catch (error) {
+            if (error.code === 'SQLITE_CONSTRAINT') {
+              duplicates++
+              return null
+            }
+            throw error
+          }
+        })
+        .filter((expense) => !!expense)
+    })
+
+    const result = transaction(expenses) as Expense[]
+
+    await sleep(5000)
+
+    return {
+      inserted: result,
+      duplicates,
+    }
+  },
+)
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -176,10 +231,8 @@ const saveFile = async (data: { fileName: string; buffer: Buffer; increment: num
   filePath = `${app.getPath('downloads')}/${fileName}`
   try {
     await fsp.writeFile(`${filePath}`, data.buffer, { flag: 'wx' })
-    console.log('File written successfully\n')
   } catch (err) {
     if (err.code === 'EEXIST') {
-      console.log('fileAlready exists')
       data.increment++
       await saveFile(data)
     } else {

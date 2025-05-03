@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount } from 'vue'
+import { computed } from 'vue'
 import { useDayjs } from '@/composable/useDayjs'
 import { useTimeStore } from '@/stores/time'
 import { useExpensesStore } from '@/stores/expenses'
@@ -8,7 +8,7 @@ const props = defineProps({
   value: { type: String, required: true },
   currency: { type: String, required: false, default: 'RON' },
   date: { type: String, required: true },
-  id: { type: String, required: true },
+  id: { type: Number, required: true },
 })
 const dayjs = useDayjs()
 const timeStore = useTimeStore()
@@ -43,8 +43,8 @@ const dayLimiter = computed<string>((): string => {
   return dayLimiter
 })
 
-const getPreviousDate = (id: string) => {
-  let date
+const getPreviousDate = (id: number) => {
+  let date: string
 
   const index = expensesStore.list.findIndex((expense) => expense.id === id)
   if (index > -1) {

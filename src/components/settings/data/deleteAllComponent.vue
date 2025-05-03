@@ -12,12 +12,11 @@ const expensesService = inject('expensesService') as ExpensesService
 
 const deleteAll = async (): Promise<void> => {
   try {
+    toggleDeleteAllDialog()
     const removedDataCount = await expensesService.deleteAllData()
     console.log(removedDataCount)
   } catch (error) {
     console.error(error)
-  } finally {
-    toggleDeleteAllDialog()
   }
 }
 
@@ -28,7 +27,7 @@ const toggleDeleteAllDialog = () => {
 </script>
 
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center gap-x-2">
     <dialog-component @close="toggleDeleteAllDialog" v-if="showDeleteAllDialog">
       <template #title>Delete all data</template>
       <template #default>
@@ -38,14 +37,16 @@ const toggleDeleteAllDialog = () => {
       </template>
       <template #actions>
         <cancel-button-component @click="toggleDeleteAllDialog">Cancel</cancel-button-component>
-
         <danger-button-component @click="deleteAll"> Delete </danger-button-component>
       </template>
     </dialog-component>
     <button
       class="cursor-pointer text-red-500 hover:text-red-400"
       @click="toggleDeleteAllDialog"
-      :class="{ 'pointer-events-none text-neutral-500': expensesStore.isDeletingAllData }"
+      :class="{
+        'pointer-events-none text-neutral-500':
+          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
+      }"
     >
       Delete all data
     </button>

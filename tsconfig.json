@@ -9,9 +9,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
-    "module": "ESNext",
+    "module": "es2022",
     "moduleResolution": "bundler",
     "sourceMap": true,
+    "target": "es2022",
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]

@@ -9,8 +9,9 @@ contextBridge.exposeInMainWorld('app', {
 // TODO: handle errors for all calls
 contextBridge.exposeInMainWorld('db', {
   insert: (expense) => ipcRenderer.invoke('insertExpense', expense),
-  delete: (expenseId: string) => ipcRenderer.invoke('deleteExpense', expenseId),
+  delete: (expenseId) => ipcRenderer.invoke('deleteExpense', expenseId),
   deleteAllData: () => ipcRenderer.invoke('deleteAllData'),
   getList: (offset, limit) => ipcRenderer.invoke('getExpenses', { offset, limit }),
-  exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
+  exportExpenses: (fileName) => ipcRenderer.invoke('exportExpenses', fileName),
+  importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
 })

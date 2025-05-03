@@ -11,7 +11,14 @@ export const useExpensesStore = defineStore('expenses', () => {
   const addExpenses = (expenses: ViewExpense[]) => {
     list.value.push(...expenses)
   }
-  const remove = (expenseId: string) => {
+
+  const importExpenses = (expenses: ViewExpense[]) => {
+    list.value.push(...expenses)
+    // TODO: sort the list after adding imported data
+    list.value = list.value.sort((a, b) => b.unixDate - a.unixDate)
+  }
+
+  const remove = (expenseId: number) => {
     const index: number = list.value.findIndex((expense: ViewExpense) => expenseId === expense.id)
 
     if (index > -1) {
@@ -22,6 +29,11 @@ export const useExpensesStore = defineStore('expenses', () => {
   const isExporting = ref<boolean>(false)
   const setIsExporting = (payload: boolean) => {
     isExporting.value = payload
+  }
+
+  const isImporting = ref<boolean>(false)
+  const setIsImporting = (payload: boolean) => {
+    isImporting.value = payload
   }
 
   const isDeletingAllData = ref<boolean>(false)
@@ -35,6 +47,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     list,
     setList,
     addExpenses,
+    importExpenses,
     add,
     remove,
     isExporting,
@@ -42,5 +55,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     deleteAllData,
     isDeletingAllData,
     setIsDeletingAllData,
+    isImporting,
+    setIsImporting,
   }
 })

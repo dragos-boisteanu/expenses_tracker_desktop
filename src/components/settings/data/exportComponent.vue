@@ -9,7 +9,6 @@ const expensesStore = useExpensesStore()
 
 const exportData = async () => {
   try {
-    expensesStore.setIsExporting(true)
     await expensesService.export()
   } catch (error) {
     console.error('error', error)
@@ -24,7 +23,10 @@ const exportData = async () => {
     <button
       class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
       @click="exportData"
-      :class="{ 'pointer-events-none text-neutral-500': expensesStore.isExporting }"
+      :class="{
+        'pointer-events-none text-neutral-500':
+          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
+      }"
     >
       Export data to <span class="italic">csv</span>
     </button>
