@@ -1,7 +1,7 @@
 export type ViewExpense = {
-  id: number
+  id: number | null
   value: string
   currency?: string
   date: string
-  unixDate: number
+  unixDate: number | null
 }

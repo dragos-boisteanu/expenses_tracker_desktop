@@ -12,10 +12,11 @@ const expensesStore = useExpensesStore()
 
 const showDeleteDialog = ref<boolean>(false)
 const selectedExpense = ref<ViewExpense>({
-  id: '',
+  id: null,
   value: '',
   currency: '',
   date: '',
+  unixDate: null,
 })
 
 const handleExpenseSelected = (expense: ViewExpense) => {
@@ -24,10 +25,11 @@ const handleExpenseSelected = (expense: ViewExpense) => {
 }
 const closeDeleteDialog = () => {
   selectedExpense.value = {
-    id: '',
+    id: null,
     value: '',
     currency: '',
     date: '',
+    unixDate: null,
   }
   showDeleteDialog.value = false
 }
