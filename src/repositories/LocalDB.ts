@@ -18,7 +18,6 @@ export default class LocalDB implements IDb {
   }
 
   async import(expenses: ImportedExpense[]) {
-    console.log('import', expenses)
     return await this.db.importExpenses(expenses)
   }
 

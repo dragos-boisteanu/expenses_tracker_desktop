@@ -65,12 +65,13 @@ export class ExpensesService {
   }
   async import(file: File) {
     try {
-      const csvService = new CsvService()
-      const data = await csvService.import(file)
       this.store.setIsImporting(true)
 
-      if (data.imported.length > 0) {
-        const importResult: DbImportResult = await this.repository.import(data.imported)
+      const csvService = new CsvService()
+      const data = await csvService.import(file)
+
+      if (data.length > 0) {
+        const importResult: DbImportResult = await this.repository.import(data)
         const locale = getLocale()
         const importedExpenses: ViewExpense[] = importResult.inserted.map(
           (expense: ImportedExpense) => this.formatExpense(expense, locale),

@@ -154,14 +154,15 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
     const getExpensesListStatement = db.prepare('SELECT value, currency, date FROM expenses')
     const expenses = getExpensesListStatement.all() as Expense[]
 
-    console.log('expenses', expenses)
-
     const csvService = new CsvService()
-    const csvBlob = csvService.export(expenses)
-    const buffer = await csvBlob.arrayBuffer()
+    const csvBlob = await csvService.export(expenses)
+
+    const csvArrayBuffer = await csvBlob.arrayBuffer()
+    const buffer = Buffer.from(csvArrayBuffer)
+
     await saveFile({
       fileName,
-      buffer: Buffer.from(buffer),
+      buffer,
       increment: 0,
     })
 
@@ -175,6 +176,7 @@ ipcMain.handle(
   'importExpenses',
   async (event, expenses: ImportedExpense[]): Promise<DbImportResult> => {
     let duplicates = 0
+    const errors = []
 
     const insert = db.prepare(
       'INSERT INTO expenses (value, currency, date) VALUES(@value, @currency, @date)',
@@ -191,11 +193,11 @@ ipcMain.handle(
 
             return { ...expense, id: result.lastInsertRowid as number }
           } catch (error) {
-            if (error.code === 'SQLITE_CONSTRAINT') {
+            if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
               duplicates++
-              return null
+            } else {
+              errors.push(error.code)
             }
-            throw error
           }
         })
         .filter((expense) => !!expense)
@@ -205,9 +207,15 @@ ipcMain.handle(
 
     await sleep(5000)
 
+    console.log('result', {
+      inserted: result,
+      duplicates,
+      errors,
+    })
     return {
       inserted: result,
       duplicates,
+      errors,
     }
   },
 )
@@ -230,13 +238,14 @@ const saveFile = async (data: { fileName: string; buffer: Buffer; increment: num
   }${extension}`
   filePath = `${app.getPath('downloads')}/${fileName}`
   try {
-    await fsp.writeFile(`${filePath}`, data.buffer, { flag: 'wx' })
+    console.log('filePath', filePath)
+    await fsp.writeFile(filePath, data.buffer, { flag: 'wx' })
   } catch (err) {
     if (err.code === 'EEXIST') {
       data.increment++
       await saveFile(data)
     } else {
-      console.log('failed to write file to disk', JSON.stringify(err))
+      console.error('failed to write file to disk', JSON.stringify(err))
     }
   }
 }
