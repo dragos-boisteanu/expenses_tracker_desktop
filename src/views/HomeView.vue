@@ -2,7 +2,7 @@
 import AddExpenseComponent from '@/components/addExpenseComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import ExpensesList from '@/components/expensesList.vue'
-import WindowControllsComponent from '@/components/windowControllsComponent.vue'
+import WindowControlsComponent from '@/components/windowControlsComponent.vue'
 import SettingsContainerComponent from '@/components/settings/settingsContainerComponent.vue'
 
 const version = import.meta.env.VITE_APP_VERSION
@@ -12,7 +12,7 @@ const version = import.meta.env.VITE_APP_VERSION
   <div class="flex size-full flex-1 flex-col items-center bg-neutral-100 pt-0 dark:bg-neutral-900">
     <div class="drag flex h-12 w-full items-center justify-between gap-x-4 px-4 pt-8 pb-4">
       <theme-toggle-component class="drag--disabled" />
-      <window-controlls-component />
+      <window-controls-component />
     </div>
     <div class="flex size-full flex-col items-center gap-4 px-4 py-4">
       <div class="w-full">
