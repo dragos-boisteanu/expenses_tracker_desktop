@@ -68,6 +68,9 @@ const toggleCountriesList = async () => {
     const [initialize] = useOverlayScrollbars({
       defer: true,
       options: {
+        scrollbars: {
+          visibility: 'visible',
+        },
         overflow: {
           x: 'hidden',
           y: 'scroll',

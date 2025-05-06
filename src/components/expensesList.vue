@@ -43,6 +43,9 @@ onMounted(() => {
   const [initialize] = useOverlayScrollbars({
     defer: true,
     options: {
+      scrollbars: {
+        visibility: 'visible',
+      },
       overflow: {
         x: 'hidden',
         y: 'scroll',
