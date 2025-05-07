@@ -67,8 +67,8 @@ onMounted(() => {
       class="flex h-fit w-full items-center gap-x-4 rounded-2xl border-2 border-transparent bg-neutral-50 p-4 shadow transition-[border] duration-500 ease-in-out dark:bg-neutral-800"
       :class="{
         'border-b-indigo-600 dark:border-b-indigo-500': isInputFocused,
-        'border-b-red-500': hasError.show,
-        'border-b-green-500': isSuccess.show,
+        '!border-b-red-500': hasError.show,
+        '!border-b-green-500': isSuccess.show,
       }"
     >
       <input
