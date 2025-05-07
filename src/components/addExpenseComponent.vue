@@ -77,6 +77,7 @@ onMounted(() => {
         class="size-full rounded-2xl bg-transparent text-xl text-gray-700 outline-none dark:text-gray-200"
         type="text"
         placeholder="Enter value"
+        @keydown.enter="addExpense"
       />
       <country-select-component @countrySelected="handleCountrySelected" />
     </div>
