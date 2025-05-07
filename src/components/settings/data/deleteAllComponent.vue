@@ -48,7 +48,7 @@ const toggleDeleteAllDialog = () => {
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Delete all data
+      Delete all
     </button>
 
     <loading-indicator v-if="expensesStore.isDeletingAllData" />

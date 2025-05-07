@@ -43,7 +43,7 @@ const handleFileInputChange = async (e) => {
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Import data from <span class="italic">csv</span>
+      Import from <span class="italic">csv</span>
     </button>
     <loading-indicator v-if="expensesStore.isImporting" />
   </div>

@@ -28,7 +28,7 @@ const exportData = async () => {
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Export data to <span class="italic">csv</span>
+      Export to <span class="italic">csv</span>
     </button>
 
     <loading-indicator v-if="expensesStore.isExporting" />
