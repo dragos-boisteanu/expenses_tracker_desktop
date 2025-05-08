@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
 import DataSettingComponent from '@/components/settings/data/dataSettingComponent.vue'
-import DeleteAllComponent from '@/components/settings/data/deleteAllComponent.vue'
+import SystemSettingsComponent from '@/components/settings/system/systemSettingsComponent.vue'
 
 const emits = defineEmits(['close'])
 
@@ -16,6 +16,7 @@ const close = () => {
     <template #default>
       <div class="flex size-full flex-col gap-y-2">
         <data-setting-component />
+        <system-settings-component />
       </div>
     </template>
   </dialog-component>

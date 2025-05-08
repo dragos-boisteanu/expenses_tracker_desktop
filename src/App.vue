@@ -4,6 +4,7 @@ import { ExpensesService } from '@/services/expensesService'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
 import LocalDB from '@/repositories/LocalDB'
+import { useSystemStore } from '@/stores/system'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -21,6 +22,14 @@ onMounted(() => {
   expensesService.getExpenses()
 })
 onBeforeUnmount(() => timeStore.stopTimer())
+
+const app = window['app']
+if (app) {
+  app.getLaunchAtSystemStartup().then((value: boolean) => {
+    const systemStore = useSystemStore()
+    systemStore.setLaunchAtSystemStartup(value)
+  })
+}
 
 provide('expensesService', expensesService)
 </script>

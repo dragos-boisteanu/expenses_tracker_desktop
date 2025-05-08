@@ -109,6 +109,17 @@ app.whenReady().then(() => {
   })
 })
 
+ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
+  app.setLoginItemSettings({
+    openAtLogin: payload,
+  })
+})
+
+ipcMain.handle('getLaunchAtSystemStartup', () => {
+  const login = app.getLoginItemSettings()
+  return login.openAtLogin
+})
+
 ipcMain.handle('insertExpense', (event, expense: Expense) => {
   const insertExpenseStatement = db.prepare(
     'INSERT INTO expenses (value, currency, date) VALUES (@value, @currency, @date)',

@@ -4,6 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron')
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
   minimizeApp: () => ipcRenderer.send('minimizeApp'),
+  setLaunchAtSystemStartup: (value: boolean) => ipcRenderer.send('setLaunchAtSystemStartup', value),
+  getLaunchAtSystemStartup: () => ipcRenderer.invoke('getLaunchAtSystemStartup'),
 })
 
 // TODO: handle errors for all calls
