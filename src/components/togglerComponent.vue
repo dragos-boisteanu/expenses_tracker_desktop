@@ -13,7 +13,7 @@ const toggle = () => {
   >
     <div
       class="size-4 translate-x-0 transform rounded-full bg-white shadow transition-transform duration-200 group-hover:bg-neutral-50 dark:bg-neutral-200 group-hover:dark:bg-neutral-100"
-      :class="{ 'translate-x-5': model }"
+      :class="{ 'translate-x-4': model }"
     />
   </button>
 </template>
