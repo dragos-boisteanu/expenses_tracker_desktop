@@ -5,6 +5,8 @@ import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
 import LocalDB from '@/repositories/LocalDB'
 import { useSystemStore } from '@/stores/system'
+import { NotificationService } from '@/services/notificationService'
+import NotificationsDB from '@/repositories/NotificationDB'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -15,8 +17,11 @@ if (theme) {
   themeStore.setTheme(theme)
 }
 
+const notificationService = new NotificationService(new NotificationsDB())
+provide(NotificationService, notificationService)
+
 // const expensesService = new ExpensesService(new MemoryDB())
-const expensesService = new ExpensesService(new LocalDB())
+const expensesService = new ExpensesService(new LocalDB(), notificationService)
 provide('expenseServices', expensesService)
 onMounted(() => {
   expensesService.getExpenses()

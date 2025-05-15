@@ -9,6 +9,7 @@ import { IDb } from '@/interfaces/IDb'
 import { CsvService } from '@/services/csvService'
 import { DbImportResult } from '@/types/dbImportResult'
 import { ImportedExpense } from '@/types/importedExpense'
+import { NotificationService } from '@/services/notificationService'
 
 export class ExpensesService {
   store: PiniaStore<typeof useExpensesStore>
@@ -16,10 +17,12 @@ export class ExpensesService {
   offset: number = 0
   limit: number = 15
   allLoaded: boolean = false
+  notification: NotificationService
 
-  constructor(repository: IDb) {
+  constructor(repository: IDb, notification: NotificationService) {
     this.store = useExpensesStore()
     this.repository = repository
+    this.notification = notification
   }
 
   async getExpenses(nextPage: boolean = false) {
@@ -56,7 +59,15 @@ export class ExpensesService {
     try {
       this.store.setIsExporting(true)
       const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm')}.csv`
-      return await this.repository.export(fileName)
+      const exportResult = await this.repository.export(fileName)
+
+      await this.notification.add(
+        'Export successfully completed',
+        'You expenses list was successfully exported!',
+        'data',
+      )
+
+      return exportResult
     } catch (error) {
       console.error('getAllError', error)
     } finally {

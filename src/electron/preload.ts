@@ -16,4 +16,11 @@ contextBridge.exposeInMainWorld('db', {
   getList: (offset, limit) => ipcRenderer.invoke('getExpenses', { offset, limit }),
   exportExpenses: (fileName) => ipcRenderer.invoke('exportExpenses', fileName),
   importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
+  getNotifications: () => ipcRenderer.invoke('getNotifications'),
+  addNotification: (notification: Notification) =>
+    ipcRenderer.invoke('addNotification', notification),
+  markNotificationAsRead: (id: number) => ipcRenderer.invoke('markNotificationAsRead', id),
+  markAllNotificationsAsRead: () => ipcRenderer.invoke('markAllNotificationsAsRead'),
+  deleteNotification: (id: number) => ipcRenderer.invoke('deleteNotification', id),
+  deleteNotifications: () => ipcRenderer.invoke('deleteNotifications'),
 })
