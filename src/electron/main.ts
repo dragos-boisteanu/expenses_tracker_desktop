@@ -242,6 +242,15 @@ ipcMain.handle(
 )
 
 // NOTIFICATIONS
+ipcMain.handle('getNotifications', (event, payload): Notification[] => {
+  const getExpensesListStatement = db.prepare(
+    'SELECT * FROM notifications ORDER BY notifications.created_at DESC LIMIT @limit OFFSET @offset',
+  )
+  return getExpensesListStatement.all({
+    offset: payload.offset,
+    limit: payload.limit,
+  }) as Notification[]
+})
 ipcMain.handle('addNotification', async (event, payload: Notification) => {
   const insertExpenseStatement = db.prepare(
     'INSERT INTO notifications (title, content, type, error, created_at) VALUES (@title, @content, @type, @error, @createdAt)',

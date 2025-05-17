@@ -28,7 +28,7 @@ export default class NotificationsDB implements INotificationsDb {
     return await this.#db.deleteNotification(id)
   }
 
-  async getNotifications(): Promise<Notification[]> {
-    return await this.#db.getNotifications()
+  async getNotifications(offset: number, limit: number): Promise<Notification[]> {
+    return await this.#db.getNotifications(offset, limit)
   }
 }

@@ -47,6 +47,14 @@ export class NotificationService {
     }
   }
 
+  async getNotifications(): Promise<void> {
+    try {
+      const notifications = await this.repository.getNotifications(this.offset, this.limit)
+      console.log('notifications', notifications)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   async markAsRead(id: number) {
     try {
     } catch (error) {}

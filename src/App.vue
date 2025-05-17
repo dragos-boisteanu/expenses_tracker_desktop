@@ -20,6 +20,8 @@ if (theme) {
 const notificationService = new NotificationService(new NotificationsDB())
 provide(NotificationService, notificationService)
 
+notificationService.getNotifications()
+
 // const expensesService = new ExpensesService(new MemoryDB())
 const expensesService = new ExpensesService(new LocalDB(), notificationService)
 provide('expenseServices', expensesService)
