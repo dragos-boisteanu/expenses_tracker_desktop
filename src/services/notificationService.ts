@@ -38,7 +38,7 @@ export class NotificationService {
         title,
         content,
         type,
-        isNew: false,
+        isNew: true,
         isError,
         createdAt: unixDate,
         formattedCreatedAt: notificationDate.format('DD/MM/YY HH:mm').toString(),
