@@ -14,7 +14,7 @@ const selectNotification = () => {
 <template>
   <div
     @click="selectNotification"
-    class="flex cursor-pointer items-center gap-x-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-600"
+    class="flex cursor-pointer items-center gap-x-2 rounded-lg p-2 text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow active:bg-neutral-100/60 dark:text-gray-200 dark:hover:bg-neutral-700/50 dark:hover:text-gray-100 dark:active:bg-neutral-700/75"
   >
     <div class="icon min-h-9 min-w-9">
       <ExclamationCircleIcon

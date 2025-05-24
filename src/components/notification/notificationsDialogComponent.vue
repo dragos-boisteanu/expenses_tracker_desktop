@@ -84,7 +84,7 @@ const close = () => emits('close')
     </div>
     <template #actions>
       <button
-        class="cursor-pointer rounded-lg p-2 text-xs text-neutral-800 hover:text-neutral-700 active:text-neutral-900"
+        class="cursor-pointer rounded-lg p-2 text-xs text-neutral-800 hover:text-neutral-700 active:text-neutral-900 dark:text-neutral-300 dark:hover:text-neutral-200 dark:active:text-neutral-400"
         @click="markAllAsRead"
       >
         Mark all read
