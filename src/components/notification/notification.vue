@@ -1,14 +1,36 @@
 <script setup lang="ts">
 import { CheckIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline'
+import { computed } from 'vue'
+import dayjs from 'dayjs'
+import { useTimeStore } from '@/stores/time'
 
 const props = defineProps({
   notification: { type: Object, required: true },
 })
 const emits = defineEmits(['select'])
+const timeStore = useTimeStore()
 
 const selectNotification = () => {
   emits('select', props.notification)
 }
+
+const formattedCreatedAt = computed(() => {
+  let formattedDate = ''
+
+  const notificationDate = dayjs.unix(props.notification.createdAt)
+  const now = dayjs(timeStore.now)
+  const yesterday = dayjs(now).subtract(1, 'day').startOf('day')
+
+  if (notificationDate.startOf('day').isSame(yesterday)) {
+    formattedDate = `Yesterday at ${notificationDate.format('HH:mm')}`
+  } else if (notificationDate.startOf('day').isBefore(yesterday)) {
+    formattedDate = `${notificationDate.format('DD/MM/YYYY HH:mm')}`
+  } else {
+    formattedDate = notificationDate.fromNow()
+  }
+
+  return formattedDate
+})
 </script>
 
 <template>
@@ -51,7 +73,7 @@ const selectNotification = () => {
           'font-medium dark:!text-indigo-400': props.notification.isNew,
         }"
       >
-        {{ props.notification.formattedCreatedAt }}
+        {{ formattedCreatedAt }}
       </div>
     </div>
   </div>

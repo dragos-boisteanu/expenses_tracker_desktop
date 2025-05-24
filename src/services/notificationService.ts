@@ -41,7 +41,6 @@ export class NotificationService {
         isNew: true,
         isError,
         createdAt: unixDate,
-        formattedCreatedAt: notificationDate.format('DD/MM/YY HH:mm').toString(),
       })
     } catch (error) {
       console.error(error)

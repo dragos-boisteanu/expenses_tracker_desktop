@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AddExpenseComponent from '@/components/addExpenseComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
-import ExpensesList from '@/components/expensesList.vue'
+import ExpensesList from '@/components/expenses/expensesList.vue'
 import WindowControlsComponent from '@/components/windowControlsComponent.vue'
 import SettingsContainerComponent from '@/components/settings/settingsContainerComponent.vue'
 import NotificationIcon from '@/components/notification/notificationIcon.vue'

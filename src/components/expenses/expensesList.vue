@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ExpenseComponent from '@/components/expenseComponent.vue'
+import ExpenseComponent from '@/components/expenses/expenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
 import { inject, onMounted, ref } from 'vue'

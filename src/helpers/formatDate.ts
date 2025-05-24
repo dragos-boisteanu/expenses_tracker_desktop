@@ -1,6 +1,6 @@
 import { Dayjs } from 'dayjs'
 
-const getExpenseDate = (expenseDate: Dayjs, previousExpenseDate: Dayjs, yesterday: Dayjs) => {
+const formatDate = (expenseDate: Dayjs, previousExpenseDate: Dayjs, yesterday: Dayjs) => {
   let showDayLimiter = false
   let dayLimiterText = ''
 
@@ -23,4 +23,4 @@ const getExpenseDate = (expenseDate: Dayjs, previousExpenseDate: Dayjs, yesterda
   return { showDayLimiter, dayLimiterText }
 }
 
-export default getExpenseDate
+export default formatDate
