@@ -3,7 +3,6 @@ import { ChevronDownIcon } from '@heroicons/vue/24/outline'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import type { Country } from '@/types/country'
 import { onClickOutside } from '@vueuse/core'
-const countriesListRef = ref<HTMLInputElement | null>(null)
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import { VList } from 'virtua/vue'
 
@@ -20,6 +19,7 @@ const filteredCountries = computed(() => {
     country.code.includes(countrySearchInput.value.toUpperCase()),
   )
 })
+const countriesListRef = ref<HTMLInputElement | null>(null)
 
 watch(
   () => filteredCountries.value,

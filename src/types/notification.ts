@@ -3,7 +3,7 @@ export type Notification = {
   title: string
   content: string
   type: string
-  read: boolean
+  read: number
   isError: boolean
   createdAt: number
 }

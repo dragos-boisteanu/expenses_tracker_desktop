@@ -3,7 +3,7 @@ export type ViewNotification = {
   title: string
   content: string
   type: string
-  read: boolean
+  isNew: boolean
   isError: boolean
   createdAt: number
   formattedCreatedAt: string

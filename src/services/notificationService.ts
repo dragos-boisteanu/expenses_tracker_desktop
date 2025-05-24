@@ -3,6 +3,7 @@ import { INotificationsDb } from '@/interfaces/INotificationsDb'
 import { Notification } from '@/types/notification'
 import { useNotificationStore } from '@/stores/notifications'
 import dayjs from '@/plugins/dayjs'
+import { ViewNotification } from '@/types/viewNotification'
 
 export class NotificationService {
   store: PiniaStore<typeof useNotificationStore>
@@ -25,7 +26,7 @@ export class NotificationService {
         title,
         content,
         type,
-        read: false,
+        read: 0,
         isError,
         createdAt: unixDate,
       }
@@ -37,7 +38,7 @@ export class NotificationService {
         title,
         content,
         type,
-        read: false,
+        isNew: false,
         isError,
         createdAt: unixDate,
         formattedCreatedAt: notificationDate.format('DD/MM/YY HH:mm').toString(),
@@ -49,14 +50,39 @@ export class NotificationService {
 
   async getNotifications(): Promise<void> {
     try {
+      // TODO: implement pagination
       const notifications = await this.repository.getNotifications(this.offset, this.limit)
-      console.log('notifications', notifications)
+      const viewNotifications: ViewNotification[] = notifications.map((notification) => {
+        return {
+          id: notification.id,
+          title: notification.title,
+          content: notification.content,
+          type: notification.type,
+          isNew: notification.read === 0,
+          isError: notification.isError,
+          createdAt: notification.createdAt,
+          formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
+        }
+      })
+      this.store.setNotifications(viewNotifications)
     } catch (error) {
       console.error(error)
     }
   }
   async markAsRead(id: number) {
     try {
-    } catch (error) {}
+      await this.repository.markNotificationAsRead(id)
+      this.store.markAsRead(id)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  async markAllAsRead() {
+    try {
+      await this.repository.markAllNotificationsAsRead()
+      this.store.markAllAsRead()
+    } catch (error) {
+      console.error(error)
+    }
   }
 }

@@ -18,7 +18,7 @@ if (theme) {
 }
 
 const notificationService = new NotificationService(new NotificationsDB())
-provide(NotificationService, notificationService)
+provide('notificationService', notificationService)
 
 notificationService.getNotifications()
 

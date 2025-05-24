@@ -17,7 +17,7 @@ export default class NotificationsDB implements INotificationsDb {
   }
 
   async markAllNotificationsAsRead() {
-    return await this.#db.markAllNotifcationsAsRead()
+    return await this.#db.markAllNotificationsAsRead()
   }
 
   async deleteNotifications() {

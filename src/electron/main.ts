@@ -228,11 +228,6 @@ ipcMain.handle(
 
     await sleep(5000)
 
-    console.log('result', {
-      inserted: result,
-      duplicates,
-      errors,
-    })
     return {
       inserted: result,
       duplicates,
@@ -244,7 +239,7 @@ ipcMain.handle(
 // NOTIFICATIONS
 ipcMain.handle('getNotifications', (event, payload): Notification[] => {
   const getExpensesListStatement = db.prepare(
-    'SELECT * FROM notifications ORDER BY notifications.created_at DESC LIMIT @limit OFFSET @offset',
+    'SELECT id, title, content, read, type, error as isError, created_at as createdAt FROM notifications ORDER BY notifications.created_at DESC LIMIT @limit OFFSET @offset',
   )
   return getExpensesListStatement.all({
     offset: payload.offset,
@@ -265,6 +260,24 @@ ipcMain.handle('addNotification', async (event, payload: Notification) => {
   })
 
   return result.lastInsertRowid
+})
+ipcMain.handle('markNotificationAsRead', async (event, payload: number) => {
+  const markNotificationAsReadStatement = db.prepare(
+    'UPDATE notifications SET read = @read WHERE id = @id',
+  )
+  const result = markNotificationAsReadStatement.run({
+    read: 1,
+    id: payload,
+  })
+
+  return result.changes
+})
+ipcMain.handle('markAllNotificationsAsRead', async () => {
+  const markNotificationAsReadStatement = db.prepare(
+    'UPDATE notifications SET read = 1 WHERE read == 0',
+  )
+  const result = markNotificationAsReadStatement.run()
+  return result.changes
 })
 
 app.on('window-all-closed', () => {

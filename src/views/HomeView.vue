@@ -4,6 +4,7 @@ import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import ExpensesList from '@/components/expensesList.vue'
 import WindowControlsComponent from '@/components/windowControlsComponent.vue'
 import SettingsContainerComponent from '@/components/settings/settingsContainerComponent.vue'
+import NotificationIcon from '@/components/notification/notificationIcon.vue'
 
 const version = import.meta.env.VITE_APP_VERSION
 </script>
@@ -12,7 +13,11 @@ const version = import.meta.env.VITE_APP_VERSION
   <div class="flex size-full flex-1 flex-col items-center bg-neutral-100 pt-0 dark:bg-neutral-900">
     <div class="drag flex h-12 w-full items-center justify-between gap-x-4 px-4 pt-8 pb-4">
       <theme-toggle-component class="drag--disabled" />
-      <window-controls-component />
+
+      <div class="drag--disabled flex items-center gap-x-4">
+        <notification-icon />
+        <window-controls-component />
+      </div>
     </div>
     <div class="flex size-full flex-col items-center gap-4 px-4 py-4">
       <div class="w-full">
