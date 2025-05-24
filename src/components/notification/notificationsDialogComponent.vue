@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VList } from 'virtua/vue'
-import { inject, onMounted, ref, watch } from 'vue'
+import { inject, nextTick, onMounted, ref, watch } from 'vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import { useNotificationStore } from '@/stores/notifications'
 import Notification from '@/components/notification/notification.vue'
@@ -34,13 +34,16 @@ const markAllAsRead = async () => {
 const rootRef = ref<HTMLDivElement | null>(null)
 watch(
   () => notificationsStore.count,
-  (value) => {
+  async (value) => {
+    await nextTick()
+
     if (value < 5) {
       rootRef.value.style.height = `${value * 68}px`
     } else {
       rootRef.value.style.height = '224px'
     }
   },
+  { immediate: true },
 )
 onMounted(() => {
   const root = rootRef.value
