@@ -64,6 +64,7 @@ onMounted(() => {
 const expenseServices = inject('expenseServices') as ExpensesService
 const virtualListRef = ref<HTMLDivElement | null>(null)
 const handleOnScrollEnd = async () => {
+  // TODO: add loading indicator
   await expenseServices.getExpenses(true)
 }
 </script>

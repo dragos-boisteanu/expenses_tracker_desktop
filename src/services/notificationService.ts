@@ -9,7 +9,7 @@ export class NotificationService {
   store: PiniaStore<typeof useNotificationStore>
   repository: INotificationsDb
   offset: number = 0
-  limit: number = 15
+  limit: number = 5
   allLoaded: boolean = false
 
   constructor(repository: INotificationsDb) {
@@ -47,9 +47,11 @@ export class NotificationService {
     }
   }
 
-  async getNotifications(): Promise<void> {
+  async getNotifications(nextPage: boolean = false): Promise<void> {
     try {
-      // TODO: implement pagination
+      if (this.allLoaded) {
+        return
+      }
       const notifications = await this.repository.getNotifications(this.offset, this.limit)
       const viewNotifications: ViewNotification[] = notifications.map((notification) => {
         return {
@@ -63,7 +65,23 @@ export class NotificationService {
           formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
         }
       })
-      this.store.setNotifications(viewNotifications)
+
+      if (nextPage) {
+        this.store.addOlderNotifications(viewNotifications)
+      } else {
+        this.store.setNotifications(viewNotifications)
+      }
+
+      console.log('notifications.length', notifications.length)
+      console.log('this.limit', this.limit)
+
+      if (notifications.length < this.limit) {
+        console.log('allLoaded')
+        this.allLoaded = true
+      } else {
+        this.offset += this.limit
+        console.log('offset')
+      }
     } catch (error) {
       console.error(error)
     }

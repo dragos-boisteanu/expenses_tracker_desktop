@@ -69,6 +69,11 @@ onMounted(() => {
   })
 })
 
+const handleOnScrollEnd = async () => {
+  // TODO: add loading indicator
+  await notificationService.getNotifications(true)
+}
+
 const close = () => emits('close')
 </script>
 
@@ -77,7 +82,12 @@ const close = () => emits('close')
     <template #title>Notifications</template>
     <div class="overflow-hidden rounded-lg">
       <div ref="rootRef" data-overlayscrollbars-initialize="">
-        <VList :data="notificationsStore.list" :style="{ height: 'none' }" #default="{ item }">
+        <VList
+          :data="notificationsStore.list"
+          :style="{ height: 'none' }"
+          #default="{ item }"
+          @scrollEnd="handleOnScrollEnd"
+        >
           <notification :notification="item" @select="handleNotificationSelected" />
         </VList>
       </div>

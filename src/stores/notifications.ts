@@ -11,6 +11,9 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const addNotification = (notification: ViewNotification) => list.value.unshift(notification)
 
+  const addOlderNotifications = (notifications: ViewNotification[]) => {
+    list.value.push(...notifications)
+  }
   const markAsRead = (id: number) => {
     const notificationIndex = list.value.findIndex((n) => n.id === id)
 
@@ -52,6 +55,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     newCount,
     setNotifications,
     addNotification,
+    addOlderNotifications,
     markAsRead,
     markUnread,
     markAllAsRead,
