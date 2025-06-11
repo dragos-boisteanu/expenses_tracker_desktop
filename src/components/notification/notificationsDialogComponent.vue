@@ -70,7 +70,7 @@ onMounted(() => {
   })
 })
 
-const virtualListRef = ref<HTMLDivElement | null>(null)
+const virtualListRef = ref(null)
 const isLoadingMore = ref(true)
 const allLoaded = ref(false)
 const handleOnScroll = async (e) => {

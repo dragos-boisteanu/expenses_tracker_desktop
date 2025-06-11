@@ -63,7 +63,7 @@ onMounted(() => {
 })
 
 const expenseServices = inject('expenseServices') as ExpensesService
-const virtualListRef = ref<HTMLDivElement | null>(null)
+const virtualListRef = ref(null)
 
 const isLoadingMore = ref(false)
 const allLoaded = ref(false)
