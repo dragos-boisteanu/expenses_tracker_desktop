@@ -71,7 +71,7 @@ onMounted(() => {
 })
 
 const virtualListRef = ref(null)
-const isLoadingMore = ref(true)
+const isLoadingMore = ref(false)
 const allLoaded = ref(false)
 const handleOnScroll = async (e) => {
   try {
