@@ -25,12 +25,12 @@ export class ExpensesService {
     this.notification = notification
   }
 
-  async getExpenses(nextPage: boolean = false) {
+  async getExpenses(nextPage: boolean = false): Promise<boolean> {
     let expenses = []
     const locale = getLocale()
     try {
       if (this.allLoaded) {
-        return
+        return this.allLoaded
       }
 
       expenses = await this.repository.getList(this.offset, this.limit)
@@ -50,6 +50,8 @@ export class ExpensesService {
       } else {
         this.store.setList(expenses)
       }
+
+      return false
     } catch (error) {
       console.error('getExpensesError', error)
     }
