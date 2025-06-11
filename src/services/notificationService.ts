@@ -47,10 +47,10 @@ export class NotificationService {
     }
   }
 
-  async getNotifications(nextPage: boolean = false): Promise<void> {
+  async getNotifications(nextPage: boolean = false): Promise<boolean> {
     try {
       if (this.allLoaded) {
-        return
+        return true
       }
       const notifications = await this.repository.getNotifications(this.offset, this.limit)
       const viewNotifications: ViewNotification[] = notifications.map((notification) => {
@@ -72,16 +72,13 @@ export class NotificationService {
         this.store.setNotifications(viewNotifications)
       }
 
-      console.log('notifications.length', notifications.length)
-      console.log('this.limit', this.limit)
-
       if (notifications.length < this.limit) {
-        console.log('allLoaded')
         this.allLoaded = true
       } else {
         this.offset += this.limit
-        console.log('offset')
       }
+
+      return false
     } catch (error) {
       console.error(error)
     }

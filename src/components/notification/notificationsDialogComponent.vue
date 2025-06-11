@@ -7,6 +7,7 @@ import Notification from '@/components/notification/notification.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
 import { ViewNotification } from '@/types/viewNotification'
 import { NotificationService } from '@/services/notificationService'
+import LoadingIndicator from '@/components/loadingIndicator.vue'
 
 const notificationService = inject('notificationService') as NotificationService
 const notificationsStore = useNotificationStore()
@@ -69,9 +70,29 @@ onMounted(() => {
   })
 })
 
-const handleOnScrollEnd = async () => {
-  // TODO: add loading indicator
-  await notificationService.getNotifications(true)
+const virtualListRef = ref<HTMLDivElement | null>(null)
+const isLoadingMore = ref(true)
+const allLoaded = ref(false)
+const handleOnScroll = async (e) => {
+  try {
+    if (allLoaded.value) {
+      return
+    }
+
+    const threshold = 10
+    const scrollSize = virtualListRef.value.scrollSize
+    const clientHeight = virtualListRef.value.$el.clientHeight
+
+    if (e + clientHeight >= scrollSize - threshold) {
+      isLoadingMore.value = true
+      await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
+      allLoaded.value = await notificationService.getNotifications(true)
+    }
+  } catch (error) {
+    console.error('loadMoreNotifications', error)
+  } finally {
+    isLoadingMore.value = false
+  }
 }
 
 const close = () => emits('close')
@@ -80,13 +101,17 @@ const close = () => emits('close')
 <template>
   <dialog-component @close="close">
     <template #title>Notifications</template>
-    <div class="overflow-hidden rounded-lg">
+    <div class="relative overflow-hidden rounded-lg">
+      <div class="absolute bottom-2 z-99 flex w-full justify-center" v-if="isLoadingMore">
+        <loading-indicator class="size-6" />
+      </div>
       <div ref="rootRef" data-overlayscrollbars-initialize="">
         <VList
+          ref="virtualListRef"
           :data="notificationsStore.list"
           :style="{ height: 'none' }"
           #default="{ item }"
-          @scrollEnd="handleOnScrollEnd"
+          @scroll="handleOnScroll"
         >
           <notification :notification="item" @select="handleNotificationSelected" />
         </VList>
