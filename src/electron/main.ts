@@ -10,6 +10,7 @@ import fsp from 'fs/promises'
 import { ImportedExpense } from '@/types/importedExpense'
 import { DbImportResult } from '@/types/dbImportResult'
 import sleep from '../helpers/sleep.js'
+import { Notification } from '@/types/notification'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -33,15 +34,27 @@ db.exec(`
       date TEXT NOT NULL
     )
 `)
-
 db.exec(`
   CREATE UNIQUE INDEX IF NOT EXISTS  unique_expense ON expenses (value, currency, date);
 `)
-
 db.exec(`
   CREATE UNIQUE INDEX IF NOT EXISTS  expense_id ON expenses (id);
 `)
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id INTEGER PRIMARY KEY,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      read INTEGER CHECK(read IN (0, 1)) NOT NULL default 0,
+      type TEXT CHECK(type IN ('data', 'update')) NOT NULL,
+      error INTEGER CHECK(error IN (0, 1)) NOT NULL default 0,
+      created_at TEXT NOT NULL
+    )
+`)
+db.exec(`
+  CREATE UNIQUE INDEX IF NOT EXISTS  notification_id ON notifications (id);
+`)
 let mainWindow: BrowserWindow
 
 const createWindow = () => {
@@ -120,6 +133,7 @@ ipcMain.handle('getLaunchAtSystemStartup', () => {
   return login.openAtLogin
 })
 
+// EXPENSES
 ipcMain.handle('insertExpense', (event, expense: Expense) => {
   const insertExpenseStatement = db.prepare(
     'INSERT INTO expenses (value, currency, date) VALUES (@value, @currency, @date)',
@@ -132,7 +146,6 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
 
   return result.lastInsertRowid
 })
-
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
 
@@ -140,8 +153,8 @@ ipcMain.handle('deleteExpense', (event, expenseId: number) => {
 
   return result.changes
 })
-
 ipcMain.handle('deleteAllData', async () => {
+  //TODO: make it a transaction and delete notifications too
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses')
 
   const result = deleteExpenseStatement.run()
@@ -149,7 +162,6 @@ ipcMain.handle('deleteAllData', async () => {
 
   return result.changes
 })
-
 ipcMain.handle('getExpenses', (event, payload) => {
   const getExpensesListStatement = db.prepare(
     'SELECT * FROM expenses ORDER BY expenses.date DESC LIMIT @limit OFFSET @offset',
@@ -159,7 +171,6 @@ ipcMain.handle('getExpenses', (event, payload) => {
     limit: payload.limit,
   })
 })
-
 ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
     const getExpensesListStatement = db.prepare('SELECT value, currency, date FROM expenses')
@@ -182,7 +193,6 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
     console.error('exportExpensesError', error)
   }
 })
-
 ipcMain.handle(
   'importExpenses',
   async (event, expenses: ImportedExpense[]): Promise<DbImportResult> => {
@@ -218,11 +228,6 @@ ipcMain.handle(
 
     await sleep(5000)
 
-    console.log('result', {
-      inserted: result,
-      duplicates,
-      errors,
-    })
     return {
       inserted: result,
       duplicates,
@@ -230,6 +235,50 @@ ipcMain.handle(
     }
   },
 )
+
+// NOTIFICATIONS
+ipcMain.handle('getNotifications', (event, payload): Notification[] => {
+  const getExpensesListStatement = db.prepare(
+    'SELECT id, title, content, read, type, error as isError, created_at as createdAt FROM notifications ORDER BY notifications.created_at DESC LIMIT @limit OFFSET @offset',
+  )
+  return getExpensesListStatement.all({
+    offset: payload.offset,
+    limit: payload.limit,
+  }) as Notification[]
+})
+ipcMain.handle('addNotification', async (event, payload: Notification) => {
+  const insertExpenseStatement = db.prepare(
+    'INSERT INTO notifications (title, content, type, error, created_at) VALUES (@title, @content, @type, @error, @createdAt)',
+  )
+
+  const result = insertExpenseStatement.run({
+    title: payload.title,
+    content: payload.content,
+    type: payload.type,
+    error: 0,
+    createdAt: payload.createdAt,
+  })
+
+  return result.lastInsertRowid
+})
+ipcMain.handle('markNotificationAsRead', async (event, payload: number) => {
+  const markNotificationAsReadStatement = db.prepare(
+    'UPDATE notifications SET read = @read WHERE id = @id',
+  )
+  const result = markNotificationAsReadStatement.run({
+    read: 1,
+    id: payload,
+  })
+
+  return result.changes
+})
+ipcMain.handle('markAllNotificationsAsRead', async () => {
+  const markNotificationAsReadStatement = db.prepare(
+    'UPDATE notifications SET read = 1 WHERE read == 0',
+  )
+  const result = markNotificationAsReadStatement.run()
+  return result.changes
+})
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {

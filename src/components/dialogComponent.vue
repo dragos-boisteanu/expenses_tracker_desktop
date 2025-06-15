@@ -9,7 +9,7 @@ const emits = defineEmits(['close'])
     <slot name="dialog"></slot>
     <div class="fixed top-0 left-0 z-10 flex size-full items-center justify-center bg-black/75">
       <div
-        class="max-w-[90%] min-w-[70%] rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800"
+        class="max-w-[90%] min-w-[90%] rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800"
         ref="dialogContent"
       >
         <div class="flex items-center justify-between px-4 py-2">
