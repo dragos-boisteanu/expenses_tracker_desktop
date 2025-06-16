@@ -5,8 +5,7 @@ import DeleteAllComponent from '@/components/settings/data/deleteAllComponent.vu
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-2">
-    <div class="font-bold">Data</div>
+  <div class="flex flex-col gap-y-4">
     <export-component />
     <import-component />
     <delete-all-component />

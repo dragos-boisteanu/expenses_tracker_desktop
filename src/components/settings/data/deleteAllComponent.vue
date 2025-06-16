@@ -27,7 +27,7 @@ const toggleDeleteAllDialog = () => {
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
+  <div class="flex items-center justify-between gap-x-2">
     <dialog-component @close="toggleDeleteAllDialog" v-if="showDeleteAllDialog">
       <template #title>Delete all data</template>
       <template #default>
@@ -40,18 +40,24 @@ const toggleDeleteAllDialog = () => {
         <danger-button-component @click="deleteAll"> Delete </danger-button-component>
       </template>
     </dialog-component>
+
+    <div>
+      <div class="font-semibold">Delete data</div>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">
+        Delete all app local stored data
+      </div>
+    </div>
     <button
-      class="cursor-pointer text-red-500 hover:text-red-400"
+      class="hover-bg-neutral-200 flex min-w-16 cursor-pointer items-center justify-center rounded-lg bg-red-600 p-2 hover:bg-red-500 active:bg-red-600 active:shadow-inner dark:bg-neutral-700 dark:hover:bg-neutral-600 active:dark:bg-neutral-700"
       @click="toggleDeleteAllDialog"
       :class="{
-        'pointer-events-none text-neutral-500':
+        'pointer-events-none !bg-neutral-100 !text-neutral-500':
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Delete all
+      <loading-indicator v-if="expensesStore.isDeletingAllData" />
+      <span v-else class="text-neutral-50"> Delete all</span>
     </button>
-
-    <loading-indicator v-if="expensesStore.isDeletingAllData" />
   </div>
 </template>
 

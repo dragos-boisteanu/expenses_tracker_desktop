@@ -14,7 +14,7 @@ const close = () => {
   <dialog-component @close="close">
     <template #title>Settings</template>
     <template #default>
-      <div class="flex size-full flex-col gap-y-2">
+      <div class="flex size-full flex-col gap-y-4">
         <data-setting-component />
         <system-settings-component />
       </div>

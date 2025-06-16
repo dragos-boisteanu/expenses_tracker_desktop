@@ -19,19 +19,24 @@ const exportData = async () => {
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
+  <div class="flex items-center justify-between gap-x-2">
+    <div>
+      <div class="font-semibold">Export data</div>
+      <div class="text-neutral-500 dark:text-neutral-400">
+        Export expensive to <span class="italic">csv</span>
+      </div>
+    </div>
     <button
-      class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
+      class="align-center hover-bg-neutral-200 flex min-w-16 cursor-pointer justify-center rounded-lg bg-neutral-100 p-2 hover:bg-neutral-200 active:bg-neutral-100 active:shadow-inner dark:bg-neutral-700 dark:hover:bg-neutral-600 active:dark:bg-neutral-700"
       @click="exportData"
       :class="{
         'pointer-events-none text-neutral-500':
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Export to <span class="italic">csv</span>
+      <loading-indicator v-if="expensesStore.isExporting" />
+      <span v-else class="text-neutral-700">Export</span>
     </button>
-
-    <loading-indicator v-if="expensesStore.isExporting" />
   </div>
 </template>
 

@@ -33,19 +33,27 @@ const handleFileInputChange = async (e) => {
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
+  <div class="flex items-center justify-between">
     <input type="file" ref="fileInput" accept=".csv" class="hidden" />
+
+    <div>
+      <div class="font-semibold">Import data</div>
+      <div class="text-neutral-500 dark:text-neutral-400">
+        Import expensive from local <span class="italic">csv</span>
+      </div>
+    </div>
+    <!--    TODO: import, export, buttons color-->
     <button
       @click="importData"
-      class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
+      class="hover-bg-neutral-200 flex min-w-16 cursor-pointer items-center justify-center rounded-lg bg-purple-200 p-2 hover:bg-neutral-200 active:bg-neutral-100 active:shadow-inner dark:bg-neutral-700 dark:hover:bg-neutral-600 active:dark:bg-neutral-700"
       :class="{
         'pointer-events-none text-neutral-500':
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
-      Import from <span class="italic">csv</span>
+      <loading-indicator v-if="expensesStore.isImporting" />
+      <span v-else class="text-neutral-700">Import</span>
     </button>
-    <loading-indicator v-if="expensesStore.isImporting" />
   </div>
 </template>
 
