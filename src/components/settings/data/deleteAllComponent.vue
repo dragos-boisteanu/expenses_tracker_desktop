@@ -48,7 +48,7 @@ const toggleDeleteAllDialog = () => {
       </div>
     </div>
     <button
-      class="hover-bg-neutral-200 flex min-w-16 cursor-pointer items-center justify-center rounded-lg bg-red-600 p-2 hover:bg-red-500 active:bg-red-600 active:shadow-inner dark:bg-neutral-700 dark:hover:bg-neutral-600 active:dark:bg-neutral-700"
+      class="align-center group hover-bg-neutral-200 hover flex min-w-16 cursor-pointer justify-center rounded-lg bg-neutral-300/50 p-2 hover:bg-neutral-300/75 active:scale-95 active:bg-neutral-300/100 dark:bg-neutral-600/50 dark:hover:bg-neutral-600/70 dark:active:bg-neutral-600/100"
       @click="toggleDeleteAllDialog"
       :class="{
         'pointer-events-none !bg-neutral-100 !text-neutral-500':
@@ -56,7 +56,12 @@ const toggleDeleteAllDialog = () => {
       }"
     >
       <loading-indicator v-if="expensesStore.isDeletingAllData" />
-      <span v-else class="text-neutral-50"> Delete all</span>
+      <span
+        v-else
+        class="group-dark:active:text-neutral-200 text-neutral-900 dark:text-neutral-200"
+      >
+        Delete all</span
+      >
     </button>
   </div>
 </template>

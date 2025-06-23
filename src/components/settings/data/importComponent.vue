@@ -38,21 +38,23 @@ const handleFileInputChange = async (e) => {
 
     <div>
       <div class="font-semibold">Import data</div>
-      <div class="text-neutral-500 dark:text-neutral-400">
-        Import expensive from local <span class="italic">csv</span>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">
+        Import expenses from local <span class="italic">csv</span>
       </div>
     </div>
     <!--    TODO: import, export, buttons color-->
     <button
       @click="importData"
-      class="hover-bg-neutral-200 flex min-w-16 cursor-pointer items-center justify-center rounded-lg bg-purple-200 p-2 hover:bg-neutral-200 active:bg-neutral-100 active:shadow-inner dark:bg-neutral-700 dark:hover:bg-neutral-600 active:dark:bg-neutral-700"
+      class="align-center group hover-bg-neutral-200 hover flex min-w-16 cursor-pointer justify-center rounded-lg bg-neutral-300/50 p-2 hover:bg-neutral-300/75 active:scale-95 active:bg-neutral-300/100 dark:bg-neutral-600/50 dark:hover:bg-neutral-600/70 dark:active:bg-neutral-600/100"
       :class="{
         'pointer-events-none text-neutral-500':
           expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
       }"
     >
       <loading-indicator v-if="expensesStore.isImporting" />
-      <span v-else class="text-neutral-700">Import</span>
+      <span v-else class="group-dark:active:text-neutral-200 text-neutral-900 dark:text-neutral-200"
+        >Import</span
+      >
     </button>
   </div>
 </template>
