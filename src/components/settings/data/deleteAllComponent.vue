@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import LoadingIndicator from '@/components/loadingIndicator.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { ExpensesService } from '@/services/expensesService'
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
+import GeneralButton from '@/components/buttons/generalButton.vue'
 
 const expensesStore = useExpensesStore()
 const expensesService = inject('expensesService') as ExpensesService
@@ -24,10 +24,14 @@ const showDeleteAllDialog = ref<boolean>(false)
 const toggleDeleteAllDialog = () => {
   showDeleteAllDialog.value = !showDeleteAllDialog.value
 }
+
+const isDisabled = computed(() => {
+  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+})
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
+  <div class="flex items-center justify-between gap-x-2">
     <dialog-component @close="toggleDeleteAllDialog" v-if="showDeleteAllDialog">
       <template #title>Delete all data</template>
       <template #default>
@@ -40,18 +44,19 @@ const toggleDeleteAllDialog = () => {
         <danger-button-component @click="deleteAll"> Delete </danger-button-component>
       </template>
     </dialog-component>
-    <button
-      class="cursor-pointer text-red-500 hover:text-red-400"
-      @click="toggleDeleteAllDialog"
-      :class="{
-        'pointer-events-none text-neutral-500':
-          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
-      }"
-    >
-      Delete all
-    </button>
 
-    <loading-indicator v-if="expensesStore.isDeletingAllData" />
+    <div>
+      <div class="font-semibold">Delete data</div>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">
+        Delete all app local stored data
+      </div>
+    </div>
+    <general-button
+      text="Delete All"
+      :is-disabled="isDisabled"
+      :is-loading="expensesStore.isDeletingAllData"
+      @click="toggleDeleteAllDialog"
+    />
   </div>
 </template>
 

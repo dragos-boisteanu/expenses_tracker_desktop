@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { inject, onBeforeUnmount, onMounted, onUnmounted, ref } from 'vue'
+import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { ExpensesService } from '@/services/expensesService'
-import LoadingIndicator from '@/components/loadingIndicator.vue'
+import GeneralButton from '@/components/buttons/generalButton.vue'
 
 const expensesStore = useExpensesStore()
 const expenseService = inject('expensesService') as ExpensesService
@@ -30,22 +30,28 @@ const handleFileInputChange = async (e) => {
 
   e.target.value = ''
 }
+
+const isDisabled = computed(() => {
+  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+})
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
+  <div class="flex items-center justify-between">
     <input type="file" ref="fileInput" accept=".csv" class="hidden" />
-    <button
+
+    <div>
+      <div class="font-semibold">Import data</div>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">
+        Import expenses from local <b>csv</b>
+      </div>
+    </div>
+    <general-button
+      text="Import"
+      :is-disabled="isDisabled"
+      :is-loading="expensesStore.isImporting"
       @click="importData"
-      class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
-      :class="{
-        'pointer-events-none text-neutral-500':
-          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
-      }"
-    >
-      Import from <span class="italic">csv</span>
-    </button>
-    <loading-indicator v-if="expensesStore.isImporting" />
+    />
   </div>
 </template>
 

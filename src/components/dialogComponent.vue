@@ -13,7 +13,7 @@ const emits = defineEmits(['close'])
         ref="dialogContent"
       >
         <div class="flex items-center justify-between px-4 py-2">
-          <div class="font-semibold text-neutral-800 dark:text-gray-200">
+          <div class="text-lg font-semibold text-neutral-800 dark:text-gray-200">
             <slot name="title"></slot>
           </div>
 

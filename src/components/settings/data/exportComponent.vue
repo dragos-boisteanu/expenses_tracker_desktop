@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { inject } from 'vue'
+import { computed, inject } from 'vue'
 import { ExpensesService } from '@/services/expensesService'
-import LoadingIndicator from '@/components/loadingIndicator.vue'
 import { useExpensesStore } from '@/stores/expenses'
+import GeneralButton from '@/components/buttons/generalButton.vue'
 const expensesService = inject('expensesService') as ExpensesService
 
 const expensesStore = useExpensesStore()
@@ -16,22 +16,26 @@ const exportData = async () => {
     expensesStore.setIsExporting(false)
   }
 }
+
+const isDisabled = computed(() => {
+  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+})
 </script>
 
 <template>
-  <div class="flex items-center gap-x-2">
-    <button
-      class="cursor-pointer hover:text-neutral-600 active:text-neutral-900 hover:dark:text-neutral-100 active:dark:text-neutral-400"
+  <div class="flex items-center justify-between gap-x-2">
+    <div>
+      <div class="font-semibold">Export data</div>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">
+        Export expenses to <b>csv</b>
+      </div>
+    </div>
+    <general-button
+      text="Export"
+      :is-disabled="isDisabled"
+      :is-loading="expensesStore.isExporting"
       @click="exportData"
-      :class="{
-        'pointer-events-none text-neutral-500':
-          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
-      }"
-    >
-      Export to <span class="italic">csv</span>
-    </button>
-
-    <loading-indicator v-if="expensesStore.isExporting" />
+    />
   </div>
 </template>
 
