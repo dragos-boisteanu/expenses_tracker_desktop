@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import LoadingIndicator from '@/components/loadingIndicator.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { ExpensesService } from '@/services/expensesService'
-import { inject, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
+import GeneralButton from '@/components/buttons/generalButton.vue'
 
 const expensesStore = useExpensesStore()
 const expensesService = inject('expensesService') as ExpensesService
@@ -24,6 +24,10 @@ const showDeleteAllDialog = ref<boolean>(false)
 const toggleDeleteAllDialog = () => {
   showDeleteAllDialog.value = !showDeleteAllDialog.value
 }
+
+const isDisabled = computed(() => {
+  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+})
 </script>
 
 <template>
@@ -47,22 +51,12 @@ const toggleDeleteAllDialog = () => {
         Delete all app local stored data
       </div>
     </div>
-    <button
-      class="align-center group hover-bg-neutral-200 hover flex min-w-16 cursor-pointer justify-center rounded-lg bg-neutral-300/50 p-2 hover:bg-neutral-300/75 active:scale-95 active:bg-neutral-300/100 dark:bg-neutral-600/50 dark:hover:bg-neutral-600/70 dark:active:bg-neutral-600/100"
+    <general-button
+      text="Delete All"
+      :is-disabled="isDisabled"
+      :is-loading="expensesStore.isDeletingAllData"
       @click="toggleDeleteAllDialog"
-      :class="{
-        'pointer-events-none !bg-neutral-100 !text-neutral-500':
-          expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting,
-      }"
-    >
-      <loading-indicator v-if="expensesStore.isDeletingAllData" />
-      <span
-        v-else
-        class="group-dark:active:text-neutral-200 text-neutral-900 dark:text-neutral-200"
-      >
-        Delete all</span
-      >
-    </button>
+    />
   </div>
 </template>
 
