@@ -27,7 +27,7 @@ const isDisabled = computed(() => {
     <div>
       <div class="font-semibold">Export data</div>
       <div class="text-xs text-neutral-500 dark:text-neutral-400">
-        Export expenses to <span class="italic">csv</span>
+        Export expenses to <b>csv</b>
       </div>
     </div>
     <general-button

@@ -3,6 +3,7 @@
 import TogglerComponent from '@/components/togglerComponent.vue'
 import { ref, watch } from 'vue'
 import { useSystemStore } from '@/stores/system'
+import GeneralButton from '@/components/buttons/generalButton.vue'
 
 const systemStore = useSystemStore()
 
@@ -18,7 +19,12 @@ watch(
 
 <template>
   <div class="flex items-center justify-between">
-    <div>Launch app at system startup</div>
+    <input type="file" ref="fileInput" accept=".csv" class="hidden" />
+
+    <div>
+      <div class="font-semibold">Startup</div>
+      <div class="text-xs text-neutral-500 dark:text-neutral-400">Launch app at system startup</div>
+    </div>
     <toggler-component v-model="launchAppAtSystemStartup" />
   </div>
 </template>

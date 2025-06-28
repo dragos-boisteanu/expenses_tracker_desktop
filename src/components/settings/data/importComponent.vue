@@ -43,7 +43,7 @@ const isDisabled = computed(() => {
     <div>
       <div class="font-semibold">Import data</div>
       <div class="text-xs text-neutral-500 dark:text-neutral-400">
-        Import expenses from local <span class="italic">csv</span>
+        Import expenses from local <b>csv</b>
       </div>
     </div>
     <general-button
