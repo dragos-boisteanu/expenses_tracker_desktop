@@ -15,6 +15,7 @@ const emits = defineEmits(['click'])
     @click="emits('click')"
     :class="{
       'pointer-events-none !bg-neutral-200 dark:!bg-neutral-700': props.isDisabled,
+      'pointer-events-none': props.isLoading,
     }"
   >
     <loading-indicator v-if="props.isLoading" />

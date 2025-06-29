@@ -8,7 +8,6 @@ export const useSystemStore = defineStore('system', () => {
   const setLaunchAtSystemStartup = (payload) => {
     launchAtSystemStartup.value = payload
   }
-
   const setDisableHardwareAcceleration = (payload) => {
     disableHardwareAcceleration.value = payload
   }

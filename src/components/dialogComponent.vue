@@ -1,7 +1,34 @@
 <script setup lang="ts">
 import CloseButtonComponent from '@/components/buttons/closeButtonComponent.vue'
+import { onMounted, ref } from 'vue'
+import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 
 const emits = defineEmits(['close'])
+const rootRef = ref<HTMLDivElement | null>(null)
+
+onMounted(() => {
+  const root = rootRef.value
+
+  const [initialize] = useOverlayScrollbars({
+    defer: true,
+    options: {
+      scrollbars: {
+        visibility: 'auto',
+      },
+      overflow: {
+        x: 'hidden',
+        y: 'scroll',
+      },
+    },
+  })
+
+  initialize({
+    target: root,
+    elements: {
+      viewport: root.firstElementChild as HTMLElement,
+    },
+  })
+})
 </script>
 
 <template>
@@ -20,7 +47,8 @@ const emits = defineEmits(['close'])
           <close-button-component @close="emits('close')" />
         </div>
         <div
-          class="text-md px-4 py-2 text-sm text-neutral-800 dark:border-neutral-600 dark:text-gray-300"
+          ref="rootRef"
+          class="text-md max-h-96 overflow-y-scroll px-4 py-2 text-sm text-neutral-800 dark:border-neutral-600 dark:text-gray-300"
         >
           <slot />
         </div>
