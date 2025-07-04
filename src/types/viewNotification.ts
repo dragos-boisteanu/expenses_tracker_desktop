@@ -1,5 +1,5 @@
 export type ViewNotification = {
-  id: number
+  id: number | bigint
   title: string
   content: string
   type: string

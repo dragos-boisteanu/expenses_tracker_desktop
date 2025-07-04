@@ -1,5 +1,5 @@
 export type Notification = {
-  id?: number
+  id?: number | bigint
   title: string
   content: string
   type: string

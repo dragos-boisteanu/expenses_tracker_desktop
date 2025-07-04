@@ -6,6 +6,16 @@ contextBridge.exposeInMainWorld('app', {
   minimizeApp: () => ipcRenderer.send('minimizeApp'),
   setLaunchAtSystemStartup: (value: boolean) => ipcRenderer.send('setLaunchAtSystemStartup', value),
   getLaunchAtSystemStartup: () => ipcRenderer.invoke('getLaunchAtSystemStartup'),
+
+  mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
+    const listener = (_event: Electron.IpcRendererEvent, payload) => handler(payload)
+    ipcRenderer.on('mainMessage', listener)
+
+    // Return unsubscribe function
+    return () => {
+      ipcRenderer.removeListener('mainLog', listener)
+    }
+  },
 })
 
 // TODO: handle errors for all calls

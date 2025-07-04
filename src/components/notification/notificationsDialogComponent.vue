@@ -16,7 +16,11 @@ const emits = defineEmits(['markAllAsRead', 'close'])
 
 const handleNotificationSelected = (notification: ViewNotification) => {
   if (notification.isNew) {
-    notificationService.markAsRead(notification.id)
+    notificationService.markAsRead(notification.id as number)
+  }
+
+  if (notification.type === 'update') {
+    console.log('updateNotification', notification)
   }
 }
 

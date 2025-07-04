@@ -36,6 +36,28 @@ if (app) {
     const systemStore = useSystemStore()
     systemStore.setLaunchAtSystemStartup(value)
   })
+
+  app.mainMessage((payload) => {
+    switch (payload.action) {
+      case 'log': {
+        switch (payload.type) {
+          case 'log':
+            console.log(payload.data)
+            break
+          case 'error':
+            console.error(payload.data)
+            break
+          case 'info':
+            console.info(payload.data)
+            break
+        }
+        break
+      }
+      case 'notification': {
+        break
+      }
+    }
+  })
 }
 
 provide('expensesService', expensesService)

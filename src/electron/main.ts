@@ -74,13 +74,20 @@ const createWindow = () => {
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173/')
     // Open the DevTools.
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
   } else {
     mainWindow.loadFile(join(__dirname, '../index.html'))
   }
 
+  mainWindow.webContents.openDevTools()
+
   mainWindow.on('closed', () => {
     mainWindow = null
+  })
+
+  mainWindow.on('ready-to-show', () => {
+    sendLogToRender('readyToShow', 'log')
+    // sendLogToRender('readyToShow', 'error')
   })
 }
 
@@ -89,22 +96,96 @@ export function getAutoUpdater(): AppUpdater {
   return autoUpdater
 }
 
+const autoUpdater = getAutoUpdater()
+let manualCheckForUpdate = false
+let autoCheckFoUpdateInterval = null
+const AUTO_UPDATE_CHECK_TIME = 60 * 60000
+
 app.whenReady().then(() => {
   createWindow()
 
   if (!isDev) {
-    const autoUpdater = getAutoUpdater()
+    autoUpdater.autoDownload = false
 
-    autoUpdater.on('checking-for-update', () => console.log('checking for update'))
-    autoUpdater.on('update-available', () => console.log('update available'))
-    autoUpdater.on('update-not-available', () => console.log('update not available'))
-    autoUpdater.on('update-downloaded', () => console.log('update downloaded'))
+    autoUpdater.on('checking-for-update', () => {
+      console.log('checking for update')
+      sendLogToRender('checking for update', 'log')
+    })
+    autoUpdater.on('update-available', (event) => {
+      console.log('update available')
+
+      if (manualCheckForUpdate) {
+        const version = event.version
+        const releaseDate = event.releaseDate
+        const releaseNote = event.releaseNotes
+
+        const notification: Notification = {
+          title: `New update available v${version} from ${formatDate(releaseDate)}`,
+          content: releaseNote.toString(),
+          type: 'update',
+          read: 0,
+          isError: false,
+          createdAt: Math.floor(Date.now() / 1000),
+        }
+
+        sendLogToRender(JSON.stringify(notification, null, 2), 'log')
+        sendLogToRender(`version ${version}`, 'log')
+        sendLogToRender(`releaseDate ${releaseDate}`, 'log')
+        sendLogToRender(`releaseNote ${releaseNote}`, 'log')
+
+        const notificationId = insertNotification(notification)
+
+        mainWindow.webContents.send('mainMessage', {
+          action: 'notification',
+          data: {
+            id: notificationId,
+            title: notification.title,
+            content: notification.content,
+            type: notification.type,
+            isNew: true,
+            isError: false,
+            createdAt: notification.createdAt,
+          },
+        })
+
+        // insertNotification(notification)
+      }
+    })
+    autoUpdater.on('update-not-available', () => {
+      if (manualCheckForUpdate) {
+        mainWindow.webContents.send('mainMessage', {
+          action: 'updateNotAvailable',
+        })
+      } else {
+        console.log('update not available')
+      }
+    })
+    autoUpdater.on('update-downloaded', (event) => {
+      const version = event.version
+      const releaseDate = event.releaseDate
+      const releaseNote = event.releaseNotes
+
+      console.log('update released note', releaseNote)
+      const notification: Notification = {
+        title: `New update downloaded ${version} from ${releaseDate}`,
+        content: '',
+        type: 'update',
+        read: 0,
+        isError: false,
+        createdAt: Math.floor(Date.now() / 1000),
+      }
+
+      // insertNotification(notification)
+    })
+    //TODO: add a notification than an update has been downloaded
+    // title: New Update Downloaded <version>
+    // body: <come up with something>
 
     autoUpdater.checkForUpdates().catch((error) => console.log('error', error))
 
-    setInterval(
+    autoCheckFoUpdateInterval = setInterval(
       () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
-      60 * 60000,
+      AUTO_UPDATE_CHECK_TIME,
     )
   }
 
@@ -120,6 +201,36 @@ app.whenReady().then(() => {
   ipcMain.on('minimizeApp', () => {
     mainWindow.minimize()
   })
+})
+
+ipcMain.handle('checkForUpdates', (event) => {
+  return new Promise(async (reject, resolve) => {
+    try {
+      if (autoUpdater) {
+        manualCheckForUpdate = true
+        clearInterval(autoCheckFoUpdateInterval)
+        await autoUpdater.checkForUpdates()
+        resolve(true)
+      }
+    } catch (error) {
+      reject(error)
+    } finally {
+      manualCheckForUpdate = false
+
+      autoCheckFoUpdateInterval = setInterval(
+        () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
+        AUTO_UPDATE_CHECK_TIME,
+      )
+    }
+  })
+})
+
+ipcMain.on('downloadUpdate', () => {
+  autoUpdater.downloadUpdate().then((result) => console.log('download result', result))
+})
+
+ipcMain.on('installUpdate', () => {
+  autoUpdater.quitAndInstall()
 })
 
 ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
@@ -246,7 +357,8 @@ ipcMain.handle('getNotifications', (event, payload): Notification[] => {
     limit: payload.limit,
   }) as Notification[]
 })
-ipcMain.handle('addNotification', async (event, payload: Notification) => {
+
+function insertNotification(payload: Notification) {
   const insertExpenseStatement = db.prepare(
     'INSERT INTO notifications (title, content, type, error, created_at) VALUES (@title, @content, @type, @error, @createdAt)',
   )
@@ -260,6 +372,9 @@ ipcMain.handle('addNotification', async (event, payload: Notification) => {
   })
 
   return result.lastInsertRowid
+}
+ipcMain.handle('addNotification', async (event, payload: Notification) => {
+  insertNotification(payload)
 })
 ipcMain.handle('markNotificationAsRead', async (event, payload: number) => {
   const markNotificationAsReadStatement = db.prepare(
@@ -308,4 +423,21 @@ const saveFile = async (data: { fileName: string; buffer: Buffer; increment: num
       console.error('failed to write file to disk', JSON.stringify(err))
     }
   }
+}
+
+const sendLogToRender = (data: string, type: string) => {
+  mainWindow.webContents.send('mainMessage', { action: 'log', data, type })
+}
+
+const formatDate = (isoString: string): string => {
+  const date = new Date(isoString)
+
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0') // Months are 0-based
+  const year = date.getFullYear()
+
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+
+  return `${day}.${month}.${year} ${hours}:${minutes}`
 }
