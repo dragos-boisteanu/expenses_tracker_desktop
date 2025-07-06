@@ -13,7 +13,7 @@ const props = defineProps({
     <slot></slot>
     <div
       v-if="typeof count === 'string' || count > 0"
-      class="absolute -top-2 -right-2 rounded-full bg-red-600 px-1 text-xs text-white"
+      class="absolute -top-1 -right-1 rounded-full bg-red-600 px-1 text-xs text-white"
     >
       {{ props.count }}
     </div>
