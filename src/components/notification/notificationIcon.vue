@@ -15,10 +15,10 @@ const toggleNotificationDialog = () => {
 </script>
 
 <template>
-  <div class="relative">
-    <badge-component :count="notificationsStore.newCount" @click="toggleNotificationDialog">
+  <div class="relative cursor-pointer" @click="toggleNotificationDialog">
+    <badge-component :count="notificationsStore.newCount">
       <BellIcon
-        class="size-5 cursor-pointer text-neutral-800 hover:text-neutral-600 active:text-neutral-900 dark:text-neutral-300 hover:dark:text-neutral-50 active:dark:text-neutral-400"
+        class="size-5 text-neutral-800 hover:text-neutral-600 active:text-neutral-900 dark:text-neutral-300 hover:dark:text-neutral-50 active:dark:text-neutral-400"
       />
     </badge-component>
     <notifications-dialog-component v-if="show" @close="toggleNotificationDialog" />
