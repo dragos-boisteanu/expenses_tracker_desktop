@@ -6,10 +6,14 @@ contextBridge.exposeInMainWorld('app', {
   minimizeApp: () => ipcRenderer.send('minimizeApp'),
   setLaunchAtSystemStartup: (value: boolean) => ipcRenderer.send('setLaunchAtSystemStartup', value),
   restartNow: () => ipcRenderer.send('restartNow'),
+  quitAndInstall: () => ipcRenderer.send('quitAndInstall'),
 
   getLaunchAtSystemStartup: () => ipcRenderer.invoke('getLaunchAtSystemStartup'),
   disableHardwareAcceleration: (payload) =>
     ipcRenderer.invoke('disableHardwareAcceleration', payload),
+
+  checkForUpdate: () => ipcRenderer.invoke('checkForUpdate'),
+  downloadUpdate: () => ipcRenderer.invoke('downloadUpdate'),
 
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
     const listener = (_event: Electron.IpcRendererEvent, payload) => handler(payload)

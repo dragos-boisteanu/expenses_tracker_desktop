@@ -11,7 +11,6 @@ import { ImportedExpense } from '@/types/importedExpense'
 import { DbImportResult } from '@/types/dbImportResult'
 import sleep from '../helpers/sleep.js'
 import { Notification } from '@/types/notification'
-import { isWorker } from '@vueuse/core'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -154,51 +153,56 @@ app.whenReady().then(() => {
     autoUpdater.on('update-available', (event) => {
       console.log('update available')
 
-      if (manualCheckForUpdate) {
-        const version = event.version
-        const releaseDate = event.releaseDate
-        const releaseNote = event.releaseNotes
+      const version = event.version
+      const releaseDate = event.releaseDate
+      const releaseNote = event.releaseNotes
 
-        const notification: Notification = {
-          title: `New update available v${version} from ${formatDate(releaseDate)}`,
-          content: releaseNote.toString(),
-          type: 'update',
-          read: 0,
-          isError: false,
-          createdAt: Math.floor(Date.now() / 1000),
-        }
-
-        sendLogToRender(JSON.stringify(notification, null, 2), 'log')
-        sendLogToRender(`version ${version}`, 'log')
-        sendLogToRender(`releaseDate ${releaseDate}`, 'log')
-        sendLogToRender(`releaseNote ${releaseNote}`, 'log')
-
-        const notificationId = insertNotification(notification)
-
-        mainWindow.webContents.send('mainMessage', {
-          action: 'notification',
-          data: {
-            id: notificationId,
-            title: notification.title,
-            content: notification.content,
-            type: notification.type,
-            isNew: true,
-            isError: false,
-            createdAt: notification.createdAt,
-          },
-        })
-
-        // insertNotification(notification)
+      const notification: Notification = {
+        title: `New update available v${version} from ${formatDate(releaseDate)}`,
+        content: releaseNote.toString(),
+        type: 'update',
+        read: 0,
+        isError: false,
+        createdAt: Math.floor(Date.now() / 1000),
       }
+      //
+      // sendLogToRender(JSON.stringify(notification, null, 2), 'log')
+      // sendLogToRender(`version ${version}`, 'log')
+      // sendLogToRender(`releaseDate ${releaseDate}`, 'log')
+      // sendLogToRender(`releaseNote ${releaseNote}`, 'log')
+
+      // const notificationId = insertNotification(notification)
+      mainWindow.webContents.send('mainMessage', {
+        action: 'updateAvailable',
+        data: {
+          content: releaseNote,
+          date: releaseDate,
+          version,
+        },
+      })
+
+      // mainWindow.webContents.send('mainMessage', {
+      //   action: 'notification',
+      //   data: {
+      //     id: notificationId,
+      //     title: notification.title,
+      //     content: notification.content,
+      //     type: notification.type,
+      //     isNew: true,
+      //     isError: false,
+      //     createdAt: notification.createdAt,
+      //   },
+      // })
+
+      // insertNotification(notification)
     })
     autoUpdater.on('update-not-available', () => {
-      if (manualCheckForUpdate) {
-        mainWindow.webContents.send('mainMessage', {
-          action: 'updateNotAvailable',
-        })
-      } else {
-        console.log('update not available')
-      }
+      mainWindow.webContents.send('mainMessage', {
+        action: 'updateNotAvailable',
+      })
+    })
+    autoUpdater.on('download-progress', (event) => {
+      sendLogToRender(`downloadProgress ${JSON.stringify(event)}`, 'log')
     })
     autoUpdater.on('update-downloaded', (event) => {
       const version = event.version
@@ -215,42 +219,75 @@ app.whenReady().then(() => {
         createdAt: Math.floor(Date.now() / 1000),
       }
 
+      mainWindow.webContents.send('mainMessage', {
+        action: 'updateDownloaded',
+        data: {
+          content: releaseNote,
+          date: releaseDate,
+          version,
+        },
+      })
+
       // insertNotification(notification)
     })
     //TODO: add a notification than an update has been downloaded
     // title: New Update Downloaded <version>
     // body: <come up with something>
 
-    autoUpdater.checkForUpdates().catch((error) => console.log('error', error))
+    // autoUpdater.checkForUpdates().catch((error) => console.log('error', error))
+    //
+    // autoCheckFoUpdateInterval = setInterval(
+    //   () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
+    //   AUTO_UPDATE_CHECK_TIME,
+    // )
 
-    autoCheckFoUpdateInterval = setInterval(
-      () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
-      AUTO_UPDATE_CHECK_TIME,
-    )
+    app.on('activate', function () {
+      // On macOS it's common to re-create a window in the app when the
+      // dock icon is clicked and there are no other windows open.
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    })
   }
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-  })
-
-  ipcMain.on('closeApp', () => {
-    mainWindow.close()
-  })
-  ipcMain.on('minimizeApp', () => {
-    mainWindow.minimize()
-  })
-
-  ipcMain.on('restartNow', () => {
-    app.relaunch()
-    app.quit()
-  })
 })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
+})
+
+ipcMain.on('closeApp', () => {
+  mainWindow.close()
+})
+ipcMain.on('minimizeApp', () => {
+  mainWindow.minimize()
+})
+
+ipcMain.on('restartNow', () => {
+  app.relaunch()
+  app.quit()
+})
+
+ipcMain.handle('checkForUpdate', () => {
+  return new Promise((resolve, reject) => {
+    autoUpdater
+      .checkForUpdates()
+      .then(() => {
+        resolve(true)
+      })
+      .catch((error) => reject(error))
+  })
+})
+ipcMain.handle('downloadUpdate', () => {
+  return new Promise((resolve, reject) => {
+    autoUpdater
+      .downloadUpdate()
+      .then(() => {
+        resolve(true)
+      })
+      .catch((error) => reject(error))
+  })
+})
+ipcMain.on('quitAndInstall', () => {
+  autoUpdater.quitAndInstall()
 })
 
 ipcMain.handle('disableHardwareAcceleration', async (event, payload) => {

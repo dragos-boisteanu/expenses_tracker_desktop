@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, provide } from 'vue'
+import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { ExpensesService } from '@/services/expensesService'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
@@ -7,6 +7,7 @@ import LocalDB from '@/repositories/LocalDB'
 import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
+import NewUpdateDialog from '@/components/newUpdateDialog.vue'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -56,6 +57,23 @@ if (app) {
         }
         break
       }
+      case 'updateDownloaded': {
+        console.log('updateDownloaded', payload.data)
+        break
+      }
+      case 'updateAvailable': {
+        console.log('updateAvailable', payload.data)
+        newUpdateDetails.value.content = payload.data.content
+        newUpdateDetails.value.date = payload.data.date
+        newUpdateDetails.value.version = payload.data.version
+        showNewUpdateDialog.value = true
+
+        break
+      }
+      case 'updateNotAvailable': {
+        console.log('updateNotAvailable', payload.data)
+        break
+      }
       case 'notification': {
         break
       }
@@ -63,10 +81,23 @@ if (app) {
   })
 }
 
+const showNewUpdateDialog = ref(false)
+const newUpdateDetails = ref({
+  version: '',
+  content: '',
+  date: '',
+})
 provide('expensesService', expensesService)
 </script>
 
 <template>
+  <new-update-dialog
+    v-if="showNewUpdateDialog"
+    :content="newUpdateDetails.version"
+    :date="newUpdateDetails.date"
+    :version="newUpdateDetails.version"
+    @close="showNewUpdateDialog = false"
+  />
   <div id="app-container" class="size-full" :class="{ dark: themeStore.theme === 'dark' }">
     <RouterView />
   </div>

@@ -1,14 +1,21 @@
 <script setup lang="ts">
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { ref } from 'vue'
+import { useAutoUpdateStore } from '@/stores/autoUpdate'
+
+const updateStore = useAutoUpdateStore()
 
 const checkingForUpdate = ref<boolean>(false)
 const checkForUpdate = async () => {
-  checkingForUpdate.value = true
+  try {
+    checkingForUpdate.value = true
 
-  await new Promise((resolve) => setTimeout(resolve, 2000))
-
-  checkingForUpdate.value = false
+    await window['app'].checkForUpdate()
+  } catch (error) {
+    console.error('checkForUpdate', error)
+  } finally {
+    checkingForUpdate.value = false
+  }
 }
 </script>
 
@@ -20,7 +27,11 @@ const checkForUpdate = async () => {
         Check and download new updates
       </div>
     </div>
-    <general-button-component :is-loading="checkingForUpdate" @click="checkForUpdate">
+    <general-button-component
+      :is-disabled="updateStore.isUpdateDownloaded"
+      :is-loading="checkingForUpdate"
+      @click="checkForUpdate"
+    >
       Check
     </general-button-component>
   </div>

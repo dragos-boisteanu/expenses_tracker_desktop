@@ -12,11 +12,19 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
     checkingForUpdate.value = payload
   }
 
+  const isUpdateDownloaded = ref(false)
+  const setIsUpdateDownloaded = (payload) => {
+    isUpdateDownloaded.value = payload
+  }
+
   return {
     autoUpdate,
     setAutoUpdate,
 
     checkingForUpdate,
     setCheckingForUpdate,
+
+    isUpdateDownloaded,
+    setIsUpdateDownloaded,
   }
 })
