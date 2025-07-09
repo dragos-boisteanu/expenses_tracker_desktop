@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import GeneralButton from '@/components/buttons/generalButton.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { ref } from 'vue'
 
 const checkingForUpdate = ref<boolean>(false)
@@ -20,7 +20,9 @@ const checkForUpdate = async () => {
         Check and download new updates
       </div>
     </div>
-    <general-button text="Check" :is-loading="checkingForUpdate" @click="checkForUpdate" />
+    <general-button-component :is-loading="checkingForUpdate" @click="checkForUpdate">
+      Check
+    </general-button-component>
   </div>
 </template>
 

@@ -5,7 +5,7 @@ import { computed, inject, ref } from 'vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
-import GeneralButton from '@/components/buttons/generalButton.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const expensesStore = useExpensesStore()
 const expensesService = inject('expensesService') as ExpensesService
@@ -35,9 +35,11 @@ const isDisabled = computed(() => {
     <dialog-component @close="toggleDeleteAllDialog" v-if="showDeleteAllDialog">
       <template #title>Delete all data</template>
       <template #default>
-        You are going to delete all stored data. This action is <strong>final</strong>. Once the
-        data is deleted it can't be recovered. It is recommended to <strong>export</strong> the data
-        before deleting it.
+        <div>
+          You are going to delete all stored data. This action is <strong>final</strong>. Once the
+          data is deleted it can't be recovered. It is recommended to <strong>export</strong> the
+          data before deleting it.
+        </div>
       </template>
       <template #actions>
         <cancel-button-component @click="toggleDeleteAllDialog">Cancel</cancel-button-component>
@@ -51,12 +53,13 @@ const isDisabled = computed(() => {
         Delete all app local stored data
       </div>
     </div>
-    <general-button
-      text="Delete All"
+    <general-button-component
       :is-disabled="isDisabled"
       :is-loading="expensesStore.isDeletingAllData"
       @click="toggleDeleteAllDialog"
-    />
+    >
+      Delete All
+    </general-button-component>
   </div>
 </template>
 

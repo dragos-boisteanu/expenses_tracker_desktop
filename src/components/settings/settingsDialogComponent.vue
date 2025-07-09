@@ -5,6 +5,7 @@ import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import SystemStartUp from '@/components/settings/system/systemStartUp.vue'
 import AutoUpdateComponent from '@/components/settings/system/autoUpdateComponent.vue'
 import CheckForUpdateComponent from '@/components/settings/system/checkForUpdateComponent.vue'
+import HardwareAccelerationSettingComponent from '@/components/settings/system/hardwareAccelerationSettingComponent.vue'
 
 const emits = defineEmits(['close'])
 
@@ -26,6 +27,7 @@ const close = () => {
         <check-for-update-component />
         <hr class="text-neutral-300 dark:text-neutral-600" />
         <system-start-up />
+        <hardware-acceleration-setting-component />
       </div>
     </template>
   </dialog-component>

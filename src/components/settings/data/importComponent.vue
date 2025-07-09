@@ -2,7 +2,7 @@
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { ExpensesService } from '@/services/expensesService'
-import GeneralButton from '@/components/buttons/generalButton.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const expensesStore = useExpensesStore()
 const expenseService = inject('expensesService') as ExpensesService
@@ -46,12 +46,13 @@ const isDisabled = computed(() => {
         Import expenses from local <b>csv</b>
       </div>
     </div>
-    <general-button
-      text="Import"
+    <general-button-component
       :is-disabled="isDisabled"
       :is-loading="expensesStore.isImporting"
       @click="importData"
-    />
+    >
+      Import
+    </general-button-component>
   </div>
 </template>
 

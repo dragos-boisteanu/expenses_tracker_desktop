@@ -3,7 +3,7 @@ const model = defineModel({ required: true })
 const emits = defineEmits(['changed'])
 const toggle = () => {
   model.value = !model.value
-  emits('changed', model.value)
+  emits('changed', !model.value)
 }
 </script>
 

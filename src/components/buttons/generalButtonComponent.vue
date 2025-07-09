@@ -3,7 +3,6 @@ import LoadingIndicator from '@/components/loadingIndicator.vue'
 const props = defineProps({
   isDisabled: { type: Boolean, default: false },
   isLoading: { type: Boolean, default: false },
-  text: { type: String, required: true },
 })
 
 const emits = defineEmits(['click'])
@@ -21,11 +20,11 @@ const emits = defineEmits(['click'])
     <loading-indicator v-if="props.isLoading" />
     <span
       v-else
-      class="group-dark:active:text-neutral-200 text-neutral-900 dark:text-neutral-200"
-      :class="{ '!text-neutral-500 dark:!text-neutral-400': props.isDisabled }"
+      class="text-neutral-700 dark:text-neutral-200"
+      :class="{ '!text-neutral-300 dark:!text-neutral-400': props.isDisabled }"
     >
-      {{ props.text }}</span
-    >
+      <slot></slot>
+    </span>
   </button>
 </template>
 

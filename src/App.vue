@@ -29,14 +29,17 @@ onMounted(() => {
   expensesService.getExpenses()
 })
 onBeforeUnmount(() => timeStore.stopTimer())
-
+const systemStore = useSystemStore()
 const app = window['app']
 if (app) {
   app.getLaunchAtSystemStartup().then((value: boolean) => {
-    const systemStore = useSystemStore()
     systemStore.setLaunchAtSystemStartup(value)
   })
 
+  app.disableHardwareAcceleration().then((result) => {
+    console.log('disableHardwareAcceleration', result)
+    systemStore.setIsHardwareAccelerationDisabled(!!result)
+  })
   app.mainMessage((payload) => {
     switch (payload.action) {
       case 'log': {

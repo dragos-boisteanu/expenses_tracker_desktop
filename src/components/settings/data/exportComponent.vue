@@ -2,7 +2,7 @@
 import { computed, inject } from 'vue'
 import { ExpensesService } from '@/services/expensesService'
 import { useExpensesStore } from '@/stores/expenses'
-import GeneralButton from '@/components/buttons/generalButton.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 const expensesService = inject('expensesService') as ExpensesService
 
 const expensesStore = useExpensesStore()
@@ -30,12 +30,13 @@ const isDisabled = computed(() => {
         Export expenses to <b>csv</b>
       </div>
     </div>
-    <general-button
-      text="Export"
+    <general-button-component
       :is-disabled="isDisabled"
       :is-loading="expensesStore.isExporting"
       @click="exportData"
-    />
+    >
+      Export
+    </general-button-component>
   </div>
 </template>
 

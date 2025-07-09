@@ -11,8 +11,14 @@ import { ImportedExpense } from '@/types/importedExpense'
 import { DbImportResult } from '@/types/dbImportResult'
 import sleep from '../helpers/sleep.js'
 import { Notification } from '@/types/notification'
+import { isWorker } from '@vueuse/core'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
+
+const autoUpdater = getAutoUpdater()
+let manualCheckForUpdate = false
+let autoCheckFoUpdateInterval = null
+const AUTO_UPDATE_CHECK_TIME = 60 * 60000
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,6 +27,46 @@ let dbPath = path.join(app.getPath('userData'), 'expenses.db')
 
 if (isDev) {
   dbPath = 'expenses.db'
+}
+
+const dataPath = app.getPath('userData')
+const configFilePath = path.join(dataPath, 'config.json')
+async function writeConfigData(key: string, value: string) {
+  try {
+    const content = await parseConfigData()
+    content[key] = value
+
+    await fsp.writeFile(configFilePath, JSON.stringify(content, null, 2))
+  } catch (error) {
+    throw error
+  }
+}
+
+async function readConfigData(key: string) {
+  try {
+    const content = await parseConfigData()
+    return content[key]
+  } catch (error) {
+    throw error
+  }
+}
+
+async function parseConfigData() {
+  try {
+    const dataFromFile = await fsp.readFile(configFilePath, 'utf8')
+    return JSON.parse(dataFromFile)
+  } catch (error) {
+    return {}
+  }
+}
+
+try {
+  const isHwAccelerationDisabled = await readConfigData('disableHardwareAcceleration')
+  if (typeof isHwAccelerationDisabled === 'boolean' && isHwAccelerationDisabled) {
+    app.disableHardwareAcceleration()
+  }
+} catch (error) {
+  console.error(error)
 }
 
 const db = new Database(dbPath, {})
@@ -40,7 +86,6 @@ db.exec(`
 db.exec(`
   CREATE UNIQUE INDEX IF NOT EXISTS  expense_id ON expenses (id);
 `)
-
 db.exec(`
     CREATE TABLE IF NOT EXISTS notifications (
       id INTEGER PRIMARY KEY,
@@ -95,11 +140,6 @@ export function getAutoUpdater(): AppUpdater {
   const { autoUpdater } = electronUpdater
   return autoUpdater
 }
-
-const autoUpdater = getAutoUpdater()
-let manualCheckForUpdate = false
-let autoCheckFoUpdateInterval = null
-const AUTO_UPDATE_CHECK_TIME = 60 * 60000
 
 app.whenReady().then(() => {
   createWindow()
@@ -201,8 +241,25 @@ app.whenReady().then(() => {
   ipcMain.on('minimizeApp', () => {
     mainWindow.minimize()
   })
+
+  ipcMain.on('restartNow', () => {
+    app.relaunch()
+    app.quit()
+  })
+})
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
 })
 
+ipcMain.handle('disableHardwareAcceleration', async (event, payload) => {
+  if (payload?.type === 'set') {
+    await writeConfigData('disableHardwareAcceleration', payload.value)
+  } else {
+    return await readConfigData('disableHardwareAcceleration')
+  }
+})
 ipcMain.handle('checkForUpdates', (event) => {
   return new Promise(async (reject, resolve) => {
     try {
@@ -393,12 +450,6 @@ ipcMain.handle('markAllNotificationsAsRead', async () => {
   )
   const result = markNotificationAsReadStatement.run()
   return result.changes
-})
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
 })
 
 const saveFile = async (data: { fileName: string; buffer: Buffer; increment: number }) => {
