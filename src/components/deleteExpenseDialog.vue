@@ -29,8 +29,11 @@ const remove = () => {
   <dialog-component @close="close">
     <template #title> Delete entry </template>
     <template #default>
-      Are you sure you want to delete the expense from <strong>{{ props.expense.date }}</strong> of
-      <strong> {{ props.expense.value }} {{ props.expense.currency }}</strong> ?
+      <div>
+        Are you sure you want to delete the expense from
+        <span class="font-semibold">{{ props.expense.date }}</span> of
+        <span class="font-semibold"> {{ props.expense.value }} {{ props.expense.currency }}</span> ?
+      </div>
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
