@@ -12,10 +12,7 @@ hardwareAcceleration.value = systemStore.isHardwareAccelerationDisabled
 
 const setHardwareAcceleration = async (value) => {
   try {
-    await window['app']?.disableHardwareAcceleration({
-      value: value,
-      type: 'set',
-    })
+    await window['app']?.disableHardwareAcceleration(value)
     systemStore.setIsHardwareAccelerationDisabled(value)
     toggleRestartNowDialog()
   } catch (error) {

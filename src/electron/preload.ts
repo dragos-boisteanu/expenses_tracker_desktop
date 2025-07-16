@@ -8,12 +8,12 @@ contextBridge.exposeInMainWorld('app', {
   restartNow: () => ipcRenderer.send('restartNow'),
   quitAndInstall: () => ipcRenderer.send('quitAndInstall'),
 
-  getLaunchAtSystemStartup: () => ipcRenderer.invoke('getLaunchAtSystemStartup'),
-  disableHardwareAcceleration: (payload) =>
-    ipcRenderer.invoke('disableHardwareAcceleration', payload),
+  disableHardwareAcceleration: (value: boolean) =>
+    ipcRenderer.invoke('disableHardwareAcceleration', value),
 
   checkForUpdate: () => ipcRenderer.invoke('checkForUpdate'),
   downloadUpdate: () => ipcRenderer.invoke('downloadUpdate'),
+  setAutoUpdate: (value: boolean) => ipcRenderer.invoke('setAutoUpdate', value),
 
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
     const listener = (_event: Electron.IpcRendererEvent, payload) => handler(payload)

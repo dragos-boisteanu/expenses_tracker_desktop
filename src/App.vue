@@ -8,19 +8,18 @@ import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
 import NewUpdateDialog from '@/components/newUpdateDialog.vue'
+import { useAutoUpdateStore } from '@/stores/autoUpdate'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
 timeStore.startTimer()
 const theme = localStorage.getItem('theme')
-
 if (theme) {
   themeStore.setTheme(theme)
 }
 
 const notificationService = new NotificationService(new NotificationsDB())
 provide('notificationService', notificationService)
-
 notificationService.getNotifications()
 
 // const expensesService = new ExpensesService(new MemoryDB())
@@ -30,17 +29,12 @@ onMounted(() => {
   expensesService.getExpenses()
 })
 onBeforeUnmount(() => timeStore.stopTimer())
+
 const systemStore = useSystemStore()
+const autoUpdateStore = useAutoUpdateStore()
+
 const app = window['app']
 if (app) {
-  app.getLaunchAtSystemStartup().then((value: boolean) => {
-    systemStore.setLaunchAtSystemStartup(value)
-  })
-
-  app.disableHardwareAcceleration().then((result) => {
-    console.log('disableHardwareAcceleration', result)
-    systemStore.setIsHardwareAccelerationDisabled(!!result)
-  })
   app.mainMessage((payload) => {
     switch (payload.action) {
       case 'log': {
@@ -55,6 +49,10 @@ if (app) {
             console.info(payload.data)
             break
         }
+        break
+      }
+      case 'autoUpdate': {
+        autoUpdateStore.setAutoUpdate(payload.data.value)
         break
       }
       case 'updateDownloaded': {
@@ -72,6 +70,14 @@ if (app) {
       }
       case 'updateNotAvailable': {
         console.log('updateNotAvailable', payload.data)
+        break
+      }
+      case 'isHwAccelerationDisabled': {
+        systemStore.setIsHardwareAccelerationDisabled(payload.data.value)
+        break
+      }
+      case 'launchAtSystemStartup': {
+        systemStore.setLaunchAtSystemStartup(payload.data.value)
         break
       }
       case 'notification': {

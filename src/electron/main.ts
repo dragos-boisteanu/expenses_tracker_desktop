@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import path from 'path'
 import Database from 'better-sqlite3'
 import { Expense } from '../types/expense.js'
-import electronUpdater, { type AppUpdater } from 'electron-updater'
+import electronUpdater from 'electron-updater'
 import { CsvService } from '../services/csvService.js'
 import fsp from 'fs/promises'
 import { ImportedExpense } from '@/types/importedExpense'
@@ -14,8 +14,7 @@ import { Notification } from '@/types/notification'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
-const autoUpdater = getAutoUpdater()
-let manualCheckForUpdate = false
+const { autoUpdater } = electronUpdater
 let autoCheckFoUpdateInterval = null
 const AUTO_UPDATE_CHECK_TIME = 60 * 60000
 
@@ -30,7 +29,7 @@ if (isDev) {
 
 const dataPath = app.getPath('userData')
 const configFilePath = path.join(dataPath, 'config.json')
-async function writeConfigData(key: string, value: string) {
+async function writeConfigData(key: string, value: string | boolean) {
   try {
     const content = await parseConfigData()
     content[key] = value
@@ -59,10 +58,14 @@ async function parseConfigData() {
   }
 }
 
+let isHwAccelerationDisabled: boolean = false
 try {
-  const isHwAccelerationDisabled = await readConfigData('disableHardwareAcceleration')
+  isHwAccelerationDisabled = await readConfigData('disableHardwareAcceleration')
   if (typeof isHwAccelerationDisabled === 'boolean' && isHwAccelerationDisabled) {
+    isHwAccelerationDisabled = true
     app.disableHardwareAcceleration()
+  } else {
+    isHwAccelerationDisabled = false
   }
 } catch (error) {
   console.error(error)
@@ -102,50 +105,103 @@ db.exec(`
 let mainWindow: BrowserWindow
 
 const createWindow = () => {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-    width: 400,
-    height: 624,
-    resizable: false,
-    frame: false,
-    webPreferences: {
-      preload: join(__dirname, './preload.js'),
+  return new Promise((resolve, reject) => {
+    try {
+      // Create the browser window.
+      mainWindow = new BrowserWindow({
+        width: 400,
+        height: 624,
+        resizable: false,
+        frame: false,
+        webPreferences: {
+          preload: join(__dirname, './preload.js'),
+        },
+      })
+
+      // and load the index.html of the app.
+
+      if (isDev) {
+        mainWindow.loadURL('http://localhost:5173/')
+        // Open the DevTools.
+        // mainWindow.webContents.openDevTools()
+      } else {
+        mainWindow.loadFile(join(__dirname, '../index.html'))
+      }
+
+      mainWindow.webContents.openDevTools()
+
+      mainWindow.on('closed', () => {
+        mainWindow = null
+      })
+
+      mainWindow.on('ready-to-show', () => {
+        sendLogToRender('readyToShow', 'log')
+        // sendLogToRender('readyToShow', 'error')
+        resolve(true)
+      })
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+
+function setAutoUpdate(value: boolean): void {
+  if (value) {
+    autoUpdater.autoDownload = true
+    // autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
+    autoCheckFoUpdateInterval = setInterval(
+      () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
+      AUTO_UPDATE_CHECK_TIME,
+    )
+  } else {
+    autoUpdater.autoDownload = false
+    clearInterval(autoCheckFoUpdateInterval)
+  }
+}
+
+async function getAutoUpdate() {
+  try {
+    let autoUpdate = await readConfigData('autoUpdate')
+    sendLogToRender(`autoupdate ${autoUpdate}`, 'log')
+    if (typeof autoUpdate === 'undefined') {
+      await writeConfigData('autoUpdate', true)
+      autoUpdate = true
+    }
+
+    setAutoUpdate(autoUpdate)
+
+    mainWindow.webContents.send('mainMessage', {
+      action: 'autoUpdate',
+      data: {
+        value: autoUpdate,
+      },
+    })
+  } catch (error) {
+    console.error(error)
+  }
+}
+app.whenReady().then(async () => {
+  await createWindow()
+
+  mainWindow.webContents.send('mainMessage', {
+    action: 'isHwAccelerationDisabled',
+    data: {
+      value: isHwAccelerationDisabled,
     },
   })
 
-  // and load the index.html of the app.
-
-  if (isDev) {
-    mainWindow.loadURL('http://localhost:5173/')
-    // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
-  } else {
-    mainWindow.loadFile(join(__dirname, '../index.html'))
-  }
-
-  mainWindow.webContents.openDevTools()
-
-  mainWindow.on('closed', () => {
-    mainWindow = null
+  const login = app.getLoginItemSettings()
+  mainWindow.webContents.send('mainMessage', {
+    action: 'launchAtSystemStartup',
+    data: {
+      value: login.openAtLogin,
+    },
   })
-
-  mainWindow.on('ready-to-show', () => {
-    sendLogToRender('readyToShow', 'log')
-    // sendLogToRender('readyToShow', 'error')
-  })
-}
-
-export function getAutoUpdater(): AppUpdater {
-  const { autoUpdater } = electronUpdater
-  return autoUpdater
-}
-
-app.whenReady().then(() => {
-  createWindow()
 
   if (!isDev) {
-    autoUpdater.autoDownload = false
-
+    getAutoUpdate().catch((error) => {
+      console.error(error)
+    })
     autoUpdater.on('checking-for-update', () => {
       console.log('checking for update')
       sendLogToRender('checking for update', 'log')
@@ -157,21 +213,15 @@ app.whenReady().then(() => {
       const releaseDate = event.releaseDate
       const releaseNote = event.releaseNotes
 
-      const notification: Notification = {
-        title: `New update available v${version} from ${formatDate(releaseDate)}`,
-        content: releaseNote.toString(),
-        type: 'update',
-        read: 0,
-        isError: false,
-        createdAt: Math.floor(Date.now() / 1000),
-      }
-      //
-      // sendLogToRender(JSON.stringify(notification, null, 2), 'log')
-      // sendLogToRender(`version ${version}`, 'log')
-      // sendLogToRender(`releaseDate ${releaseDate}`, 'log')
-      // sendLogToRender(`releaseNote ${releaseNote}`, 'log')
+      // const notification: Notification = {
+      //   title: `New update available v${version} from ${formatDate(releaseDate)}`,
+      //   content: releaseNote.toString(),
+      //   type: 'update',
+      //   read: 0,
+      //   isError: false,
+      //   createdAt: Math.floor(Date.now() / 1000),
+      // }
 
-      // const notificationId = insertNotification(notification)
       mainWindow.webContents.send('mainMessage', {
         action: 'updateAvailable',
         data: {
@@ -180,21 +230,6 @@ app.whenReady().then(() => {
           version,
         },
       })
-
-      // mainWindow.webContents.send('mainMessage', {
-      //   action: 'notification',
-      //   data: {
-      //     id: notificationId,
-      //     title: notification.title,
-      //     content: notification.content,
-      //     type: notification.type,
-      //     isNew: true,
-      //     isError: false,
-      //     createdAt: notification.createdAt,
-      //   },
-      // })
-
-      // insertNotification(notification)
     })
     autoUpdater.on('update-not-available', () => {
       mainWindow.webContents.send('mainMessage', {
@@ -209,16 +244,6 @@ app.whenReady().then(() => {
       const releaseDate = event.releaseDate
       const releaseNote = event.releaseNotes
 
-      console.log('update released note', releaseNote)
-      const notification: Notification = {
-        title: `New update downloaded ${version} from ${releaseDate}`,
-        content: '',
-        type: 'update',
-        read: 0,
-        isError: false,
-        createdAt: Math.floor(Date.now() / 1000),
-      }
-
       mainWindow.webContents.send('mainMessage', {
         action: 'updateDownloaded',
         data: {
@@ -227,19 +252,10 @@ app.whenReady().then(() => {
           version,
         },
       })
-
-      // insertNotification(notification)
     })
     //TODO: add a notification than an update has been downloaded
     // title: New Update Downloaded <version>
     // body: <come up with something>
-
-    // autoUpdater.checkForUpdates().catch((error) => console.log('error', error))
-    //
-    // autoCheckFoUpdateInterval = setInterval(
-    //   () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
-    //   AUTO_UPDATE_CHECK_TIME,
-    // )
 
     app.on('activate', function () {
       // On macOS it's common to re-create a window in the app when the
@@ -286,22 +302,37 @@ ipcMain.handle('downloadUpdate', () => {
       .catch((error) => reject(error))
   })
 })
+ipcMain.handle('setAutoUpdate', (event, payload: boolean) => {
+  console.log('setAutoUpdate', payload)
+  return new Promise(async (resolve, reject) => {
+    try {
+      setAutoUpdate(payload)
+      await writeConfigData('autoUpdate', payload)
+      resolve(true)
+    } catch (error) {
+      reject(error)
+    }
+  })
+})
 ipcMain.on('quitAndInstall', () => {
   autoUpdater.quitAndInstall()
 })
 
-ipcMain.handle('disableHardwareAcceleration', async (event, payload) => {
-  if (payload?.type === 'set') {
-    await writeConfigData('disableHardwareAcceleration', payload.value)
-  } else {
-    return await readConfigData('disableHardwareAcceleration')
-  }
+ipcMain.handle('disableHardwareAcceleration', (event, value: boolean) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      //TODO: fix this, it is not working
+      await writeConfigData('disableHardwareAcceleration', value)
+      resolve(true)
+    } catch (error) {
+      reject(error)
+    }
+  })
 })
 ipcMain.handle('checkForUpdates', (event) => {
   return new Promise(async (reject, resolve) => {
     try {
       if (autoUpdater) {
-        manualCheckForUpdate = true
         clearInterval(autoCheckFoUpdateInterval)
         await autoUpdater.checkForUpdates()
         resolve(true)
@@ -309,8 +340,6 @@ ipcMain.handle('checkForUpdates', (event) => {
     } catch (error) {
       reject(error)
     } finally {
-      manualCheckForUpdate = false
-
       autoCheckFoUpdateInterval = setInterval(
         () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
         AUTO_UPDATE_CHECK_TIME,
@@ -331,11 +360,6 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
   app.setLoginItemSettings({
     openAtLogin: payload,
   })
-})
-
-ipcMain.handle('getLaunchAtSystemStartup', () => {
-  const login = app.getLoginItemSettings()
-  return login.openAtLogin
 })
 
 // EXPENSES

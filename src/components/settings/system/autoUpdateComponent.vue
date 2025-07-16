@@ -10,6 +10,11 @@ autoUpdate.value = autoUpdateStore.autoUpdate
 
 const setAutoUpdate = (payload) => {
   autoUpdateStore.setAutoUpdate(payload)
+
+  window['app']
+    ?.setAutoUpdate(payload)
+    .then(() => console.log('autoUpdateSet'))
+    .catch((error) => console.error('failedToSetAutoUpdate', error))
 }
 </script>
 
@@ -22,7 +27,7 @@ const setAutoUpdate = (payload) => {
         closed
       </div>
     </div>
-    <toggler-component v-model="autoUpdate" @change="setAutoUpdate" />
+    <toggler-component v-model="autoUpdate" @changed="setAutoUpdate" />
   </div>
 </template>
 
