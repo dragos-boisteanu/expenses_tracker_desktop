@@ -148,7 +148,6 @@ const createWindow = () => {
 function setAutoUpdate(value: boolean): void {
   if (value) {
     autoUpdater.autoDownload = true
-    // autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
     autoCheckFoUpdateInterval = setInterval(
       () => autoUpdater.checkForUpdates().catch((error) => console.log('error', error)),
       AUTO_UPDATE_CHECK_TIME,
@@ -176,6 +175,8 @@ async function getAutoUpdate() {
         value: autoUpdate,
       },
     })
+
+    return autoUpdate
   } catch (error) {
     console.error(error)
   }
@@ -199,9 +200,15 @@ app.whenReady().then(async () => {
   })
 
   if (!isDev) {
-    getAutoUpdate().catch((error) => {
-      console.error(error)
-    })
+    getAutoUpdate()
+      .then((result) => {
+        if (result) {
+          autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
+        }
+      })
+      .catch((error) => {
+        console.error(error)
+      })
     autoUpdater.on('checking-for-update', () => {
       console.log('checking for update')
       sendLogToRender('checking for update', 'log')
