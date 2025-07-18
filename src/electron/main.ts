@@ -181,7 +181,27 @@ async function getAutoUpdate() {
     console.error(error)
   }
 }
+
+const getInstanceLock = () => {
+  const gotTheLock = app.requestSingleInstanceLock()
+
+  if (!gotTheLock) {
+    app.quit()
+  } else {
+    app.on('second-instance', (event, commandLine, workingDirectory) => {
+      if (mainWindow) {
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore()
+        }
+        mainWindow.setSkipTaskbar(false)
+        mainWindow.focus()
+      }
+    })
+  }
+}
 app.whenReady().then(async () => {
+  getInstanceLock()
+
   await createWindow()
 
   mainWindow.webContents.send('mainMessage', {
