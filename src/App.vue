@@ -57,6 +57,7 @@ if (app) {
       }
       case 'updateDownloaded': {
         console.log('updateDownloaded', payload.data)
+        // TODO: if auto update is selected show "confirm update install" dialog
         autoUpdateStore.setUpdate(newUpdateDetails.value)
         autoUpdateStore.setIsUpdateDownloaded(true)
         break
