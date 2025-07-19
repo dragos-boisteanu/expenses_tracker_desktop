@@ -7,7 +7,7 @@ import LocalDB from '@/repositories/LocalDB'
 import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
-import NewUpdateDialog from '@/components/newUpdateDialog.vue'
+import NewUpdateDialog from '@/components/autoUpdate/newUpdateDialog.vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
@@ -57,6 +57,8 @@ if (app) {
       }
       case 'updateDownloaded': {
         console.log('updateDownloaded', payload.data)
+        autoUpdateStore.setUpdate(newUpdateDetails.value)
+        autoUpdateStore.setIsUpdateDownloaded(true)
         break
       }
       case 'updateAvailable': {
@@ -66,10 +68,15 @@ if (app) {
         newUpdateDetails.value.version = payload.data.version
         showNewUpdateDialog.value = true
 
+        autoUpdateStore.setIsUpdateAvailable(true)
+        autoUpdateStore.setUpdate(newUpdateDetails.value)
         break
       }
       case 'updateNotAvailable': {
         console.log('updateNotAvailable', payload.data)
+        autoUpdateStore.setUpdate(null)
+        autoUpdateStore.setIsUpdateAvailable(false)
+
         break
       }
       case 'isHwAccelerationDisabled': {

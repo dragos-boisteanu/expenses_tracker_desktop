@@ -31,8 +31,8 @@ const isDisabled = computed(() => {
       </div>
     </div>
     <general-button-component
-      :is-disabled="isDisabled"
-      :is-loading="expensesStore.isExporting"
+      :disabled="isDisabled"
+      :loading="expensesStore.isExporting"
       @click="exportData"
     >
       Export

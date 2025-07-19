@@ -54,8 +54,8 @@ const isDisabled = computed(() => {
       </div>
     </div>
     <general-button-component
-      :is-disabled="isDisabled"
-      :is-loading="expensesStore.isDeletingAllData"
+      :disabled="isDisabled"
+      :loading="expensesStore.isDeletingAllData"
       @click="toggleDeleteAllDialog"
     >
       Delete All

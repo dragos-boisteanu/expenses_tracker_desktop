@@ -47,8 +47,8 @@ const isDisabled = computed(() => {
       </div>
     </div>
     <general-button-component
-      :is-disabled="isDisabled"
-      :is-loading="expensesStore.isImporting"
+      :disabled="isDisabled"
+      :loading="expensesStore.isImporting"
       @click="importData"
     >
       Import

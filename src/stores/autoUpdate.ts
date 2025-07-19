@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { UpdateType } from '@/types/updateType'
 
 export const useAutoUpdateStore = defineStore('autoUpdate', () => {
   const autoUpdate = ref<boolean>(false)
@@ -17,6 +18,28 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
     isUpdateDownloaded.value = payload
   }
 
+  const isUpdateAvailable = ref(false)
+  const setIsUpdateAvailable = (payload) => {
+    isUpdateAvailable.value = payload
+  }
+
+  const update = ref<UpdateType>({
+    version: '',
+    content: '',
+    date: '',
+  })
+  const setUpdate = (payload: UpdateType | null) => {
+    if (payload) {
+      update.value = payload
+    } else {
+      update.value = {
+        version: '',
+        content: '',
+        date: '',
+      }
+    }
+  }
+
   return {
     autoUpdate,
     setAutoUpdate,
@@ -26,5 +49,11 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
 
     isUpdateDownloaded,
     setIsUpdateDownloaded,
+
+    isUpdateAvailable,
+    setIsUpdateAvailable,
+
+    update,
+    setUpdate,
   }
 })

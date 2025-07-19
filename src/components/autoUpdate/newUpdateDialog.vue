@@ -4,6 +4,7 @@ import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import { ref } from 'vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
+import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
 
 const props = defineProps({
   version: { type: String, required: true },
@@ -41,28 +42,12 @@ const toggleConfirmRestartDialog = () => {
     close()
   }
 }
-
-const restartApp = () => {
-  window['app']?.quitAndInstall()
-}
 </script>
 
 <template>
   <dialog-component @close="close">
     <template #dialog>
-      <dialog-component v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog">
-        <template #title> Install update </template>
-        <template #default>
-          Restart the app in order for the update to be installed. Otherwise the update will be
-          installed when the app will be closed
-        </template>
-        <template #actions>
-          <cancel-button-component @click="toggleConfirmRestartDialog"
-            >Cancel</cancel-button-component
-          >
-          <confirm-button-component @click="restartApp"> Restart </confirm-button-component>
-        </template>
-      </dialog-component>
+      <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
     </template>
     <template #title>New update available.</template>
     <template #default>
@@ -74,7 +59,7 @@ const restartApp = () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <confirm-button-component @click="downloadUpdate" :loading="isDownloading">
+      <confirm-button-component @click="downloadUpdate" :is-loading="isDownloading">
         Download
       </confirm-button-component>
     </template>
