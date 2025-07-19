@@ -58,7 +58,7 @@ const downloadUpdate = async () => {
     >
       Download update
     </general-button-component>
-    <general-button-component v-else :is-loading="checkingForUpdate" @click="checkForUpdate">
+    <general-button-component v-else :loading="checkingForUpdate" @click="checkForUpdate">
       Check for update
     </general-button-component>
   </div>

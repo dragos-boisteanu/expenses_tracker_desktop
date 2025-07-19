@@ -5,6 +5,7 @@ import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vu
 import { ref } from 'vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const props = defineProps({
   version: { type: String, required: true },
@@ -59,9 +60,9 @@ const toggleConfirmRestartDialog = () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <confirm-button-component @click="downloadUpdate" :is-loading="isDownloading">
+      <general-button-component @click="downloadUpdate" :loading="isDownloading">
         Download
-      </confirm-button-component>
+      </general-button-component>
     </template>
   </dialog-component>
 </template>
