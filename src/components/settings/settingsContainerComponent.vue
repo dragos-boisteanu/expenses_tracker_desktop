@@ -3,19 +3,25 @@ import SettingsDialogComponent from '@/components/settings/settingsDialogCompone
 import { CogIcon } from '@heroicons/vue/24/outline'
 
 import { ref } from 'vue'
+import BadgeComponent from '@/components/badgeComponent.vue'
+import { useAutoUpdateStore } from '@/stores/autoUpdate'
 
 const showSettingsDialog = ref<boolean>(false)
+
+const autoUpdateStore = useAutoUpdateStore()
 </script>
 
 <template>
-  <div class="flex items-center">
+  <div class="flex items-center" @click="showSettingsDialog = true">
     <settings-dialog-component v-if="showSettingsDialog" @close="showSettingsDialog = false" />
 
-    <button class="group size-5 cursor-pointer rounded-full" @click="showSettingsDialog = true">
-      <CogIcon
-        class="size-fit rounded-full text-neutral-800 group-hover:text-neutral-600 group-active:text-neutral-900 dark:text-neutral-300 group-hover:dark:text-neutral-50 group-active:dark:text-neutral-400"
-      />
-    </button>
+    <badge-component :dot="autoUpdateStore.isUpdateDownloaded || autoUpdateStore.isUpdateAvailable">
+      <button class="group size-5 cursor-pointer rounded-full">
+        <CogIcon
+          class="size-fit rounded-full text-neutral-800 group-hover:text-neutral-600 group-active:text-neutral-900 dark:text-neutral-300 group-hover:dark:text-neutral-50 group-active:dark:text-neutral-400"
+        />
+      </button>
+    </badge-component>
   </div>
 </template>
 

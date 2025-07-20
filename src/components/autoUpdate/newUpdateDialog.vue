@@ -5,7 +5,6 @@ import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vu
 import { ref } from 'vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
-import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const props = defineProps({
   version: { type: String, required: true },
@@ -14,25 +13,21 @@ const props = defineProps({
 })
 const emits = defineEmits(['close'])
 const close = () => {
-  if (isDownloading.value) {
-    return
-  }
   emits('close')
 }
 
 const updateStore = useAutoUpdateStore()
 
-const isDownloading = ref(false)
 const downloadUpdate = async () => {
   try {
-    isDownloading.value = true
+    close()
     await window['app']?.downloadUpdate()
     updateStore.setIsUpdateDownloaded(true)
     toggleConfirmRestartDialog()
+    //   TODO: show notification and add the a notification to db
+    //   if an update was downloaded
   } catch (error) {
     console.error('downloadAndInstall', error)
-  } finally {
-    isDownloading.value = false
   }
 }
 
@@ -50,7 +45,7 @@ const toggleConfirmRestartDialog = () => {
     <template #dialog>
       <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
     </template>
-    <template #title>New update available.</template>
+    <template #title>New update available</template>
     <template #default>
       <div>
         <div>Version {{ props.version }}</div>
@@ -60,9 +55,7 @@ const toggleConfirmRestartDialog = () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <general-button-component @click="downloadUpdate" :loading="isDownloading">
-        Download
-      </general-button-component>
+      <confirm-button-component @click="downloadUpdate"> Download </confirm-button-component>
     </template>
   </dialog-component>
 </template>
