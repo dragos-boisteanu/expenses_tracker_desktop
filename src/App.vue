@@ -9,6 +9,8 @@ import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
 import NewUpdateDialog from '@/components/autoUpdate/newUpdateDialog.vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
+import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
+import { UpdateType } from '@/types/updateType'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -57,20 +59,28 @@ if (app) {
       }
       case 'updateDownloaded': {
         console.log('updateDownloaded', payload.data)
-        // TODO: if auto update is selected show "confirm update install" dialog
-        autoUpdateStore.setUpdate(newUpdateDetails.value)
+        const newUpdateDetails: UpdateType = {
+          version: payload.data.version,
+          content: payload.data.content,
+          date: payload.data.date,
+        }
+        autoUpdateStore.setUpdate(newUpdateDetails)
         autoUpdateStore.setIsUpdateDownloaded(true)
+
+        showConfirmRestartDialog.value = true
+
         break
       }
       case 'updateAvailable': {
         console.log('updateAvailable', payload.data)
-        newUpdateDetails.value.content = payload.data.content
-        newUpdateDetails.value.date = payload.data.date
-        newUpdateDetails.value.version = payload.data.version
-        showNewUpdateDialog.value = true
+        const newUpdateDetails: UpdateType = {
+          version: payload.data.version,
+          content: payload.data.content,
+          date: payload.data.date,
+        }
 
         autoUpdateStore.setIsUpdateAvailable(true)
-        autoUpdateStore.setUpdate(newUpdateDetails.value)
+        autoUpdateStore.setUpdate(newUpdateDetails)
         break
       }
       case 'updateNotAvailable': {
@@ -95,23 +105,16 @@ if (app) {
   })
 }
 
-const showNewUpdateDialog = ref(false)
-const newUpdateDetails = ref({
-  version: '',
-  content: '',
-  date: '',
-})
+const showConfirmRestartDialog = ref(false)
+const toggleConfirmRestartDialog = () => {
+  showConfirmRestartDialog.value = !showConfirmRestartDialog.value
+}
 provide('expensesService', expensesService)
 </script>
 
 <template>
-  <new-update-dialog
-    v-if="showNewUpdateDialog"
-    :content="newUpdateDetails.version"
-    :date="newUpdateDetails.date"
-    :version="newUpdateDetails.version"
-    @close="showNewUpdateDialog = false"
-  />
+  <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
+
   <div id="app-container" class="size-full" :class="{ dark: themeStore.theme === 'dark' }">
     <RouterView />
   </div>
