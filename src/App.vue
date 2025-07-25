@@ -11,6 +11,7 @@ import NewUpdateDialog from '@/components/autoUpdate/newUpdateDialog.vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
 import { UpdateType } from '@/types/updateType'
+import ToastComponent from '@/components/toast/toastComponent.vue'
 const timeStore = useTimeStore()
 const themeStore = useThemeStore()
 
@@ -115,8 +116,26 @@ provide('expensesService', expensesService)
 <template>
   <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
 
-  <div id="app-container" class="size-full" :class="{ dark: themeStore.theme === 'dark' }">
+  <div id="app-container" class="relative size-full" :class="{ dark: themeStore.theme === 'dark' }">
     <RouterView />
+    <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
+      <toast-component
+        type="error"
+        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
+      />
+      <toast-component
+        type="success"
+        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
+      />
+      <toast-component
+        type="warning"
+        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
+      />
+      <toast-component
+        type=""
+        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
+      />
+    </div>
   </div>
 </template>
 
