@@ -2,12 +2,21 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { ToastType } from '@/types/ToastType'
 
+const MAX_TOASTS: number = 2
+const DEFAULT_DURATION: number = 3000
+
 export const useToastStore = defineStore('notifier', () => {
   const list = ref<ToastType[]>([])
   const add = (payload: ToastType) => {
-    list.value.push(payload)
+    payload.duration = DEFAULT_DURATION
+    if (list.value.length < MAX_TOASTS) {
+      list.value.unshift(payload)
+    } else {
+      list.value.splice(list.value.length - 1, 1)
+      list.value.unshift(payload)
+    }
   }
-  const remove = (id: string) => {
+  const remove = (id: number) => {
     const index = list.value.findIndex((entry) => entry.id === id)
 
     if (index > -1) {

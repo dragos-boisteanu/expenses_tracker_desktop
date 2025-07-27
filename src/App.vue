@@ -7,15 +7,38 @@ import LocalDB from '@/repositories/LocalDB'
 import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
-import NewUpdateDialog from '@/components/autoUpdate/newUpdateDialog.vue'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
 import { UpdateType } from '@/types/updateType'
 import ToastComponent from '@/components/toast/toastComponent.vue'
-const timeStore = useTimeStore()
-const themeStore = useThemeStore()
+import { ToastService } from '@/services/toastService'
 
+const timeStore = useTimeStore()
 timeStore.startTimer()
+
+const toastService = new ToastService()
+const handleCloseToast = (id: number) => {
+  toastService.remove(id)
+}
+
+setTimeout(() => {
+  toastService.add('test toast')
+}, 1000)
+
+// setTimeout(() => {
+//   toastStore.add({
+//     id: '1',
+//     text: 'test toast 2',
+//   })
+// }, 2000)
+// setTimeout(() => {
+//   toastStore.add({
+//     id: '2',
+//     text: 'test toast 3',
+//   })
+// }, 4000)
+
+const themeStore = useThemeStore()
 const theme = localStorage.getItem('theme')
 if (theme) {
   themeStore.setTheme(theme)
@@ -116,29 +139,68 @@ provide('expensesService', expensesService)
 <template>
   <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
 
-  <div id="app-container" class="relative size-full" :class="{ dark: themeStore.theme === 'dark' }">
+  <div
+    id="app-container"
+    class="relative size-full overflow-hidden"
+    :class="{ dark: themeStore.theme === 'dark' }"
+  >
     <RouterView />
     <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
-      <toast-component
-        type="error"
-        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
-      />
-      <toast-component
-        type="success"
-        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
-      />
-      <toast-component
-        type="warning"
-        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
-      />
-      <toast-component
-        type=""
-        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"
-      />
+      <TransitionGroup name="toast">
+        <toast-component
+          v-for="toast in toastService.list()"
+          :key="toast.id"
+          :text="toast.text"
+          :link="toast.path"
+          :type="toast.type"
+          :duration="toast.duration"
+          @close="handleCloseToast(toast.id)"
+        />
+      </TransitionGroup>
+      <!--      <toast-component-->
+      <!--        type="error"-->
+      <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->
+      <!--      />-->
+      <!--      <toast-component-->
+      <!--        type="success"-->
+      <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->
+      <!--      />-->
+      <!--      <toast-component-->
+      <!--        type="warning"-->
+      <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->
+      <!--      />-->
+      <!--      <toast-component-->
+      <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->
+      <!--      />-->
     </div>
   </div>
 </template>
 
 <style>
 @import './assets/fonts.css';
+/* ENTER */
+.toast-enter-from {
+  transform: translateY(150%);
+}
+.toast-enter-to {
+  transform: translateY(0);
+}
+.toast-enter-active {
+  transition: transform 0.5s ease-in-out;
+}
+
+/* LEAVE */
+.toast-leave-from {
+  transform: translateY(0);
+}
+.toast-leave-to {
+  transform: translateY(150%);
+}
+.toast-leave-active {
+  transition: transform 0.5s ease-in-out;
+}
+
+.toast-move {
+  transition: transform 0.5s ease-in-out;
+}
 </style>

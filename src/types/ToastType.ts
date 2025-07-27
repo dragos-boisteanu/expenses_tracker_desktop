@@ -1,7 +1,7 @@
 export type ToastType = {
-  title: string
-  description?: string
+  text: string
   duration?: number // milliseconds
-  id?: string
+  id: number
   path?: string
+  type?: string
 }
