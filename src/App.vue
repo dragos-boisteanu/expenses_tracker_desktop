@@ -21,9 +21,9 @@ const handleCloseToast = (id: number) => {
   toastService.remove(id)
 }
 
-setTimeout(() => {
-  toastService.add('test toast')
-}, 1000)
+// setTimeout(() => {
+//   toastService.add('test toast')
+// }, 1000)
 
 // setTimeout(() => {
 //   toastStore.add({
@@ -49,7 +49,7 @@ provide('notificationService', notificationService)
 notificationService.getNotifications()
 
 // const expensesService = new ExpensesService(new MemoryDB())
-const expensesService = new ExpensesService(new LocalDB(), notificationService)
+const expensesService = new ExpensesService(new LocalDB(), notificationService, toastService)
 provide('expenseServices', expensesService)
 onMounted(() => {
   expensesService.getExpenses()

@@ -10,6 +10,7 @@ import { CsvService } from '@/services/csvService'
 import { DbImportResult } from '@/types/dbImportResult'
 import { ImportedExpense } from '@/types/importedExpense'
 import { NotificationService } from '@/services/notificationService'
+import { ToastService } from '@/services/toastService'
 
 export class ExpensesService {
   store: PiniaStore<typeof useExpensesStore>
@@ -18,11 +19,13 @@ export class ExpensesService {
   limit: number = 15
   allLoaded: boolean = false
   notification: NotificationService
+  toastService: ToastService
 
-  constructor(repository: IDb, notification: NotificationService) {
+  constructor(repository: IDb, notification: NotificationService, toastService: ToastService) {
     this.store = useExpensesStore()
     this.repository = repository
     this.notification = notification
+    this.toastService = toastService
   }
 
   async getExpenses(nextPage: boolean = false): Promise<boolean> {
@@ -60,6 +63,7 @@ export class ExpensesService {
   async export() {
     try {
       this.store.setIsExporting(true)
+      this.toastService.add('Export in progress. Do not close the app !')
       const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm')}.csv`
       const exportResult = await this.repository.export(fileName)
 
@@ -69,9 +73,11 @@ export class ExpensesService {
         'data',
       )
 
+      this.toastService.add('Export successfully completed')
       return exportResult
     } catch (error) {
       console.error('getAllError', error)
+      this.toastService.add('Export failed')
     } finally {
       this.store.setIsExporting(false)
     }
