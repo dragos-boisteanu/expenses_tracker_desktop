@@ -5,7 +5,7 @@ import { ToastType } from '@/types/ToastType'
 const MAX_TOASTS: number = 2
 const DEFAULT_DURATION: number = 3000
 
-export const useToastStore = defineStore('notifier', () => {
+export const useToastStore = defineStore('toasts', () => {
   const list = ref<ToastType[]>([])
   const add = (payload: ToastType) => {
     payload.duration = DEFAULT_DURATION

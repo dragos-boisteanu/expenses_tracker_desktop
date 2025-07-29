@@ -17,7 +17,13 @@ export class NotificationService {
     this.repository = repository
   }
 
-  async add(title: string, content: string, type: string, isError: boolean = false) {
+  async add(
+    title: string,
+    content: string,
+    type: string,
+    isNew: boolean = true,
+    isError: boolean = false,
+  ) {
     try {
       const notificationDate = dayjs()
       const unixDate = notificationDate.unix()
@@ -26,7 +32,7 @@ export class NotificationService {
         title,
         content,
         type,
-        read: 0,
+        read: isNew ? 0 : 1,
         isError,
         createdAt: unixDate,
       }
@@ -38,7 +44,7 @@ export class NotificationService {
         title,
         content,
         type,
-        isNew: true,
+        isNew,
         isError,
         createdAt: unixDate,
       })

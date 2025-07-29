@@ -82,7 +82,6 @@ if (app) {
         break
       }
       case 'updateDownloaded': {
-        console.log('updateDownloaded', payload.data)
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -93,10 +92,16 @@ if (app) {
 
         showConfirmRestartDialog.value = true
 
+        // TODO: add click event that opens the update change log
+        notificationService.add(
+          `New version downloaded v${payload.data.version}`,
+          'The latest update has been downloaded and awaits installation.',
+          'update',
+          false,
+        )
         break
       }
       case 'updateAvailable': {
-        console.log('updateAvailable', payload.data)
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -105,12 +110,24 @@ if (app) {
 
         autoUpdateStore.setIsUpdateAvailable(true)
         autoUpdateStore.setUpdate(newUpdateDetails)
+
+        toastService.add('A new version is available.')
+
+        // TODO: add click event that opens the update change log
+        notificationService.add(
+          `New version available v${payload.data.version}`,
+          'A new version is available for download. Check settings.',
+          'update',
+          false,
+        )
         break
       }
       case 'updateNotAvailable': {
         console.log('updateNotAvailable', payload.data)
         autoUpdateStore.setUpdate(null)
         autoUpdateStore.setIsUpdateAvailable(false)
+
+        toastService.add('You already have the latest version !')
 
         break
       }

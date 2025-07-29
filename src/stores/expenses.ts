@@ -14,7 +14,6 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   const importExpenses = (expenses: ViewExpense[]) => {
     list.value.push(...expenses)
-    // TODO: sort the list after adding imported data
     list.value = list.value.sort((a, b) => b.unixDate - a.unixDate)
   }
 
