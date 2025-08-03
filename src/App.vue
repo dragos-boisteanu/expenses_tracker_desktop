@@ -102,6 +102,7 @@ if (app) {
         break
       }
       case 'updateAvailable': {
+        console.log('updateAvailable', payload)
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -111,7 +112,9 @@ if (app) {
         autoUpdateStore.setIsUpdateAvailable(true)
         autoUpdateStore.setUpdate(newUpdateDetails)
 
-        toastService.add('A new version is available.')
+        if (autoUpdateStore.isManualCheck) {
+          toastService.add('A new version is available.')
+        }
 
         // TODO: add click event that opens the update change log
         notificationService.add(
@@ -127,8 +130,10 @@ if (app) {
         autoUpdateStore.setUpdate(null)
         autoUpdateStore.setIsUpdateAvailable(false)
 
-        //TODO: this message should only be shown after manual update check
-        toastService.add('You already have the latest version !')
+        if (autoUpdateStore.isManualCheck) {
+          toastService.add('You already have the latest version !')
+          autoUpdateStore.setIsManualCheck(false)
+        }
 
         break
       }

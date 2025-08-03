@@ -8,6 +8,11 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
     autoUpdate.value = payload
   }
 
+  const isManualCheck = ref<boolean>(false)
+  const setIsManualCheck = (value: boolean) => {
+    isManualCheck.value = value
+  }
+
   const checkingForUpdate = ref<boolean>(false)
   const setCheckingForUpdate = (payload) => {
     checkingForUpdate.value = payload
@@ -43,6 +48,9 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
   return {
     autoUpdate,
     setAutoUpdate,
+
+    isManualCheck,
+    setIsManualCheck,
 
     checkingForUpdate,
     setCheckingForUpdate,

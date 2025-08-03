@@ -10,6 +10,7 @@ const checkingForUpdate = ref<boolean>(false)
 const checkForUpdate = async () => {
   try {
     checkingForUpdate.value = true
+    updateStore.setIsManualCheck(true)
     await window['app'].checkForUpdate()
   } catch (error) {
     console.error('checkForUpdate', error)
