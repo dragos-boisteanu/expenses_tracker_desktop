@@ -62,7 +62,7 @@ const formattedCreatedAt = computed(() => {
       <div
         class="text-xs text-neutral-600 dark:text-neutral-400"
         :class="{
-          'font-medium dark:!text-neutral-200': props.notification.isNew,
+          'font-medium text-neutral-800 dark:!text-neutral-200': props.notification.isNew,
         }"
       >
         {{ props.notification.content }}
@@ -70,7 +70,7 @@ const formattedCreatedAt = computed(() => {
       <div
         class="text-xs text-indigo-600 dark:text-indigo-500"
         :class="{
-          'font-medium dark:!text-indigo-400': props.notification.isNew,
+          'font-medium text-indigo-500 dark:!text-indigo-400': props.notification.isNew,
         }"
       >
         {{ formattedCreatedAt }}
