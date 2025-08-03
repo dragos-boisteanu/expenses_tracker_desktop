@@ -127,6 +127,7 @@ if (app) {
         autoUpdateStore.setUpdate(null)
         autoUpdateStore.setIsUpdateAvailable(false)
 
+        //TODO: this message should only be shown after manual update check
         toastService.add('You already have the latest version !')
 
         break
