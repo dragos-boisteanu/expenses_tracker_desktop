@@ -505,13 +505,14 @@ ipcMain.handle('getNotifications', (event, payload): Notification[] => {
 
 function insertNotification(payload: Notification) {
   const insertExpenseStatement = db.prepare(
-    'INSERT INTO notifications (title, content, type, error, created_at) VALUES (@title, @content, @type, @error, @createdAt)',
+    'INSERT INTO notifications (title, content, type, read, error, created_at) VALUES (@title, @content, @type, @read, @error, @createdAt)',
   )
 
   const result = insertExpenseStatement.run({
     title: payload.title,
     content: payload.content,
     type: payload.type,
+    read: payload.read,
     error: 0,
     createdAt: payload.createdAt,
   })
