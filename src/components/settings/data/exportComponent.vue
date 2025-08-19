@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
-import { ExpensesService } from '@/services/expensesService'
 import { useExpensesStore } from '@/stores/expenses'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
-const expensesService = inject('expensesService') as ExpensesService
+import { ExportService } from '@/services/exportService'
+import { useExportStore } from '@/stores/export'
+
+const exportService = inject('exportService') as ExportService
 
 const expensesStore = useExpensesStore()
+const exportStore = useExportStore()
 
 const exportData = async () => {
   try {
-    await expensesService.export()
+    await exportService.export()
   } catch (error) {
     console.error('error', error)
   } finally {
@@ -18,7 +21,7 @@ const exportData = async () => {
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
 })
 </script>
 
@@ -32,7 +35,7 @@ const isDisabled = computed(() => {
     </div>
     <general-button-component
       :disabled="isDisabled"
-      :loading="expensesStore.isExporting"
+      :loading="exportStore.isExporting"
       @click="exportData"
     >
       Export

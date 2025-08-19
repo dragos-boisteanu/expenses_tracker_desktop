@@ -429,20 +429,56 @@ ipcMain.handle('getExpenses', (event, payload) => {
 })
 ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
-    const getExpensesListStatement = db.prepare('SELECT value, currency, date FROM expenses')
-    const expenses = getExpensesListStatement.all() as Expense[]
+    const limit = 25
+    let offset = 0
 
-    const csvService = new CsvService()
-    const csvBlob = await csvService.export(expenses)
+    const getExpensesListStatement = db.prepare(
+      'SELECT value, currency, date FROM expenses LIMIT @limit OFFSET @offset',
+    )
 
-    const csvArrayBuffer = await csvBlob.arrayBuffer()
-    const buffer = Buffer.from(csvArrayBuffer)
+    let expenses = getExpensesListStatement.all({
+      limit,
+      offset,
+    }) as Expense[]
 
-    await saveFile({
-      fileName,
-      buffer,
-      increment: 0,
-    })
+    let expensesCount = expenses.length
+    if (expensesCount > 0) {
+      const csvService = new CsvService()
+      const csvBlob = await csvService.export(expenses)
+      const csvArrayBuffer = await csvBlob.arrayBuffer()
+      const buffer = Buffer.from(csvArrayBuffer)
+      await saveFile({
+        fileName,
+        buffer,
+        increment: 0,
+      })
+
+      while (expensesCount >= limit) {
+        offset += limit
+
+        expenses = getExpensesListStatement.all({
+          limit,
+          offset,
+        }) as Expense[]
+
+        expensesCount = expenses.length
+        if (expensesCount > 0) {
+          const csvBlob = await csvService.export(expenses, false)
+          const csvArrayBuffer = await csvBlob.arrayBuffer()
+          let buffer = Buffer.from(csvArrayBuffer)
+          buffer = Buffer.concat([buffer, Buffer.from('\n')])
+
+          // TODO: find a way to not add an empty row at the end
+
+          await saveFile({
+            fileName,
+            buffer,
+            increment: 0,
+            append: true,
+          })
+        }
+      }
+    }
 
     await sleep(5000)
   } catch (error) {
@@ -541,7 +577,12 @@ ipcMain.handle('markAllNotificationsAsRead', async () => {
   return result.changes
 })
 
-const saveFile = async (data: { fileName: string; buffer: Buffer; increment: number }) => {
+const saveFile = async (data: {
+  fileName: string
+  buffer: Buffer
+  increment: number
+  append?: boolean
+}) => {
   const fileNameWithoutExtension = path.parse(data.fileName).name
   const extension = path.parse(data.fileName).ext
 
@@ -553,8 +594,13 @@ const saveFile = async (data: { fileName: string; buffer: Buffer; increment: num
   }${extension}`
   filePath = `${app.getPath('downloads')}/${fileName}`
   try {
-    console.log('filePath', filePath)
-    await fsp.writeFile(filePath, data.buffer, { flag: 'wx' })
+    let flags = 'wx'
+
+    if (data.append) {
+      flags = 'a'
+    }
+
+    await fsp.writeFile(filePath, data.buffer, { flag: flags })
   } catch (err) {
     if (err.code === 'EEXIST') {
       data.increment++
@@ -569,6 +615,7 @@ const sendLogToRender = (data: string, type: string) => {
   mainWindow.webContents.send('mainMessage', { action: 'log', data, type })
 }
 
+/*
 const formatDate = (isoString: string): string => {
   const date = new Date(isoString)
 
@@ -581,3 +628,4 @@ const formatDate = (isoString: string): string => {
 
   return `${day}.${month}.${year} ${hours}:${minutes}`
 }
+*/

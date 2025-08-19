@@ -12,6 +12,7 @@ import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.v
 import { UpdateType } from '@/types/updateType'
 import ToastComponent from '@/components/toast/toastComponent.vue'
 import { ToastService } from '@/services/toastService'
+import { ExportService } from '@/services/exportService'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
@@ -49,12 +50,16 @@ provide('notificationService', notificationService)
 notificationService.getNotifications()
 
 // const expensesService = new ExpensesService(new MemoryDB())
-const expensesService = new ExpensesService(new LocalDB(), notificationService, toastService)
+const localDb = new LocalDB()
+const expensesService = new ExpensesService(localDb, notificationService, toastService)
 provide('expenseServices', expensesService)
 onMounted(() => {
   expensesService.getExpenses()
 })
 onBeforeUnmount(() => timeStore.stopTimer())
+
+const exportService = new ExportService(localDb, notificationService, toastService)
+provide('exportService', exportService)
 
 const systemStore = useSystemStore()
 const autoUpdateStore = useAutoUpdateStore()

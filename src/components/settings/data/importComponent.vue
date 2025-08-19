@@ -3,8 +3,10 @@ import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { ExpensesService } from '@/services/expensesService'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
+import { useExportStore } from '@/stores/export'
 
 const expensesStore = useExpensesStore()
+const exportStore = useExportStore()
 const expenseService = inject('expensesService') as ExpensesService
 const fileInput = ref(null)
 
@@ -32,7 +34,7 @@ const handleFileInputChange = async (e) => {
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
 })
 </script>
 

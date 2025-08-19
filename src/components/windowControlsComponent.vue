@@ -1,8 +1,28 @@
 <script setup lang="ts">
 import { XMarkIcon, MinusIcon } from '@heroicons/vue/24/outline'
+import { useExpensesStore } from '@/stores/expenses'
+import DialogComponent from '@/components/dialogComponent.vue'
+import { ref } from 'vue'
+import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
+import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
+import { useExportStore } from '@/stores/export'
 
-const closeApp = () => {
-  window['app']?.close()
+const showConfirmAppCloseDialog = ref<boolean>(false)
+const expensesStore = useExpensesStore()
+const exportStore = useExportStore()
+
+const toggleShowConfirmAppCloseDialog = () => {
+  showConfirmAppCloseDialog.value = !showConfirmAppCloseDialog.value
+}
+const closeApp = (event, force: boolean = false) => {
+  if (
+    !force &&
+    (exportStore.isExporting || expensesStore.isImporting || expensesStore.isDeletingAllData)
+  ) {
+    toggleShowConfirmAppCloseDialog()
+  } else {
+    window['app']?.close()
+  }
 }
 const minimizeApp = () => {
   window['app']?.minimizeApp()
@@ -10,6 +30,28 @@ const minimizeApp = () => {
 </script>
 
 <template>
+  <dialog-component @close="toggleShowConfirmAppCloseDialog" v-if="showConfirmAppCloseDialog">
+    <template #title>Confirm app close ?</template>
+    <template #default>
+      <div>
+        <div>
+          <span class="font-semibold" v-if="exportStore.isExporting">Exporting data</span>
+          <span class="font-semibold" v-else-if="expensesStore.isImporting">Importing data</span>
+          <span class="font-semibold" v-else-if="expensesStore.isDeletingAllData"
+            >Deleting data</span
+          >
+          <span> is in progress.</span>
+        </div>
+        <div>By closing the app right now the action might fail and data might be loss.</div>
+      </div>
+    </template>
+    <template #actions>
+      <cancel-button-component @click="toggleShowConfirmAppCloseDialog"
+        >Cancel</cancel-button-component
+      >
+      <danger-button-component @click="closeApp($event, true)"> Close app </danger-button-component>
+    </template>
+  </dialog-component>
   <div class="flex items-center gap-x-4">
     <button class="drag--disabled group size-5 cursor-pointer rounded-full" @click="minimizeApp">
       <MinusIcon

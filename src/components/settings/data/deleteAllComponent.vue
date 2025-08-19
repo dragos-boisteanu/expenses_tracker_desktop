@@ -6,8 +6,10 @@ import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vu
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
+import { useExportStore } from '@/stores/export'
 
 const expensesStore = useExpensesStore()
+const exportStore = useExportStore()
 const expensesService = inject('expensesService') as ExpensesService
 
 const deleteAll = async (): Promise<void> => {
@@ -26,7 +28,7 @@ const toggleDeleteAllDialog = () => {
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || expensesStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
 })
 </script>
 

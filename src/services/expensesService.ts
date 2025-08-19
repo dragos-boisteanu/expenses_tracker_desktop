@@ -60,38 +60,10 @@ export class ExpensesService {
     }
   }
 
-  async export() {
-    try {
-      this.store.setIsExporting(true)
-      this.toastService.add('Export in progress. Do not close the app !')
-      const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm')}.csv`
-      const exportResult = await this.repository.export(fileName)
-
-      this.notification
-        .add(
-          'Export successfully completed',
-          'You expenses list was successfully exported!',
-          'data',
-          false,
-        )
-        .catch((error) => console.error('failedToSaveNotification', error))
-
-      this.toastService.add('Export successfully completed')
-      return exportResult
-    } catch (error) {
-      console.error('getAllError', error)
-
-      this.notification
-        .add('Export failed !', 'You expenses list was not exported!', 'error', false)
-        .catch((error) => console.error('failedToSaveNotification', error))
-
-      this.toastService.add('Export failed')
-    } finally {
-      this.store.setIsExporting(false)
-    }
-  }
   async import(file: File) {
     try {
+      //TODO: paginate data when reading from csv so
+      // it won't overload the memory in case of large data
       this.store.setIsImporting(true)
       this.toastService.add('Import in progress. Do not close the app !')
 
