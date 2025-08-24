@@ -7,8 +7,10 @@ import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vu
 import DialogComponent from '@/components/dialogComponent.vue'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
+import { useImportStore } from '@/stores/import'
 
 const expensesStore = useExpensesStore()
+const importStore = useImportStore()
 const exportStore = useExportStore()
 const expensesService = inject('expensesService') as ExpensesService
 
@@ -28,7 +30,7 @@ const toggleDeleteAllDialog = () => {
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || importStore.isImporting
 })
 </script>
 

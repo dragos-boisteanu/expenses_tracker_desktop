@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
-import { ExpensesService } from '@/services/expensesService'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
+import { useImportStore } from '@/stores/import'
+import ImportService from '@/services/importService'
+import { ExpensesService } from '@/services/expensesService'
 
 const expensesStore = useExpensesStore()
+const importStore = useImportStore()
 const exportStore = useExportStore()
-const expenseService = inject('expensesService') as ExpensesService
+const importService = inject('importService') as ImportService
+const expensesService = inject('expensesService') as ExpensesService
 const fileInput = ref(null)
 
 onMounted(() => {
@@ -27,14 +31,15 @@ const importData = async () => {
 const handleFileInputChange = async (e) => {
   const file = e.target.files[0]
   if (file) {
-    await expenseService.import(file)
+    await importService.import(file)
+    await expensesService.getExpenses(true)
   }
 
   e.target.value = ''
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || importStore.isImporting
 })
 </script>
 
@@ -50,7 +55,7 @@ const isDisabled = computed(() => {
     </div>
     <general-button-component
       :disabled="isDisabled"
-      :loading="expensesStore.isImporting"
+      :loading="importStore.isImporting"
       @click="importData"
     >
       Import

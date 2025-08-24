@@ -13,6 +13,7 @@ import { UpdateType } from '@/types/updateType'
 import ToastComponent from '@/components/toast/toastComponent.vue'
 import { ToastService } from '@/services/toastService'
 import { ExportService } from '@/services/exportService'
+import ImportService from '@/services/importService'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
@@ -54,12 +55,15 @@ const localDb = new LocalDB()
 const expensesService = new ExpensesService(localDb, notificationService, toastService)
 provide('expenseServices', expensesService)
 onMounted(() => {
-  expensesService.getExpenses()
+  expensesService.getExpenses(true)
 })
 onBeforeUnmount(() => timeStore.stopTimer())
 
 const exportService = new ExportService(localDb, notificationService, toastService)
 provide('exportService', exportService)
+
+const importService = new ImportService(localDb, notificationService, toastService)
+provide('importService', importService)
 
 const systemStore = useSystemStore()
 const autoUpdateStore = useAutoUpdateStore()

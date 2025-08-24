@@ -6,11 +6,9 @@ import getLocale from '@/helpers/getLocale'
 import { ViewExpense } from '@/types/viewExpense'
 import { PiniaStore } from '@/types/PiniaStore'
 import { IDb } from '@/interfaces/IDb'
-import { CsvService } from '@/services/csvService'
-import { DbImportResult } from '@/types/dbImportResult'
-import { ImportedExpense } from '@/types/importedExpense'
 import { NotificationService } from '@/services/notificationService'
 import { ToastService } from '@/services/toastService'
+import { formatExpense } from '@/helpers/formatExpense'
 
 export class ExpensesService {
   store: PiniaStore<typeof useExpensesStore>
@@ -28,12 +26,16 @@ export class ExpensesService {
     this.toastService = toastService
   }
 
-  async getExpenses(nextPage: boolean = false): Promise<boolean> {
+  async getExpenses(firstPage: boolean = false, nextPage: boolean = false): Promise<boolean> {
     let expenses = []
     const locale = getLocale()
     try {
       if (this.allLoaded) {
         return this.allLoaded
+      }
+
+      if (firstPage) {
+        this.offset = 0
       }
 
       expenses = await this.repository.getList(this.offset, this.limit)
@@ -44,9 +46,7 @@ export class ExpensesService {
         this.offset += this.limit
       }
 
-      expenses = expenses.map((expense: Expense) =>
-        this.formatExpense(expense, locale),
-      ) as ViewExpense[]
+      expenses = expenses.map((expense: Expense) => formatExpense(expense, locale)) as ViewExpense[]
 
       if (nextPage) {
         this.store.addExpenses(expenses)
@@ -57,61 +57,6 @@ export class ExpensesService {
       return false
     } catch (error) {
       console.error('getExpensesError', error)
-    }
-  }
-
-  async import(file: File) {
-    try {
-      //TODO: paginate data when reading from csv so
-      // it won't overload the memory in case of large data
-      this.store.setIsImporting(true)
-      this.toastService.add('Import in progress. Do not close the app !')
-
-      const csvService = new CsvService()
-      const data = await csvService.import(file)
-
-      if (data.length > 0) {
-        const importResult: DbImportResult = await this.repository.import(data)
-        if (importResult.inserted.length === importResult.duplicates) {
-        }
-        const locale = getLocale()
-        const importedExpenses: ViewExpense[] = importResult.inserted.map(
-          (expense: ImportedExpense) => this.formatExpense(expense, locale),
-        )
-        this.store.importExpenses(importedExpenses)
-
-        const insertedCount = importResult.inserted.length
-
-        let notificationTitle = 'Import successfully completed'
-        let notificationContent = `${insertedCount} new entries imported`
-        let toast = `${insertedCount} new entries imported`
-
-        if (importResult.duplicates > 0 && insertedCount === 0) {
-          notificationTitle = 'Nothing to import'
-          notificationContent = `Found ${importResult.duplicates} duplicates and 0 new entries.`
-          toast = `Found ${importResult.duplicates} duplicates. No data inserted.`
-        } else if (importResult.duplicates > 0 && insertedCount > 0) {
-          notificationTitle = 'Partial data import'
-          notificationContent = `Found ${importResult.duplicates} duplicates and ${insertedCount} new entries. Skip import.`
-          toast = `Partial data import.  ${importResult.duplicates} duplicates. ${insertedCount} entries inserted`
-        }
-
-        this.notification
-          .add(notificationTitle, notificationContent, 'data', false)
-          .catch((error) => console.error('failedToSaveNotification', error))
-
-        this.toastService.add(toast)
-      }
-    } catch (error) {
-      console.error('getAllError', error)
-
-      this.notification
-        .add('Import failed !', 'Your data was not imported !', 'error')
-        .catch((error) => console.error('failedToSaveNotification', error))
-
-      this.toastService.add('Data import failed !')
-    } finally {
-      this.store.setIsImporting(false)
     }
   }
 
@@ -171,18 +116,6 @@ export class ExpensesService {
         .catch((error) => console.error('failedToSaveNotification', error))
     } finally {
       this.store.setIsDeletingAllData(false)
-    }
-  }
-
-  private formatExpense(expense: Expense, locale: string): ViewExpense {
-    const expenseDate = dayjs.unix(expense.date).format('DD/MM/YY HH:mm')
-
-    return {
-      id: expense.id,
-      value: currencyFormat(expense.value, expense.currency, locale),
-      currency: expense.currency || '',
-      date: expenseDate,
-      unixDate: expense.date,
     }
   }
 }

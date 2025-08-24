@@ -6,9 +6,11 @@ import { ref } from 'vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
+import { useImportStore } from '@/stores/import'
 
 const showConfirmAppCloseDialog = ref<boolean>(false)
 const expensesStore = useExpensesStore()
+const importStore = useImportStore()
 const exportStore = useExportStore()
 
 const toggleShowConfirmAppCloseDialog = () => {
@@ -17,7 +19,7 @@ const toggleShowConfirmAppCloseDialog = () => {
 const closeApp = (event, force: boolean = false) => {
   if (
     !force &&
-    (exportStore.isExporting || expensesStore.isImporting || expensesStore.isDeletingAllData)
+    (exportStore.isExporting || importStore.isImporting || expensesStore.isDeletingAllData)
   ) {
     toggleShowConfirmAppCloseDialog()
   } else {
@@ -36,7 +38,7 @@ const minimizeApp = () => {
       <div>
         <div>
           <span class="font-semibold" v-if="exportStore.isExporting">Exporting data</span>
-          <span class="font-semibold" v-else-if="expensesStore.isImporting">Importing data</span>
+          <span class="font-semibold" v-else-if="importStore.isImporting">Importing data</span>
           <span class="font-semibold" v-else-if="expensesStore.isDeletingAllData"
             >Deleting data</span
           >

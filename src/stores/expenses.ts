@@ -25,16 +25,6 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  const isExporting = ref<boolean>(false)
-  const setIsExporting = (payload: boolean) => {
-    isExporting.value = payload
-  }
-
-  const isImporting = ref<boolean>(false)
-  const setIsImporting = (payload: boolean) => {
-    isImporting.value = payload
-  }
-
   const isDeletingAllData = ref<boolean>(false)
   const deleteAllData = () => {
     list.value = []
@@ -49,12 +39,8 @@ export const useExpensesStore = defineStore('expenses', () => {
     importExpenses,
     add,
     remove,
-    isExporting,
-    setIsExporting,
     deleteAllData,
     isDeletingAllData,
     setIsDeletingAllData,
-    isImporting,
-    setIsImporting,
   }
 })

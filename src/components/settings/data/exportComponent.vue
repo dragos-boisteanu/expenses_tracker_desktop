@@ -4,24 +4,24 @@ import { useExpensesStore } from '@/stores/expenses'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { ExportService } from '@/services/exportService'
 import { useExportStore } from '@/stores/export'
+import { useImportStore } from '@/stores/import'
 
 const exportService = inject('exportService') as ExportService
 
 const expensesStore = useExpensesStore()
 const exportStore = useExportStore()
+const importStore = useImportStore()
 
 const exportData = async () => {
   try {
     await exportService.export()
   } catch (error) {
     console.error('error', error)
-  } finally {
-    expensesStore.setIsExporting(false)
   }
 }
 
 const isDisabled = computed(() => {
-  return expensesStore.isDeletingAllData || exportStore.isExporting || expensesStore.isImporting
+  return expensesStore.isDeletingAllData || exportStore.isExporting || importStore.isImporting
 })
 </script>
 

@@ -414,7 +414,6 @@ ipcMain.handle('deleteAllData', async () => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses')
 
   const result = deleteExpenseStatement.run()
-  await sleep(5000)
 
   return result.changes
 })
@@ -517,8 +516,6 @@ ipcMain.handle(
     })
 
     const result = transaction(expenses) as Expense[]
-
-    await sleep(5000)
 
     return {
       inserted: result,
