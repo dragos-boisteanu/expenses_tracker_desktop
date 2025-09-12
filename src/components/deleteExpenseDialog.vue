@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
-import { inject, ref } from 'vue'
-import type { ExpensesService } from '@/services/expensesService'
+import { ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
+import { useExpensesStore } from '@/stores/expenses'
 
 const props = defineProps<{
   expense: ViewExpense
 }>()
-const expensesService = inject<ExpensesService>('expensesService')!
 const emits = defineEmits(['close', 'cancel'])
 const close = () => {
   emits('close')
@@ -19,9 +18,15 @@ const showConfirmDialog = ref<boolean>(false)
 const toggleConfirmDialog = () => {
   showConfirmDialog.value = !showConfirmDialog.value
 }
-const remove = () => {
-  expensesService.removeExpense(props.expense.id)
-  close()
+const remove = async () => {
+  try {
+    const expensesStore = useExpensesStore()
+    await expensesStore.removeExpense(props.expense.id)
+    close()
+  } catch (error) {
+    // TODO: show notification
+    console.error('removeExpense', error)
+  }
 }
 </script>
 

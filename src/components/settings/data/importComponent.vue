@@ -5,13 +5,11 @@ import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
 import ImportService from '@/services/importService'
-import { ExpensesService } from '@/services/expensesService'
 
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
 const importService = inject('importService') as ImportService
-const expensesService = inject('expensesService') as ExpensesService
 const fileInput = ref(null)
 
 onMounted(() => {
@@ -32,7 +30,7 @@ const handleFileInputChange = async (e) => {
   const file = e.target.files[0]
   if (file) {
     await importService.import(file)
-    await expensesService.getExpenses(true)
+    await expensesStore.getExpenses(true)
   }
 
   e.target.value = ''

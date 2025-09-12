@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { PlusIcon } from '@heroicons/vue/24/outline'
-import { inject, onMounted, ref } from 'vue'
-import type { ExpensesService } from '@/services/expensesService'
+import { onMounted, ref } from 'vue'
 import type { Country } from '@/types/country'
 import CountrySelectComponent from '@/components/countrySelectComponent.vue'
 import { ActionResult } from '@/types/actionResult'
+import { useExpensesStore } from '@/stores/expenses'
 
-const expensesService = inject<ExpensesService>('expensesService')!
 const value = ref<string>('')
 const hasError = ref<ActionResult>({
   show: false,
@@ -28,7 +27,9 @@ const addExpense = async () => {
       if (numericValue === 0) {
         throw new Error('Expense might have a value, either negative or positive')
       }
-      await expensesService.addExpense(numericValue, selectedCountry.value.code)
+
+      const expenseStore = useExpensesStore()
+      await expenseStore.addExpense(numericValue, selectedCountry.value.code)
       value.value = ''
       hasError.value.show = false
       isSuccess.value.show = true

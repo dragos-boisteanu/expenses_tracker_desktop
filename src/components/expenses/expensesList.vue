@@ -2,11 +2,10 @@
 import ExpenseComponent from '@/components/expenses/expenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
-import { inject, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import { VList } from 'virtua/vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
-import { ExpensesService } from '@/services/expensesService'
 import LoadingIndicator from '@/components/loadingIndicator.vue'
 
 const expensesStore = useExpensesStore()
@@ -62,14 +61,12 @@ onMounted(() => {
   })
 })
 
-const expenseServices = inject('expenseServices') as ExpensesService
 const virtualListRef = ref(null)
 
 const isLoadingMore = ref(false)
-const allLoaded = ref(false)
 const handleOnScroll = async (e) => {
   try {
-    if (allLoaded.value) {
+    if (expensesStore.allLoaded) {
       return
     }
 
@@ -79,7 +76,8 @@ const handleOnScroll = async (e) => {
     if (e + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
       await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
-      allLoaded.value = await expenseServices.getExpenses(false, true)
+
+      await expensesStore.getExpenses(false, true)
     }
   } catch (error) {
     console.log('loadMoreExpenses', error)

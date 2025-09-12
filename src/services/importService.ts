@@ -6,11 +6,6 @@ import { useImportStore } from '@/stores/import'
 import { CsvService } from '@/services/csvService'
 import { useExpensesStore } from '@/stores/expenses'
 import { DbImportResult } from '@/types/dbImportResult'
-import getLocale from '@/helpers/getLocale'
-import { ViewExpense } from '@/types/viewExpense'
-import { ImportedExpense } from '@/types/importedExpense'
-import { formatExpense } from '@/helpers/formatExpense'
-
 export default class ImportService {
   private notificationService: NotificationService
   private toastService: ToastService
@@ -37,53 +32,24 @@ export default class ImportService {
       this.importStore.setIsImporting(true)
       this.toastService.add('Import in progress. Do not close the app !')
 
-      console.log('fileSize', file.size)
       const csvService = new CsvService()
-      // let insertedCount = 0
-      // let firstGroup = true
-
-      // csvService.import(
-      //   file,
-      //   async (result) => {
-      //     console.log('result', result)
-      //     const importResult: DbImportResult = await this.repository.import(result.data)
-      //     // const locale = getLocale()
-      //
-      //     // if (firstGroup) {
-      //     //   const importedExpenses: ViewExpense[] = importResult.inserted.map(
-      //     //     (expense: ImportedExpense) => formatExpense(expense, locale),
-      //     //   )
-      //     //   this.expensesStore.importExpenses(importedExpenses)
-      //     //   firstGroup = false
-      //     // }
-      //
-      //     console.log('insertedCount', importResult.inserted.length)
-      //   },
-      //   () => {
-      //     console.log('importCompleted')
-      //
-      //     this.importStore.setIsImporting(false)
-      //   },
-      // )
-
       const data = await csvService.import(file)
 
       if (data.length > 0) {
         const importResult: DbImportResult = await this.repository.import(data)
         console.log('importResult', importResult)
+
+        //TODO: make clear error, duplicate, success messages
+
         if (importResult.errors.length > 0) {
           console.error('importErrors', importResult.errors[1])
           return
         }
+
         if (importResult.inserted.length === importResult.duplicates) {
           console.warn('all data is duplicated')
           return
         }
-        // const locale = getLocale()
-        // const importedExpenses: ViewExpense[] = importResult.inserted.map(
-        //   (expense: ImportedExpense) => formatExpense(expense, locale),
-        // )
-        // this.expensesStore.importExpenses(importedExpenses)
 
         const insertedCount = importResult.inserted.length
 

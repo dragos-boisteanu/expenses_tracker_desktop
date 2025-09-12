@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useExpensesStore } from '@/stores/expenses'
-import { ExpensesService } from '@/services/expensesService'
 import { computed, inject, ref } from 'vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
@@ -8,19 +7,32 @@ import DialogComponent from '@/components/dialogComponent.vue'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
+import { ToastService } from '@/services/toastService'
+import { NotificationService } from '@/services/notificationService'
 
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
-const expensesService = inject('expensesService') as ExpensesService
+
+const toastService = inject('toastService') as ToastService
+const notificationService = inject('notificationService') as NotificationService
 
 const deleteAll = async (): Promise<void> => {
   try {
     toggleDeleteAllDialog()
-    const removedDataCount = await expensesService.deleteAllData()
-    console.log(removedDataCount)
+    await expensesStore.deleteAll()
+
+    toastService.add('All data deleted successfully.')
+    notificationService
+      .add('Data removed', 'All data was successfully removed.', 'data', false)
+      .catch((error) => console.error('failedToSaveNotification', error))
   } catch (error) {
     console.error(error)
+    toastService.add('Failed to delete data.')
+
+    notificationService
+      .add('Data not removed', 'Failed to remove data', 'data', false)
+      .catch((error) => console.error('failedToSaveNotification', error))
   }
 }
 

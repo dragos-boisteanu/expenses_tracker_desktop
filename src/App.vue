@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
-import { ExpensesService } from '@/services/expensesService'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
 import LocalDB from '@/repositories/LocalDB'
@@ -14,6 +13,7 @@ import ToastComponent from '@/components/toast/toastComponent.vue'
 import { ToastService } from '@/services/toastService'
 import { ExportService } from '@/services/exportService'
 import ImportService from '@/services/importService'
+import { useExpensesStore } from '@/stores/expenses'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
@@ -23,6 +23,7 @@ const handleCloseToast = (id: number) => {
   toastService.remove(id)
 }
 
+provide('toastService', toastService)
 // setTimeout(() => {
 //   toastService.add('test toast')
 // }, 1000)
@@ -50,12 +51,13 @@ const notificationService = new NotificationService(new NotificationsDB())
 provide('notificationService', notificationService)
 notificationService.getNotifications()
 
-// const expensesService = new ExpensesService(new MemoryDB())
 const localDb = new LocalDB()
-const expensesService = new ExpensesService(localDb, notificationService, toastService)
-provide('expenseServices', expensesService)
+
 onMounted(() => {
-  expensesService.getExpenses(true)
+  const expensesStore = useExpensesStore()
+  expensesStore.getExpenses().catch((error) => {
+    console.error('getExpensesError', error)
+  })
 })
 onBeforeUnmount(() => timeStore.stopTimer())
 
@@ -165,7 +167,6 @@ const showConfirmRestartDialog = ref(false)
 const toggleConfirmRestartDialog = () => {
   showConfirmRestartDialog.value = !showConfirmRestartDialog.value
 }
-provide('expensesService', expensesService)
 </script>
 
 <template>
