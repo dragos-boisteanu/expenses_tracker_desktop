@@ -20,13 +20,13 @@ export const useExpensesStore = defineStore('expenses', () => {
     nextPage: boolean = false,
   ): Promise<void> => {
     try {
-      if (allLoaded.value) {
-        return Promise.resolve()
-      }
-
       if (firstPage) {
         allLoaded.value = false
         offset = 0
+      }
+
+      if (allLoaded.value) {
+        return Promise.resolve()
       }
 
       const dataSource = dataSourceFactory('local')
@@ -43,6 +43,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       if (nextPage) {
         list.value.push(...viewExpenses)
       } else {
+        console.log('addImportedExpenses')
         list.value = viewExpenses
       }
     } catch (error) {
