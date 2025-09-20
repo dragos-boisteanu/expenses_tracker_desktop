@@ -1,7 +1,7 @@
 import { NotificationService } from '@/services/notificationService'
 import { ToastService } from '@/services/toastService'
 import { PiniaStore } from '@/types/PiniaStore'
-import { IDb } from '@/interfaces/IDb'
+import { IExpensesSource } from '@/interfaces/IExpensesSource'
 import { useImportStore } from '@/stores/import'
 import { CsvService } from '@/services/csvService'
 import { useExpensesStore } from '@/stores/expenses'
@@ -11,10 +11,10 @@ export default class ImportService {
   private toastService: ToastService
   private importStore: PiniaStore<typeof useImportStore>
   private expensesStore: PiniaStore<typeof useExpensesStore>
-  private repository: IDb
+  private repository: IExpensesSource
 
   constructor(
-    repository: IDb,
+    repository: IExpensesSource,
     notificationService: NotificationService,
     toastService: ToastService,
   ) {

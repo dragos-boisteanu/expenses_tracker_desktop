@@ -1,12 +1,21 @@
 import { Expense } from '@/types/expense'
-import { IDb } from '@/interfaces/IDb'
+import { IExpensesSource } from '@/interfaces/IExpensesSource'
 import { ImportedExpense } from '@/types/importedExpense'
 
-export default class LocalDB implements IDb {
-  db
+export default class ExpensesDB implements IExpensesSource {
+  private db
+  private static _instance
 
   constructor() {
     this.db = window['db']
+  }
+
+  public static get instance(): ExpensesDB {
+    if (!ExpensesDB._instance) {
+      ExpensesDB._instance = new ExpensesDB()
+    }
+
+    return ExpensesDB._instance()
   }
 
   async getList(offset: number, limit: number): Promise<Expense[]> {

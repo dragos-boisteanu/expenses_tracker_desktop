@@ -3,29 +3,18 @@ import { ToastService } from '@/services/toastService'
 import { useExportStore } from '@/stores/export'
 import { PiniaStore } from '@/types/PiniaStore'
 import dayjs from '@/plugins/dayjs'
-import { IDb } from '@/interfaces/IDb'
+import { IExpensesSource } from '@/interfaces/IExpensesSource'
 
 export class ExportService {
-  notificationService: NotificationService
-  toastService: ToastService
-  store: PiniaStore<typeof useExportStore>
-  repository: IDb
+  // notificationService: NotificationService
+  // toastService: ToastService
+  // store: PiniaStore<typeof useExportStore>
+  // repository: IExpensesSource
 
-  constructor(
-    repository: IDb,
-    notificationService: NotificationService,
-    toastService: ToastService,
-  ) {
-    this.notificationService = notificationService
-    this.toastService = toastService
-    this.store = useExportStore()
-    this.repository = repository
-  }
+  constructor() {}
 
   export = async () => {
     try {
-      this.store.setIsExporting(true)
-      this.toastService.add('Export in progress. Do not close the app !')
       const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm_ss')}.csv`
 
       const exportResult = await this.repository.export(fileName)

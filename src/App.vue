@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
-import LocalDB from '@/repositories/LocalDB'
+import LocalDB from '@/repositories/ExpensesDB'
 import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
@@ -47,12 +47,10 @@ if (theme) {
   themeStore.setTheme(theme)
 }
 
-const notificationService = new NotificationService(new NotificationsDB())
-provide('notificationService', notificationService)
-notificationService.getNotifications()
+const notificationStore = useNotificationStore()
+notificationStore.getNotifications().catch((error) => console.error('GetNotifications', error))
 
 const localDb = new LocalDB()
-
 onMounted(() => {
   const expensesStore = useExpensesStore()
   expensesStore.getExpenses().catch((error) => {

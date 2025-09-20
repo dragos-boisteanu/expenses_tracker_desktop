@@ -6,4 +6,5 @@ export type ViewNotification = {
   isNew: boolean
   isError: boolean
   createdAt: number
+  formattedCreatedAt: string
 }

@@ -1,22 +1,38 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { ExportService } from '@/services/exportService'
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
-
-const exportService = inject('exportService') as ExportService
+import { useToastStore } from '@/stores/toast'
 
 const expensesStore = useExpensesStore()
 const exportStore = useExportStore()
 const importStore = useImportStore()
 
 const exportData = async () => {
+  const exportService = new ExportService()
+  const toastStore = useToastStore()
+
   try {
+    exportStore.setIsExporting(true)
+    toastStore.add({
+      text: 'Export in progress. Do not close the app !',
+    })
+
     await exportService.export()
+
+    toastStore.add({
+      text: 'Export successfully completed',
+    })
   } catch (error) {
+    toastStore.add({
+      text: 'Error while exporting expenses',
+    })
     console.error('error', error)
+  } finally {
+    exportStore.setIsExporting(false)
   }
 }
 

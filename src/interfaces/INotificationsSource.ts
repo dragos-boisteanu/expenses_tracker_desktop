@@ -1,6 +1,6 @@
 import { Notification } from '@/types/notification'
 
-export interface INotificationsDb {
+export interface INotificationsSource {
   getNotifications(offset: number, limit: number): Promise<Notification[]>
   addNotification(notification: Notification): Promise<number>
   markNotificationAsRead(id: number): Promise<void>

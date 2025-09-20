@@ -1,37 +1,125 @@
 import { defineStore } from 'pinia'
 import { computed, ComputedRef, ref } from 'vue'
 import { ViewNotification } from '@/types/viewNotification'
+import dayjs from '@/plugins/dayjs'
+import NotificationsDB from '@/repositories/NotificationDB'
+import { Notification } from '@/types/notification'
+import { AddNotificationType } from '@/types/addNotificationType'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const list = ref<ViewNotification[]>([])
 
-  const setNotifications = (notifications: ViewNotification[]) => {
-    list.value = notifications
+  const limit = 5
+  let offset = 0
+  let allLoaded = false
+
+  const addNotification = async (payload: AddNotificationType): Promise<void> => {
+    try {
+      const notificationDate = dayjs()
+      const unixDate = notificationDate.unix()
+
+      const notification: Notification = {
+        title: payload.title,
+        content: payload.content,
+        type: payload.type,
+        read: payload.isNew ? 0 : 1,
+        isError: payload.isError,
+        createdAt: unixDate,
+      }
+
+      const notificationDb = NotificationsDB.instance
+      const id: number = await notificationDb.addNotification(notification)
+
+      list.value.unshift({
+        id,
+        title: notification.title,
+        content: notification.content,
+        type: notification.type,
+        isNew: !!notification.read,
+        isError: notification.isError,
+        createdAt: notification.createdAt,
+        formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
+      })
+    } catch (error) {
+      throw error
+    }
   }
 
-  const addNotification = (notification: ViewNotification) => list.value.unshift(notification)
+  const getNotifications = async (nextPage: boolean = false): Promise<void> => {
+    try {
+      if (allLoaded) {
+        return
+      }
+
+      const notificationsDB = NotificationsDB.instance
+
+      const notifications = await notificationsDB.getNotifications(offset, limit)
+      const viewNotifications: ViewNotification[] = notifications.map(
+        (notification: Notification): ViewNotification => {
+          return {
+            id: notification.id,
+            title: notification.title,
+            content: notification.content,
+            type: notification.type,
+            isNew: notification.read === 0,
+            isError: notification.isError,
+            createdAt: notification.createdAt,
+            formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
+          }
+        },
+      )
+
+      if (nextPage) {
+        list.value.push(...viewNotifications)
+      } else {
+        list.value = notifications
+      }
+
+      if (notifications.length < limit) {
+        allLoaded = true
+      } else {
+        offset += limit
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const markAsRead = async (id: number) => {
+    try {
+      const notificationDb = NotificationsDB.instance
+      await notificationDb.markNotificationAsRead(id)
+
+      const notificationIndex = list.value.findIndex((n) => n.id === id)
+      if (notificationIndex > -1) {
+        list.value[notificationIndex].isNew = false
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const markAllAsRead = async () => {
+    try {
+      const notificationDb = NotificationsDB.instance
+      await notificationDb.markAllNotificationsAsRead()
+
+      for (const notification of list.value) {
+        notification.isNew = false
+      }
+    } catch (error) {
+      throw error
+    }
+  }
 
   const addOlderNotifications = (notifications: ViewNotification[]) => {
     list.value.push(...notifications)
-  }
-  const markAsRead = (id: number) => {
-    const notificationIndex = list.value.findIndex((n) => n.id === id)
-
-    if (notificationIndex > -1) {
-      list.value[notificationIndex].isNew = false
-    }
   }
 
   const markUnread = (id: number) => {
     const notificationIndex = list.value.findIndex((n) => n.id === id)
     if (notificationIndex > -1) {
       list.value[notificationIndex].isNew = true
-    }
-  }
-
-  const markAllAsRead = () => {
-    for (const notification of list.value) {
-      notification.isNew = false
     }
   }
 
@@ -53,9 +141,8 @@ export const useNotificationStore = defineStore('notifications', () => {
     list,
     count,
     newCount,
-    setNotifications,
     addNotification,
-    addOlderNotifications,
+    getNotifications,
     markAsRead,
     markUnread,
     markAllAsRead,

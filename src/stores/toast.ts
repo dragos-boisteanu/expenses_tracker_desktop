@@ -8,7 +8,9 @@ const DEFAULT_DURATION: number = 3000
 export const useToastStore = defineStore('toasts', () => {
   const list = ref<ToastType[]>([])
   const add = (payload: ToastType) => {
+    payload.id = list.value.length + 1
     payload.duration = DEFAULT_DURATION
+
     if (list.value.length < MAX_TOASTS) {
       list.value.unshift(payload)
     } else {
