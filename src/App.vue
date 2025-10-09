@@ -1,44 +1,23 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
-import ExpensesDB from '@/repositories/ExpensesDB'
 import { useSystemStore } from '@/stores/system'
-import { NotificationService } from '@/services/notificationService'
-import NotificationsDB from '@/repositories/NotificationDB'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
 import { UpdateType } from '@/types/updateType'
 import ToastComponent from '@/components/toast/toastComponent.vue'
-import { ToastService } from '@/services/toastService'
 import { useExpensesStore } from '@/stores/expenses'
 import { useNotificationStore } from '@/stores/notifications'
+import { useToastStore } from '@/stores/toast'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
 
-const toastService = new ToastService()
+const toastStore = useToastStore()
 const handleCloseToast = (id: number) => {
-  toastService.remove(id)
+  toastStore.remove(id)
 }
-
-provide('toastService', toastService)
-// setTimeout(() => {
-//   toastService.add('test toast')
-// }, 1000)
-
-// setTimeout(() => {
-//   toastStore.add({
-//     id: '1',
-//     text: 'test toast 2',
-//   })
-// }, 2000)
-// setTimeout(() => {
-//   toastStore.add({
-//     id: '2',
-//     text: 'test toast 3',
-//   })
-// }, 4000)
 
 const themeStore = useThemeStore()
 const theme = localStorage.getItem('theme')
@@ -56,12 +35,6 @@ onMounted(() => {
   })
 })
 onBeforeUnmount(() => timeStore.stopTimer())
-
-// const exportService = new ExportService(localDb, notificationService, toastService)
-// provide('exportService', exportService)
-
-// const importService = new ImportService(localDb, notificationService, toastService)
-// provide('importService', importService)
 
 const systemStore = useSystemStore()
 const autoUpdateStore = useAutoUpdateStore()
@@ -100,12 +73,13 @@ if (app) {
         showConfirmRestartDialog.value = true
 
         // TODO: add click event that opens the update change log
-        notificationService.add(
-          `New version downloaded v${payload.data.version}`,
-          'The latest update has been downloaded and awaits installation.',
-          'update',
-          false,
-        )
+        notificationStore.addNotification({
+          title: `New version downloaded v${payload.data.version}`,
+          content: 'The latest update has been downloaded and awaits installation.',
+          type: 'update',
+          isNew: false,
+          isError: false,
+        })
         break
       }
       case 'updateAvailable': {
@@ -120,16 +94,17 @@ if (app) {
         autoUpdateStore.setUpdate(newUpdateDetails)
 
         if (autoUpdateStore.isManualCheck) {
-          toastService.add('A new version is available.')
+          toastStore.add({ text: 'A new version is available.' })
         }
 
         // TODO: add click event that opens the update change log
-        notificationService.add(
-          `New version available v${payload.data.version}`,
-          'A new version is available for download. Check settings.',
-          'update',
-          false,
-        )
+        notificationStore.addNotification({
+          title: `New version available v${payload.data.version}`,
+          content: 'A new version is available for download. Check settings.',
+          type: 'update',
+          isNew: false,
+          isError: false,
+        })
         break
       }
       case 'updateNotAvailable': {
@@ -138,7 +113,7 @@ if (app) {
         autoUpdateStore.setIsUpdateAvailable(false)
 
         if (autoUpdateStore.isManualCheck) {
-          toastService.add('You already have the latest version !')
+          toastStore.add({ text: 'You already have the latest version !' })
           autoUpdateStore.setIsManualCheck(false)
         }
 
@@ -177,7 +152,7 @@ const toggleConfirmRestartDialog = () => {
     <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
       <TransitionGroup name="toast">
         <toast-component
-          v-for="toast in toastService.list()"
+          v-for="toast in toastStore.list"
           :key="toast.id"
           :text="toast.text"
           :link="toast.path"

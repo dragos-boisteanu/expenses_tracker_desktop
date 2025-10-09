@@ -15,7 +15,7 @@ export default class ExpensesDB implements IExpensesSource {
       ExpensesDB._instance = new ExpensesDB()
     }
 
-    return ExpensesDB._instance()
+    return ExpensesDB._instance
   }
 
   async getList(offset: number, limit: number): Promise<Expense[]> {

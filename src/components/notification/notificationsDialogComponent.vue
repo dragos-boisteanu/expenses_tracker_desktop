@@ -6,17 +6,15 @@ import { useNotificationStore } from '@/stores/notifications'
 import Notification from '@/components/notification/notification.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
 import { ViewNotification } from '@/types/viewNotification'
-import { NotificationService } from '@/services/notificationService'
 import LoadingIndicator from '@/components/loadingIndicator.vue'
 
-const notificationService = inject('notificationService') as NotificationService
 const notificationsStore = useNotificationStore()
 
 const emits = defineEmits(['markAllAsRead', 'close'])
 
 const handleNotificationSelected = (notification: ViewNotification) => {
   if (notification.isNew) {
-    notificationService.markAsRead(notification.id as number)
+    notificationsStore.markAsRead(notification.id as number)
   }
 
   if (notification.type === 'update') {
@@ -28,7 +26,7 @@ const isLoadingMarkAllAsRead = ref<boolean>(false)
 const markAllAsRead = async () => {
   try {
     isLoadingMarkAllAsRead.value = true
-    await notificationService.markAllAsRead()
+    await notificationsStore.markAllAsRead()
   } catch (error) {
     console.error('error', error)
   } finally {
@@ -90,7 +88,7 @@ const handleOnScroll = async (e) => {
     if (e + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
       await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
-      allLoaded.value = await notificationService.getNotifications(true)
+      allLoaded.value = await notificationsStore.getNotifications(true)
     }
   } catch (error) {
     console.error('loadMoreNotifications', error)

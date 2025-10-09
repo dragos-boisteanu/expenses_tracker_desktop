@@ -7,31 +7,43 @@ import DialogComponent from '@/components/dialogComponent.vue'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
-import { ToastService } from '@/services/toastService'
-import { NotificationService } from '@/services/notificationService'
+import { useToastStore } from '@/stores/toast'
+import { useNotificationStore } from '@/stores/notifications'
 
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
+const toastStore = useToastStore()
 
-const toastService = inject('toastService') as ToastService
-const notificationService = inject('notificationService') as NotificationService
+const notificationStore = useNotificationStore()
 
 const deleteAll = async (): Promise<void> => {
   try {
     toggleDeleteAllDialog()
     await expensesStore.deleteAll()
 
-    toastService.add('All data deleted successfully.')
-    notificationService
-      .add('Data removed', 'All data was successfully removed.', 'data', false)
+    toastStore.add({ text: 'All data deleted successfully.' })
+    notificationStore
+      .addNotification({
+        title: 'Data removed',
+        content: 'All data was successfully removed.',
+        type: 'data',
+        isNew: false,
+        isError: false,
+      })
       .catch((error) => console.error('failedToSaveNotification', error))
   } catch (error) {
     console.error(error)
-    toastService.add('Failed to delete data.')
+    toastStore.add({ text: 'Failed to delete data.' })
 
-    notificationService
-      .add('Data not removed', 'Failed to remove data', 'data', false)
+    notificationStore
+      .addNotification({
+        title: 'Data not removed',
+        content: 'Failed to remove data',
+        type: 'data',
+        isNew: false,
+        isError: false,
+      })
       .catch((error) => console.error('failedToSaveNotification', error))
   }
 }

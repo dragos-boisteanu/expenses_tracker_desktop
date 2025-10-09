@@ -45,7 +45,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     }
   }
 
-  const getNotifications = async (nextPage: boolean = false): Promise<void> => {
+  const getNotifications = async (nextPage: boolean = false): Promise<boolean> => {
     try {
       if (allLoaded) {
         return
@@ -80,6 +80,8 @@ export const useNotificationStore = defineStore('notifications', () => {
       } else {
         offset += limit
       }
+
+      return allLoaded
     } catch (error) {
       throw error
     }
