@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { computed, inject, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
-import ImportService from '@/services/importService'
 
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
-const importService = inject('importService') as ImportService
 const fileInput = ref(null)
 
 onMounted(() => {
@@ -29,7 +27,7 @@ const importData = async () => {
 const handleFileInputChange = async (e) => {
   const file = e.target.files[0]
   if (file) {
-    await importService.import(file)
+    await importStore.importExpenses(file)
     await expensesStore.getExpenses(true)
   }
 

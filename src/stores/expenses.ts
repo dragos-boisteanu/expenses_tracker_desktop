@@ -2,11 +2,11 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import type { Expense } from '@/types/expense'
-import dataSourceFactory from '@/factories/dataSourceFactory'
 import { formatExpense } from '@/helpers/formatExpense'
 import dayjs from '@/plugins/dayjs'
 import currencyFormat from '@/helpers/currencyFormat'
 import getLocale from '@/helpers/getLocale'
+import ExpensesDB from '@/repositories/ExpensesDB'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -29,7 +29,7 @@ export const useExpensesStore = defineStore('expenses', () => {
         return Promise.resolve()
       }
 
-      const dataSource = dataSourceFactory('local')
+      const dataSource = ExpensesDB.instance
       const expenses = await dataSource.getList(offset, limit)
 
       if (expenses.length < limit) {
@@ -62,7 +62,7 @@ export const useExpensesStore = defineStore('expenses', () => {
         date: unixDate,
       }
 
-      const dataSource = dataSourceFactory('local')
+      const dataSource = ExpensesDB.instance
       const id = await dataSource.add(expense)
 
       const viewExpense: ViewExpense = {
@@ -80,7 +80,7 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   const removeExpense = async (id: number) => {
     try {
-      const dataSource = dataSourceFactory('local')
+      const dataSource = ExpensesDB.instance
       await dataSource.delete(id)
 
       const expenseIndex = list.value.findIndex((expense) => expense.id === id)
@@ -95,8 +95,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   const deleteAll = async (): Promise<void> => {
     try {
       isDeletingAllData.value = true
-      const dataSource = dataSourceFactory('local')
-
+      const dataSource = ExpensesDB.instance
       await dataSource.deleteAllData()
 
       list.value = []

@@ -2,7 +2,7 @@
 import { onBeforeUnmount, onMounted, provide, ref } from 'vue'
 import { useTimeStore } from '@/stores/time'
 import { useThemeStore } from '@/stores/theme'
-import LocalDB from '@/repositories/ExpensesDB'
+import ExpensesDB from '@/repositories/ExpensesDB'
 import { useSystemStore } from '@/stores/system'
 import { NotificationService } from '@/services/notificationService'
 import NotificationsDB from '@/repositories/NotificationDB'
@@ -11,9 +11,8 @@ import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.v
 import { UpdateType } from '@/types/updateType'
 import ToastComponent from '@/components/toast/toastComponent.vue'
 import { ToastService } from '@/services/toastService'
-import { ExportService } from '@/services/exportService'
-import ImportService from '@/services/importService'
 import { useExpensesStore } from '@/stores/expenses'
+import { useNotificationStore } from '@/stores/notifications'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
@@ -50,7 +49,6 @@ if (theme) {
 const notificationStore = useNotificationStore()
 notificationStore.getNotifications().catch((error) => console.error('GetNotifications', error))
 
-const localDb = new LocalDB()
 onMounted(() => {
   const expensesStore = useExpensesStore()
   expensesStore.getExpenses().catch((error) => {
@@ -59,11 +57,11 @@ onMounted(() => {
 })
 onBeforeUnmount(() => timeStore.stopTimer())
 
-const exportService = new ExportService(localDb, notificationService, toastService)
-provide('exportService', exportService)
+// const exportService = new ExportService(localDb, notificationService, toastService)
+// provide('exportService', exportService)
 
-const importService = new ImportService(localDb, notificationService, toastService)
-provide('importService', importService)
+// const importService = new ImportService(localDb, notificationService, toastService)
+// provide('importService', importService)
 
 const systemStore = useSystemStore()
 const autoUpdateStore = useAutoUpdateStore()

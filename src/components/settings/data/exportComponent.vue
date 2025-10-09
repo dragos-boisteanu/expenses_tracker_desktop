@@ -2,26 +2,35 @@
 import { computed } from 'vue'
 import { useExpensesStore } from '@/stores/expenses'
 import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
-import { ExportService } from '@/services/exportService'
 import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
 import { useToastStore } from '@/stores/toast'
+import { useNotificationStore } from '@/stores/notifications'
 
 const expensesStore = useExpensesStore()
 const exportStore = useExportStore()
 const importStore = useImportStore()
 
 const exportData = async () => {
-  const exportService = new ExportService()
   const toastStore = useToastStore()
+  const exportStore = useExportStore()
+  const notificationStore = useNotificationStore()
 
   try {
-    exportStore.setIsExporting(true)
     toastStore.add({
       text: 'Export in progress. Do not close the app !',
     })
 
-    await exportService.export()
+    await exportStore.exportExpenses()
+    notificationStore
+      .addNotification({
+        title: 'Export successfully completed',
+        content: 'You expenses list was successfully exported!',
+        type: 'data',
+        isError: false,
+        isNew: false,
+      })
+      .catch((error) => console.error('addNotificationError', error))
 
     toastStore.add({
       text: 'Export successfully completed',
@@ -31,8 +40,6 @@ const exportData = async () => {
       text: 'Error while exporting expenses',
     })
     console.error('error', error)
-  } finally {
-    exportStore.setIsExporting(false)
   }
 }
 
