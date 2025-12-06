@@ -39,7 +39,6 @@ const rootRef = ref<HTMLDivElement | null>(null)
 
 onMounted(() => {
   const root = rootRef.value
-  console.log('root.firstElementChild', root.firstElementChild)
   const [initialize] = useOverlayScrollbars({
     defer: false,
     options: {
@@ -65,6 +64,10 @@ const virtualListRef = ref(null)
 
 const isLoadingMore = ref(false)
 const handleOnScroll = async (e) => {
+  if (isLoadingMore.value) {
+    return
+  }
+
   try {
     if (expensesStore.allLoaded) {
       return

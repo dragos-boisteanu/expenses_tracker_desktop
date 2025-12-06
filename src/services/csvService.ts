@@ -1,6 +1,6 @@
 import { Expense } from '@/types/expense'
 import { ImportedExpense } from '@/types/importedExpense'
-import Papa, { Parser, ParseStepResult } from 'papaparse'
+import Papa from 'papaparse'
 
 export class CsvService {
   async export(data: Expense[], header: boolean = true) {

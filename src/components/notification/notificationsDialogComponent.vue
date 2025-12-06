@@ -76,6 +76,9 @@ const virtualListRef = ref(null)
 const isLoadingMore = ref(false)
 const allLoaded = ref(false)
 const handleOnScroll = async (e) => {
+  if (isLoadingMore.value) {
+    return
+  }
   try {
     if (allLoaded.value) {
       return
