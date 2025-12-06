@@ -39,9 +39,9 @@ const rootRef = ref<HTMLDivElement | null>(null)
 
 onMounted(() => {
   const root = rootRef.value
-
+  console.log('root.firstElementChild', root.firstElementChild)
   const [initialize] = useOverlayScrollbars({
-    defer: true,
+    defer: false,
     options: {
       scrollbars: {
         visibility: 'visible',
@@ -73,6 +73,7 @@ const handleOnScroll = async (e) => {
     const threshold = 10
     const scrollSize = virtualListRef.value.scrollSize
     const clientHeight = virtualListRef.value.$el.clientHeight
+
     if (e + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
       await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
@@ -88,20 +89,16 @@ const handleOnScroll = async (e) => {
 </script>
 
 <template>
-  <div class="relative size-full rounded-2xl bg-transparent">
+  <div class="relative size-full flex-col rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800">
     <delete-expense-dialog
       v-if="showDeleteDialog"
       @close="closeDeleteDialog"
       :expense="selectedExpense"
     />
-    <div class="absolute bottom-2 z-99 flex w-full justify-center" v-if="isLoadingMore">
-      <loading-indicator class="size-6" />
+    <div class="absolute bottom-2 z-99 flex size-8 w-full justify-center" v-if="isLoadingMore">
+      <loading-indicator />
     </div>
-    <div
-      ref="rootRef"
-      data-overlayscrollbars-initialize=""
-      class="h-full rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800"
-    >
+    <div ref="rootRef" data-overlayscrollbars-initialize="" class="flex h-full">
       <VList
         ref="virtualListRef"
         :data="expensesStore.list"
@@ -118,6 +115,13 @@ const handleOnScroll = async (e) => {
           @select="handleExpenseSelected(item)"
         />
       </VList>
+      <!--      <div ref="skeletonLoaderRef" class="flex h-full flex-1 flex-col gap-y-2 overflow-y-auto">
+        <div
+          v-for="index in 10"
+          :key="index"
+          class="h-9 w-full animate-pulse rounded-2xl bg-neutral-500"
+        ></div>
+      </div>-->
     </div>
   </div>
 </template>

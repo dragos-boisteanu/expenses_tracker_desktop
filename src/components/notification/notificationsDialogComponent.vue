@@ -52,7 +52,7 @@ onMounted(() => {
   const root = rootRef.value
 
   const [initialize] = useOverlayScrollbars({
-    defer: true,
+    defer: false,
     options: {
       scrollbars: {
         visibility: 'visible',
@@ -103,9 +103,9 @@ const close = () => emits('close')
 <template>
   <dialog-component @close="close">
     <template #title>Notifications</template>
-    <div class="relative overflow-hidden rounded-lg">
-      <div class="absolute bottom-2 z-99 flex w-full justify-center" v-if="isLoadingMore">
-        <loading-indicator class="size-6" />
+    <div class="relative h-full overflow-hidden rounded-lg">
+      <div class="absolute bottom-2 z-99 flex size-6 w-full justify-center" v-if="isLoadingMore">
+        <loading-indicator />
       </div>
       <div ref="rootRef" data-overlayscrollbars-initialize="">
         <VList

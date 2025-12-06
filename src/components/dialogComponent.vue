@@ -10,7 +10,7 @@ onMounted(() => {
   const root = rootRef.value
 
   const [initialize] = useOverlayScrollbars({
-    defer: true,
+    defer: false,
     options: {
       scrollbars: {
         visibility: 'auto',
