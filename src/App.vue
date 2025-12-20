@@ -6,18 +6,32 @@ import { useSystemStore } from '@/stores/system'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
 import { UpdateType } from '@/types/updateType'
-import ToastComponent from '@/components/toast/toastComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { useNotificationStore } from '@/stores/notifications'
 import { useToastStore } from '@/stores/toast'
+import ToastContainerComponent from '@/components/toast/toastContainerComponent.vue'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
 
 const toastStore = useToastStore()
-const handleCloseToast = (id: number) => {
-  toastStore.remove(id)
-}
+
+// setTimeout(() => {
+//   toastService.add('test toast')
+// }, 1000)
+
+// setTimeout(() => {
+//   toastStore.add({
+//     id: '1',
+//     text: 'test toast 2',
+//   })
+// }, 2000)
+// setTimeout(() => {
+//   toastStore.add({
+//     id: '2',
+//     text: 'test toast 3',
+//   })
+// }, 4000)
 
 const themeStore = useThemeStore()
 const theme = localStorage.getItem('theme')
@@ -76,10 +90,11 @@ if (app) {
         notificationStore.addNotification({
           title: `New version downloaded v${payload.data.version}`,
           content: 'The latest update has been downloaded and awaits installation.',
-          type: 'update',
-          isNew: false,
+          type: 'data',
+          isNew: true,
           isError: false,
         })
+
         break
       }
       case 'updateAvailable': {
@@ -101,10 +116,11 @@ if (app) {
         notificationStore.addNotification({
           title: `New version available v${payload.data.version}`,
           content: 'A new version is available for download. Check settings.',
-          type: 'update',
-          isNew: false,
+          type: 'data',
+          isNew: true,
           isError: false,
         })
+
         break
       }
       case 'updateNotAvailable': {
@@ -149,18 +165,8 @@ const toggleConfirmRestartDialog = () => {
     :class="{ dark: themeStore.theme === 'dark' }"
   >
     <RouterView />
+    <toast-container-component />
     <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
-      <TransitionGroup name="toast">
-        <toast-component
-          v-for="toast in toastStore.list"
-          :key="toast.id"
-          :text="toast.text"
-          :link="toast.path"
-          :type="toast.type"
-          :duration="toast.duration"
-          @close="handleCloseToast(toast.id)"
-        />
-      </TransitionGroup>
       <!--      <toast-component-->
       <!--        type="error"-->
       <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->

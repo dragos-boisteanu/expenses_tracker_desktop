@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useExpensesStore } from '@/stores/expenses'
-import { computed, inject, ref } from 'vue'
+import { computed, ref } from 'vue'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
@@ -13,20 +13,22 @@ import { useNotificationStore } from '@/stores/notifications'
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
-const toastStore = useToastStore()
 
 const notificationStore = useNotificationStore()
+const toastStore = useToastStore()
 
 const deleteAll = async (): Promise<void> => {
   try {
     toggleDeleteAllDialog()
     await expensesStore.deleteAll()
 
-    toastStore.add({ text: 'All data deleted successfully.' })
+    toastStore.add({
+      text: 'All data deleted successfully.',
+    })
     notificationStore
       .addNotification({
         title: 'Data removed',
-        content: 'All data was successfully removed.',
+        content: 'All data was successfully removed',
         type: 'data',
         isNew: false,
         isError: false,
@@ -34,7 +36,9 @@ const deleteAll = async (): Promise<void> => {
       .catch((error) => console.error('failedToSaveNotification', error))
   } catch (error) {
     console.error(error)
-    toastStore.add({ text: 'Failed to delete data.' })
+    toastStore.add({
+      text: 'Failed to delete data.',
+    })
 
     notificationStore
       .addNotification({

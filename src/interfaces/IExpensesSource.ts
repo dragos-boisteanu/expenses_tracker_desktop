@@ -1,6 +1,6 @@
-import { Expense } from '@/types/expense'
-import { ImportedExpense } from '@/types/importedExpense'
-import { DbImportResult } from '@/types/dbImportResult'
+import type { Expense } from '@/types/expense'
+import type { ImportedExpense } from '@/types/importedExpense'
+import type { DbImportResult } from '@/types/dbImportResult'
 
 export interface IExpensesSource {
   getList(offset: number, limit: number): Promise<Expense[]>

@@ -1,19 +1,17 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
-  "include": [
-    "vite.config.*",
-    "vitest.config.*",
-    "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*",
-    "eslint.config.*"
-  ],
   "compilerOptions": {
-    "noEmit": false,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
     "composite": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "types": ["node"]
-  }
+    "target": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "skipLibCheck": false,
+    "strict": false,
+    "noImplicitAny": false,
+    "types": ["node", "electron"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*"]
 }

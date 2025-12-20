@@ -21,4 +21,15 @@ export default defineConfigWithVueTs(
   pluginVue.configs['flat/essential'],
   vueTsConfigs.recommended,
   skipFormatting,
+
+  {
+    name: 'app/custom-rules',
+    files: ['**/*.{ts,mts,tsx,vue}'], // Explicitly add this
+    rules: {
+      'vue/multi-word-component-names': 'warn',
+      'no-console': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      // Add more rules as needed
+    },
+  },
 )

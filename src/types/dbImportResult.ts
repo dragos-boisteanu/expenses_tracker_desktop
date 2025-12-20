@@ -1,4 +1,4 @@
-import { Expense } from '@/types/expense'
+import type { Expense } from '@/types/expense'
 
 export type DbImportResult = {
   inserted: Expense[] | []

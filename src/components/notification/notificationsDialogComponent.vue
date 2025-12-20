@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { VList } from 'virtua/vue'
-import { inject, nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, onMounted, ref, watch } from 'vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import { useNotificationStore } from '@/stores/notifications'
 import Notification from '@/components/notification/notification.vue'

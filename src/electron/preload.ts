@@ -16,7 +16,7 @@ contextBridge.exposeInMainWorld('app', {
   setAutoUpdate: (value: boolean) => ipcRenderer.invoke('setAutoUpdate', value),
 
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
-    const listener = (_event: Electron.IpcRendererEvent, payload) => handler(payload)
+    const listener = (_event: Electron.IpcRendererEvent, payload: any) => handler(payload)
     ipcRenderer.on('mainMessage', listener)
 
     // Return unsubscribe function

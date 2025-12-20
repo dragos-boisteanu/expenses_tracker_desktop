@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "desktop:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
+    "desktop:dev": "concurrently vite \"electron .\" \"tsc -p tsconfig.node.json -w\"",
     "desktop:build": "cross-env VITE_TARGET=desktop   npm run build && tsc && npm run rebuild-sqlite3 &&  electron-builder",
     "preview": "vite preview",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
@@ -20,26 +20,24 @@
     "postinstall": "electron-builder install-app-deps"
   },
   "dependencies": {
-    "better-sqlite3": "^11.9.1",
+    "better-sqlite3": "^12.5.0",
     "electron-updater": "^6.6.2",
     "papaparse": "^5.5.2"
   },
   "devDependencies": {
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.11",
-    "@tsconfig/node22": "^22.0.0",
     "@types/better-sqlite3": "^7.6.13",
-    "@types/node": "^22.13.9",
     "@types/papaparse": "^5.3.15",
-    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue": "^6.0.3",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
-    "@vue/tsconfig": "^0.7.0",
+    "@vue/tsconfig": "^0.8.1",
     "@vueuse/core": "^13.1.0",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
-    "electron": "^35.1.5",
+    "electron": "^39.2.7",
     "electron-builder": "^26.0.12",
     "eslint": "^9.21.0",
     "eslint-plugin-vue": "~10.0.0",
@@ -50,13 +48,12 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^4.1.11",
-    "typescript": "~5.8.0",
+    "typescript": "^5.9.3",
     "virtua": "^0.40.4",
-    "vite": "^7.0.0",
-    "vite-plugin-vue-devtools": "^7.7.7",
+    "vite": "^7.3.0",
+    "vite-plugin-vue-devtools": "^8.0.5",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
     "vue-tsc": "^2.2.10"
-  },
-  "postinstall": "electron-builder install-app-deps"
+  }
 }

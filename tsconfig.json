@@ -1,14 +1,12 @@
 {
   "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.node.json",
-    },
-  ],
+
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
   "compilerOptions": {
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "dist",
+    "noImplicitAny": false,
     "module": "es2022",
     "moduleResolution": "bundler",
     "sourceMap": true,

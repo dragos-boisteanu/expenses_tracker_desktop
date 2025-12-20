@@ -1,6 +1,6 @@
-import { Expense } from '@/types/expense'
-import { IExpensesSource } from '@/interfaces/IExpensesSource'
-import { ImportedExpense } from '@/types/importedExpense'
+import type { Expense } from '@/types/expense'
+import type { IExpensesSource } from '@/interfaces/IExpensesSource'
+import type { ImportedExpense } from '@/types/importedExpense'
 
 export default class ExpensesDB implements IExpensesSource {
   private db

@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { computed, ComputedRef, ref } from 'vue'
-import { ViewNotification } from '@/types/viewNotification'
+import { computed, type ComputedRef, ref } from 'vue'
+import type { ViewNotification } from '@/types/viewNotification'
 import dayjs from '@/plugins/dayjs'
 import NotificationsDB from '@/repositories/NotificationDB'
-import { Notification } from '@/types/notification'
-import { AddNotificationType } from '@/types/addNotificationType'
+import type { Notification } from '@/types/notification'
+import type { AddNotificationType } from '@/types/addNotificationType'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const list = ref<ViewNotification[]>([])
@@ -48,7 +48,7 @@ export const useNotificationStore = defineStore('notifications', () => {
   const getNotifications = async (nextPage: boolean = false): Promise<boolean> => {
     try {
       if (allLoaded) {
-        return
+        return true
       }
 
       const notificationsDB = NotificationsDB.instance
@@ -94,7 +94,9 @@ export const useNotificationStore = defineStore('notifications', () => {
 
       const notificationIndex = list.value.findIndex((n) => n.id === id)
       if (notificationIndex > -1) {
-        list.value[notificationIndex].isNew = false
+        if (list.value[notificationIndex]) {
+          list.value[notificationIndex].isNew = false
+        }
       }
     } catch (error) {
       throw error
@@ -114,14 +116,16 @@ export const useNotificationStore = defineStore('notifications', () => {
     }
   }
 
-  const addOlderNotifications = (notifications: ViewNotification[]) => {
-    list.value.push(...notifications)
-  }
+  // const addOlderNotifications = (notifications: ViewNotification[]) => {
+  //   list.value.push(...notifications)
+  // }
 
   const markUnread = (id: number) => {
     const notificationIndex = list.value.findIndex((n) => n.id === id)
     if (notificationIndex > -1) {
-      list.value[notificationIndex].isNew = true
+      if (list.value[notificationIndex]) {
+        list.value[notificationIndex].isNew = true
+      }
     }
   }
 
