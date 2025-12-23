@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { UpdateType } from '@/types/updateType'
+import type { UpdateType } from '@/types/updateType'
 
 export const useAutoUpdateStore = defineStore('autoUpdate', () => {
   const autoUpdate = ref<boolean>(false)

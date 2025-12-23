@@ -1,5 +1,5 @@
 import type { Expense } from '@/types/expense'
-import { ViewExpense } from '@/types/viewExpense'
+import type { ViewExpense } from '@/types/viewExpense'
 import dayjs from '@/plugins/dayjs'
 import currencyFormat from '@/helpers/currencyFormat'
 import getLocale from '@/helpers/getLocale'

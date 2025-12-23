@@ -1,6 +1,6 @@
 export type Expense = {
-  id?: number | null
+  id: number
   value: number
-  currency?: null | string
+  currency: string
   date: number
 }

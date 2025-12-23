@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { ToastType } from '@/types/ToastType'
+import type { ToastType } from '@/types/ToastType'
 
 const MAX_TOASTS: number = 2
 const DEFAULT_DURATION: number = 3000

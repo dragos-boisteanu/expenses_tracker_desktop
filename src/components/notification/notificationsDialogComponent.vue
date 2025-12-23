@@ -5,7 +5,7 @@ import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import { useNotificationStore } from '@/stores/notifications'
 import Notification from '@/components/notification/notification.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
-import { ViewNotification } from '@/types/viewNotification'
+import type { ViewNotification } from '@/types/viewNotification'
 import LoadingIndicator from '@/components/loadingIndicator.vue'
 
 const notificationsStore = useNotificationStore()
@@ -40,6 +40,10 @@ watch(
   async (value) => {
     await nextTick()
 
+    if (!rootRef.value) {
+      return
+    }
+
     if (value < 5) {
       rootRef.value.style.height = `${value * 68}px`
     } else {
@@ -49,6 +53,10 @@ watch(
   { immediate: true },
 )
 onMounted(() => {
+  if (!rootRef.value) {
+    return
+  }
+
   const root = rootRef.value
 
   const [initialize] = useOverlayScrollbars({
@@ -76,6 +84,10 @@ const virtualListRef = ref(null)
 const isLoadingMore = ref(false)
 const allLoaded = ref(false)
 const handleOnScroll = async (e) => {
+  if (!virtualListRef.value) {
+    return
+  }
+
   if (isLoadingMore.value) {
     return
   }

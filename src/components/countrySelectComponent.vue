@@ -64,6 +64,7 @@ const toggleCountriesList = async () => {
     await nextTick()
 
     const root = rootRef.value
+    if (!root) return
 
     const [initialize] = useOverlayScrollbars({
       defer: true,

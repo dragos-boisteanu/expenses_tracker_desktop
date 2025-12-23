@@ -1,5 +1,5 @@
-import { Expense } from '@/types/expense'
-import { ImportedExpense } from '@/types/importedExpense'
+import type { Expense } from '@/types/expense'
+import type { ImportedExpense } from '@/types/importedExpense'
 import Papa from 'papaparse'
 
 export class CsvService {
@@ -49,6 +49,8 @@ export class CsvService {
     return new Promise((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = (event) => {
+        if (!event.target) return
+
         const content = event.target.result as string
 
         const parsedData = Papa.parse(content, {

@@ -3,7 +3,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline'
 import { onMounted, ref } from 'vue'
 import type { Country } from '@/types/country'
 import CountrySelectComponent from '@/components/countrySelectComponent.vue'
-import { ActionResult } from '@/types/actionResult'
+import type { ActionResult } from '@/types/actionResult'
 import { useExpensesStore } from '@/stores/expenses'
 
 const value = ref<string>('')
@@ -17,6 +17,10 @@ const isSuccess = ref<ActionResult>({
 const successTimeout = ref<number>(0)
 
 const addExpense = async () => {
+  if (!selectedCountry.value) {
+    return
+  }
+
   const regex = /^[-]?[0-9.,]+$/g
 
   clearTimeout(successTimeout.value)
@@ -53,6 +57,10 @@ const isInputFocused = ref<boolean>(false)
 const inputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
+  if (!inputRef.value) {
+    return
+  }
+
   inputRef.value.addEventListener('focus', () => {
     isInputFocused.value = true
   })

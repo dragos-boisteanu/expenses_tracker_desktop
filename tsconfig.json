@@ -1,21 +1,19 @@
 {
   "files": [],
 
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
-  "compilerOptions": {
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "outDir": "dist",
-    "noImplicitAny": false,
-    "module": "es2022",
-    "moduleResolution": "bundler",
-    "sourceMap": true,
-    "target": "es2022",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }]
+  //  "compilerOptions": {
+  //    "esModuleInterop": true,
+  //    "allowSyntheticDefaultImports": true,
+  //    "outDir": "dist",
+  //    "noImplicitAny": false,
+  //    "module": "es2022",
+  //    "moduleResolution": "bundler",
+  //    "sourceMap": true,
+  //    "target": "es2022",
+  //    "baseUrl": "./",
+  //    "paths": {
+  //      "@/*": ["src/*"]
+  //    }
+  //  },
 }

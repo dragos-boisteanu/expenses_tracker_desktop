@@ -38,6 +38,8 @@ const closeDeleteDialog = () => {
 const rootRef = ref<HTMLDivElement | null>(null)
 
 onMounted(() => {
+  if (!rootRef.value) return
+
   const root = rootRef.value
   const [initialize] = useOverlayScrollbars({
     defer: false,
@@ -64,6 +66,9 @@ const virtualListRef = ref(null)
 
 const isLoadingMore = ref(false)
 const handleOnScroll = async (e) => {
+  if (!virtualListRef.value) {
+    return
+  }
   if (isLoadingMore.value) {
     return
   }

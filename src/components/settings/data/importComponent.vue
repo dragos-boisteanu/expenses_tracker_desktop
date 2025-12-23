@@ -8,17 +8,27 @@ import { useImportStore } from '@/stores/import'
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
-const fileInput = ref(null)
+const fileInput = ref(HTMLElement || null)
 
 onMounted(() => {
+  if (!fileInput.value) {
+    return
+  }
+
   fileInput.value.addEventListener('change', handleFileInputChange)
 })
 
 onBeforeUnmount(() => {
+  if (!fileInput.value) {
+    return
+  }
+
   fileInput.value.removeEventListener('change', handleFileInputChange)
 })
 const importData = async () => {
   try {
+    if (!fileInput.value) return
+
     fileInput.value.click()
   } catch (error) {
     console.error('error', error)

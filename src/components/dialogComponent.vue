@@ -7,6 +7,10 @@ const emits = defineEmits(['close'])
 const rootRef = ref<HTMLDivElement | null>(null)
 
 onMounted(() => {
+  if (!rootRef.value) {
+    return
+  }
+
   const root = rootRef.value
 
   const [initialize] = useOverlayScrollbars({

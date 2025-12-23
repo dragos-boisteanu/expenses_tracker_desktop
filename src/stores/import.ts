@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { CsvService } from '@/services/csvService'
-import { DbImportResult } from '@/types/dbImportResult'
+import type { DbImportResult } from '@/types/dbImportResult'
 import { useToastStore } from '@/stores/toast'
 import { useNotificationStore } from '@/stores/notifications'
 import ExpensesDB from '@/repositories/ExpensesDB'

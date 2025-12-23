@@ -5,7 +5,10 @@
   "author": "Dragos",
   "type": "module",
   "main": "dist/electron/main.js",
-  "repository": "https://github.com/dragos-boisteanu/expenses_tracker_desktop_release",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dragos-boisteanu/expenses_tracker_desktop_release"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",

@@ -2,15 +2,17 @@
   "extends": "@vue/tsconfig/tsconfig.dom.json",
   "compilerOptions": {
     "noImplicitAny": false,
-    "composite": true,
-    "declaration": true,
+    "composite": false,
+    "declaration": false,
+    "declarationMap": false,
     "outDir": "./dist",
+
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "types": ["node"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue"],
-  "exclude": ["src/electron/**/*"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["src/electron/**/*", "node_modules"]
 }

@@ -44,12 +44,13 @@ const dayLimiter = computed<string>((): string => {
 })
 
 const getPreviousDate = (id: number) => {
-  let date: string
+  let date: string = ''
 
   const index = expensesStore.list.findIndex((expense) => expense.id === id)
   if (index > -1) {
-    if (expensesStore.list[index + 1]) {
-      date = expensesStore.list[index + 1].date
+    const prevDate = expensesStore.list[index + 1]
+    if (prevDate) {
+      date = prevDate.date
     }
   }
 

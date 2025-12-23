@@ -57,6 +57,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       const unixDate = expenseDate.unix()
 
       const expense: Expense = {
+        id: -1,
         value,
         currency: code,
         date: unixDate,
@@ -108,7 +109,9 @@ export const useExpensesStore = defineStore('expenses', () => {
 
   const importExpenses = (expenses: ViewExpense[]) => {
     list.value.push(...expenses)
-    list.value = list.value.sort((a, b) => b.unixDate - a.unixDate)
+    list.value = list.value
+      .filter((expense) => expense.unixDate !== null)
+      .sort((a, b) => (b.unixDate as number) - (a.unixDate as number))
   }
 
   return {
