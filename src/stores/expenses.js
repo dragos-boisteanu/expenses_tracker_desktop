@@ -46,6 +46,7 @@ export const useExpensesStore = defineStore('expenses', () => {
             const expenseDate = dayjs();
             const unixDate = expenseDate.unix();
             const expense = {
+                id: -1,
                 value,
                 currency: code,
                 date: unixDate,
@@ -93,7 +94,9 @@ export const useExpensesStore = defineStore('expenses', () => {
     };
     const importExpenses = (expenses) => {
         list.value.push(...expenses);
-        list.value = list.value.sort((a, b) => b.unixDate - a.unixDate);
+        list.value = list.value
+            .filter((expense) => expense.unixDate !== null)
+            .sort((a, b) => b.unixDate - a.unixDate);
     };
     return {
         list,

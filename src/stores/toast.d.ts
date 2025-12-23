@@ -1,4 +1,4 @@
-import { ToastType } from '@/types/ToastType';
+import type { ToastType } from '@/types/ToastType';
 export declare const useToastStore: import("pinia").StoreDefinition<"toasts", Pick<{
     list: import("vue").Ref<{
         text: string;

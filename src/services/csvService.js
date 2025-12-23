@@ -44,6 +44,8 @@ export class CsvService {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = (event) => {
+                if (!event.target)
+                    return;
                 const content = event.target.result;
                 const parsedData = Papa.parse(content, {
                     header: true,

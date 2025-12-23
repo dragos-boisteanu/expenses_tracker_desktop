@@ -13,7 +13,7 @@ export const useImportStore = defineStore('importStore', () => {
             //TODO: paginate data when reading from csv so
             // it won't overload the memory in case of large data
             isImporting.value = true;
-            toastStore.add({ text: 'Import in progress. Do not close the app !' });
+            toastStore.add({ id: -1, text: 'Import in progress. Do not close the app !' });
             const csvService = new CsvService();
             const data = await csvService.import(file);
             if (data.length > 0) {
@@ -51,7 +51,7 @@ export const useImportStore = defineStore('importStore', () => {
                     isError: false,
                 })
                     .catch((error) => console.error('failedToSaveNotification', error));
-                toastStore.add({ text: toast });
+                toastStore.add({ id: -1, text: toast });
             }
         }
         catch (error) {
@@ -65,7 +65,7 @@ export const useImportStore = defineStore('importStore', () => {
                 isError: false,
             })
                 .catch((error) => console.error('failedToSaveNotification', error));
-            toastStore.add({ text: 'Data import failed !' });
+            toastStore.add({ id: -1, text: 'Data import failed !' });
         }
         finally {
             isImporting.value = false;

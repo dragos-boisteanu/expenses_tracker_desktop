@@ -1,4 +1,4 @@
-import { Notification } from '@/types/notification';
+import type { Notification } from '@/types/notification';
 export interface INotificationsSource {
     getNotifications(offset: number, limit: number): Promise<Notification[]>;
     addNotification(notification: Notification): Promise<number>;

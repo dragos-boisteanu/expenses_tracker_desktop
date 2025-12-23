@@ -12,6 +12,7 @@ export const useNotificationStore = defineStore('notifications', () => {
             const notificationDate = dayjs();
             const unixDate = notificationDate.unix();
             const notification = {
+                id: -1,
                 title: payload.title,
                 content: payload.content,
                 type: payload.type,

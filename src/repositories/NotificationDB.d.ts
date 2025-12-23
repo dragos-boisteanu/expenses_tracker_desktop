@@ -1,5 +1,5 @@
-import { INotificationsSource } from '@/interfaces/INotificationsSource';
-import { Notification } from '@/types/notification';
+import type { INotificationsSource } from '@/interfaces/INotificationsSource';
+import type { Notification } from '@/types/notification';
 export default class NotificationsDB implements INotificationsSource {
     private _db;
     private static _instance;

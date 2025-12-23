@@ -1,4 +1,4 @@
-import { UpdateType } from '@/types/updateType';
+import type { UpdateType } from '@/types/updateType';
 export declare const useAutoUpdateStore: import("pinia").StoreDefinition<"autoUpdate", Pick<{
     autoUpdate: import("vue").Ref<boolean, boolean>;
     setAutoUpdate: (payload: any) => void;
@@ -20,7 +20,7 @@ export declare const useAutoUpdateStore: import("pinia").StoreDefinition<"autoUp
         date: string;
     }>;
     setUpdate: (payload: UpdateType | null) => void;
-}, "update" | "autoUpdate" | "isManualCheck" | "checkingForUpdate" | "isUpdateDownloaded" | "isUpdateAvailable">, Pick<{
+}, "autoUpdate" | "isManualCheck" | "checkingForUpdate" | "isUpdateDownloaded" | "isUpdateAvailable" | "update">, Pick<{
     autoUpdate: import("vue").Ref<boolean, boolean>;
     setAutoUpdate: (payload: any) => void;
     isManualCheck: import("vue").Ref<boolean, boolean>;

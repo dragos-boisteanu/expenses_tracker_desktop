@@ -82,4 +82,4 @@ export declare const useNotificationStore: import("pinia").StoreDefinition<"noti
     markAsRead: (id: number) => Promise<void>;
     markUnread: (id: number) => void;
     markAllAsRead: () => Promise<void>;
-}, "getNotifications" | "addNotification" | "markAsRead" | "markUnread" | "markAllAsRead">>;
+}, "addNotification" | "getNotifications" | "markAsRead" | "markUnread" | "markAllAsRead">>;
