@@ -23,7 +23,6 @@ const deleteAll = async (): Promise<void> => {
     await expensesStore.deleteAll()
 
     toastStore.add({
-      id: -1,
       text: 'All data deleted successfully.',
     })
     notificationStore
@@ -38,7 +37,6 @@ const deleteAll = async (): Promise<void> => {
   } catch (error) {
     console.error(error)
     toastStore.add({
-      id: -1,
       text: 'Failed to delete data.',
     })
 

@@ -8,17 +8,16 @@ import { useToastStore } from '@/stores/toast'
 import { useNotificationStore } from '@/stores/notifications'
 
 const expensesStore = useExpensesStore()
-const exportStore = useExportStore()
 const importStore = useImportStore()
+const toastStore = useToastStore()
+const exportStore = useExportStore()
+const notificationStore = useNotificationStore()
 
 const exportData = async () => {
-  const toastStore = useToastStore()
-  const exportStore = useExportStore()
-  const notificationStore = useNotificationStore()
+
 
   try {
     toastStore.add({
-      id: -1,
       text: 'Export in progress. Do not close the app !',
     })
 
@@ -34,12 +33,10 @@ const exportData = async () => {
       .catch((error) => console.error('addNotificationError', error))
 
     toastStore.add({
-      id: -1,
       text: 'Export successfully completed',
     })
   } catch (error) {
     toastStore.add({
-      id: -1,
       text: 'Error while exporting expenses',
     })
     console.error('error', error)

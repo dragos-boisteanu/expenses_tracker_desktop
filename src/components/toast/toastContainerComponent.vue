@@ -22,4 +22,31 @@ const handleCloseToast = (id: number) => {
   </TransitionGroup>
 </template>
 
-<style scoped></style>
+<style>
+
+/* ENTER */
+.toast-enter-from {
+  transform: translateY(150%);
+}
+.toast-enter-to {
+  transform: translateY(0);
+}
+.toast-enter-active {
+  transition: transform 0.5s ease-in-out;
+}
+
+/* LEAVE */
+.toast-leave-from {
+  transform: translateY(0);
+}
+.toast-leave-to {
+  transform: translateY(150%);
+}
+.toast-leave-active {
+  transition: transform 0.5s ease-in-out;
+}
+
+.toast-move {
+  transition: transform 0.5s ease-in-out;
+}
+</style>

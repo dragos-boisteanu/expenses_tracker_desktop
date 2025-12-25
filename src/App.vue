@@ -109,7 +109,7 @@ if (app) {
         autoUpdateStore.setUpdate(newUpdateDetails)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({ id: -1, text: 'A new version is available.' })
+          toastStore.add({  text: 'A new version is available.' })
         }
 
         // TODO: add click event that opens the update change log
@@ -129,7 +129,7 @@ if (app) {
         autoUpdateStore.setIsUpdateAvailable(false)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({ id: -1, text: 'You already have the latest version !' })
+          toastStore.add({  text: 'You already have the latest version !' })
           autoUpdateStore.setIsManualCheck(false)
         }
 
@@ -165,8 +165,9 @@ const toggleConfirmRestartDialog = () => {
     :class="{ dark: themeStore.theme === 'dark' }"
   >
     <RouterView />
-    <toast-container-component />
     <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
+      <toast-container-component />
+
       <!--      <toast-component-->
       <!--        type="error"-->
       <!--        text="test toast ajdas dnals ndaslk ndasln daklsn dandlasnd ajslnd asl dasn d"-->
@@ -188,29 +189,5 @@ const toggleConfirmRestartDialog = () => {
 
 <style>
 @import './assets/fonts.css';
-/* ENTER */
-.toast-enter-from {
-  transform: translateY(150%);
-}
-.toast-enter-to {
-  transform: translateY(0);
-}
-.toast-enter-active {
-  transition: transform 0.5s ease-in-out;
-}
 
-/* LEAVE */
-.toast-leave-from {
-  transform: translateY(0);
-}
-.toast-leave-to {
-  transform: translateY(150%);
-}
-.toast-leave-active {
-  transition: transform 0.5s ease-in-out;
-}
-
-.toast-move {
-  transition: transform 0.5s ease-in-out;
-}
 </style>

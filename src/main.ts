@@ -9,6 +9,11 @@ import { DayjsKey } from './plugins/dayjsKey'
 import App from './App.vue'
 import router from './router'
 
+if (import.meta.env.DEV) {
+  const { devtools } = await import('@vue/devtools')
+  devtools.connect().catch(error => console.error(error))
+}
+
 const app = createApp(App)
 
 app.provide(DayjsKey, dayjs)

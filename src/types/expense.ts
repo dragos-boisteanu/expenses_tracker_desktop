@@ -1,5 +1,5 @@
 export type Expense = {
-  id: number
+  id?: number
   value: number
   currency: string
   date: number

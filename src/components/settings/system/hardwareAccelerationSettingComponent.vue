@@ -53,7 +53,7 @@ const restartNow = () => {
     <div>
       <div class="font-semibold">Hardware acceleration</div>
       <div class="text-xs text-neutral-500 dark:text-neutral-400">
-        Disable hardware acceleration
+        Toggle hardware acceleration
       </div>
     </div>
     <toggler-component v-model="hardwareAcceleration" @changed="setHardwareAcceleration" />

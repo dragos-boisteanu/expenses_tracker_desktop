@@ -9,15 +9,14 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "desktop:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
-    "desktop:build": "cross-env VITE_TARGET=desktop   npm run build && tsc && npm run rebuild-sqlite3 &&  electron-builder",
+    "desktop:dev": "tsc && concurrently \"vue-devtools\" \"vite\" \"electron .\" \"tsc -w\"",
+    "desktop:build": "cross-env VITE_TARGET=desktop npm run build && tsc && electron-builder",
     "preview": "vite preview",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/",
-    "postinstall": "electron-builder install-app-deps"
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "better-sqlite3": "^12.5.0",
@@ -25,12 +24,12 @@
     "papaparse": "^5.5.2"
   },
   "devDependencies": {
-    "node-abi": "^4.24.0",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/better-sqlite3": "^7.6.13",
     "@types/papaparse": "^5.3.15",
     "@vitejs/plugin-vue": "^6.0.0",
+    "@vue/devtools": "^8.0.5",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
     "@vue/tsconfig": "^0.7.0",
@@ -43,6 +42,7 @@
     "eslint": "^9.21.0",
     "eslint-plugin-vue": "~10.0.0",
     "jiti": "^2.4.2",
+    "node-abi": "^4.24.0",
     "npm-run-all2": "^7.0.2",
     "overlayscrollbars-vue": "^0.5.9",
     "pinia": "^3.0.3",

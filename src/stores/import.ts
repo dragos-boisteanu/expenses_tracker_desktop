@@ -64,7 +64,7 @@ export const useImportStore = defineStore('importStore', () => {
           })
           .catch((error) => console.error('failedToSaveNotification', error))
 
-        toastStore.add({ id: -1, text: toast })
+        toastStore.add({ text: toast })
       }
     } catch (error) {
       console.error('getAllError', error)
@@ -79,7 +79,7 @@ export const useImportStore = defineStore('importStore', () => {
         })
         .catch((error) => console.error('failedToSaveNotification', error))
 
-      toastStore.add({ id: -1, text: 'Data import failed !' })
+      toastStore.add({text: 'Data import failed !' })
     } finally {
       isImporting.value = false
     }
