@@ -123,12 +123,11 @@ const createWindow = () => {
       if (isDev) {
         mainWindow.loadURL('http://localhost:5173/')
         // Open the DevTools.
-        // mainWindow.webContents.openDevTools()
+        mainWindow.webContents.openDevTools()
       } else {
         mainWindow.loadFile(join(__dirname, '../index.html'))
       }
 
-      mainWindow.webContents.openDevTools()
 
       mainWindow.on('closed', () => {
         mainWindow = null
