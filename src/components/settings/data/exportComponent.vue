@@ -18,6 +18,7 @@ const exportData = async () => {
 
   try {
     toastStore.add({
+      id: -1,
       text: 'Export in progress. Do not close the app !',
     })
 
@@ -33,10 +34,12 @@ const exportData = async () => {
       .catch((error) => console.error('addNotificationError', error))
 
     toastStore.add({
+      id: -1,
       text: 'Export successfully completed',
     })
   } catch (error) {
     toastStore.add({
+      id: -1,
       text: 'Error while exporting expenses',
     })
     console.error('error', error)

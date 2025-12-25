@@ -27,7 +27,7 @@ export default defineConfigWithVueTs(
     files: ['**/*.{ts,mts,tsx,vue}'], // Explicitly add this
     rules: {
       'vue/multi-word-component-names': 'warn',
-      'no-console': 'warn',
+      'no-console': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       // Add more rules as needed
     },

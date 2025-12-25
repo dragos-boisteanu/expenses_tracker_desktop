@@ -5,14 +5,11 @@
   "author": "Dragos",
   "type": "module",
   "main": "dist/electron/main.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/dragos-boisteanu/expenses_tracker_desktop_release"
-  },
+  "repository": "https://github.com/dragos-boisteanu/expenses_tracker_desktop_release",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "desktop:dev": "concurrently vite \"electron .\" \"tsc -p tsconfig.node.json -w\"",
+    "desktop:dev": "tsc && concurrently vite \" electron .\" \"tsc -w\"",
     "desktop:build": "cross-env VITE_TARGET=desktop   npm run build && tsc && npm run rebuild-sqlite3 &&  electron-builder",
     "preview": "vite preview",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
@@ -28,15 +25,16 @@
     "papaparse": "^5.5.2"
   },
   "devDependencies": {
+    "node-abi": "^4.24.0",
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/vite": "^4.1.11",
     "@types/better-sqlite3": "^7.6.13",
     "@types/papaparse": "^5.3.15",
-    "@vitejs/plugin-vue": "^6.0.3",
+    "@vitejs/plugin-vue": "^6.0.0",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.5.0",
-    "@vue/tsconfig": "^0.8.1",
-    "@vueuse/core": "^13.1.0",
+    "@vue/tsconfig": "^0.7.0",
+    "@vueuse/core": "^14.1.0",
     "concurrently": "^9.1.2",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.13",
@@ -51,12 +49,13 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.13",
     "tailwindcss": "^4.1.11",
-    "typescript": "^5.9.3",
+    "typescript": "~5.8.0",
     "virtua": "^0.40.4",
     "vite": "^7.3.0",
-    "vite-plugin-vue-devtools": "^8.0.5",
+    "vite-plugin-vue-devtools": "^7.7.7",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
     "vue-tsc": "^2.2.10"
-  }
+  },
+  "postinstall": "electron-builder install-app-deps"
 }

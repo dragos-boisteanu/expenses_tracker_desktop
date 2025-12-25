@@ -109,7 +109,7 @@ if (app) {
         autoUpdateStore.setUpdate(newUpdateDetails)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({ text: 'A new version is available.' })
+          toastStore.add({ id: -1, text: 'A new version is available.' })
         }
 
         // TODO: add click event that opens the update change log
@@ -129,7 +129,7 @@ if (app) {
         autoUpdateStore.setIsUpdateAvailable(false)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({ text: 'You already have the latest version !' })
+          toastStore.add({ id: -1, text: 'You already have the latest version !' })
           autoUpdateStore.setIsManualCheck(false)
         }
 

@@ -8,7 +8,7 @@ import { useImportStore } from '@/stores/import'
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
 const exportStore = useExportStore()
-const fileInput = ref(HTMLElement || null)
+const fileInput = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
   if (!fileInput.value) {
