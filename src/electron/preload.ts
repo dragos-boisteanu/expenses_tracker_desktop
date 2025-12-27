@@ -8,8 +8,10 @@ contextBridge.exposeInMainWorld('app', {
   restartNow: () => ipcRenderer.send('restartNow'),
   quitAndInstall: () => ipcRenderer.send('quitAndInstall'),
 
-  disableHardwareAcceleration: (value: boolean) =>
-    ipcRenderer.invoke('disableHardwareAcceleration', value),
+  requestHardwareAccelerationValue: () => ipcRenderer.invoke('requestHardwareAccelerationValue'),
+  requestLaunchAtSystemStartupValue: () => ipcRenderer.invoke('requestLaunchAtSystemStartupValue'),
+
+  setHardwareAcceleration: (value: boolean) => ipcRenderer.invoke('setHardwareAcceleration', value),
 
   checkForUpdate: () => ipcRenderer.invoke('checkForUpdate'),
   downloadUpdate: () => ipcRenderer.invoke('downloadUpdate'),

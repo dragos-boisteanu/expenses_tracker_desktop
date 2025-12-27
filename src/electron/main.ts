@@ -58,14 +58,18 @@ async function parseConfigData() {
   }
 }
 
-let isHwAccelerationDisabled: boolean = false
+let isHardwareAccelerationEnabled: boolean = false
 try {
-  isHwAccelerationDisabled = await readConfigData('disableHardwareAcceleration')
-  if (typeof isHwAccelerationDisabled === 'boolean' && isHwAccelerationDisabled) {
-    isHwAccelerationDisabled = true
-    app.disableHardwareAcceleration()
+  isHardwareAccelerationEnabled = await readConfigData('hardwareAcceleration')
+
+  console.log('isHardwareAccelerationEnabled', isHardwareAccelerationEnabled)
+
+  if (isHardwareAccelerationEnabled === undefined || (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)) {
+    isHardwareAccelerationEnabled = true
+    // app.commandLine.appendSwitch('disable-gpu-rasterization')
   } else {
-    isHwAccelerationDisabled = false
+    app.disableHardwareAcceleration()
+    isHardwareAccelerationEnabled = false
   }
 } catch (error) {
   console.error(error)
@@ -134,6 +138,9 @@ const createWindow = () => {
       })
 
       mainWindow.on('ready-to-show', () => {
+
+
+
         sendLogToRender('readyToShow', 'log')
         // sendLogToRender('readyToShow', 'error')
         resolve(true)
@@ -203,20 +210,7 @@ app.whenReady().then(async () => {
 
   await createWindow()
 
-  mainWindow.webContents.send('mainMessage', {
-    action: 'isHwAccelerationDisabled',
-    data: {
-      value: isHwAccelerationDisabled,
-    },
-  })
 
-  const login = app.getLoginItemSettings()
-  mainWindow.webContents.send('mainMessage', {
-    action: 'launchAtSystemStartup',
-    data: {
-      value: login.openAtLogin,
-    },
-  })
 
   if (!isDev) {
     getAutoUpdate()
@@ -296,6 +290,16 @@ app.on('window-all-closed', () => {
   }
 })
 
+
+ipcMain.handle('requestHardwareAccelerationValue', () => {
+  return isHardwareAccelerationEnabled
+})
+
+ipcMain.handle('requestLaunchAtSystemStartupValue', () => {
+  const login = app.getLoginItemSettings()
+  return login.openAtLogin
+})
+
 ipcMain.on('closeApp', () => {
   mainWindow.close()
 })
@@ -344,11 +348,12 @@ ipcMain.on('quitAndInstall', () => {
   autoUpdater.quitAndInstall()
 })
 
-ipcMain.handle('disableHardwareAcceleration', (event, value: boolean) => {
+ipcMain.handle('setHardwareAcceleration', (event, value: boolean) => {
   return new Promise(async (resolve, reject) => {
     try {
+      console.log('setHardwareAcceleration', value)
       //TODO: fix this, it is not working
-      await writeConfigData('disableHardwareAcceleration', value)
+      await writeConfigData('hardwareAcceleration', value)
       resolve(true)
     } catch (error) {
       reject(error)

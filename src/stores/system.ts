@@ -7,16 +7,16 @@ export const useSystemStore = defineStore('system', () => {
     launchAtSystemStartup.value = payload
   }
 
-  const isHardwareAccelerationDisabled = ref<boolean>(false)
-  const setIsHardwareAccelerationDisabled = (payload) => {
-    isHardwareAccelerationDisabled.value = payload
+  const isHardwareAccelerationEnabled = ref<boolean>(false)
+  const setIsHardwareAccelerationEnabled = (payload) => {
+    isHardwareAccelerationEnabled.value = payload
   }
 
   return {
     launchAtSystemStartup,
     setLaunchAtSystemStartup,
 
-    isHardwareAccelerationDisabled,
-    setIsHardwareAccelerationDisabled,
+    isHardwareAccelerationEnabled,
+    setIsHardwareAccelerationEnabled,
   }
 })

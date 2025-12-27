@@ -48,6 +48,7 @@ onMounted(() => {
     console.error('getExpensesError', error)
   })
 })
+
 onBeforeUnmount(() => timeStore.stopTimer())
 
 const systemStore = useSystemStore()
@@ -55,6 +56,14 @@ const autoUpdateStore = useAutoUpdateStore()
 
 const app = window['app']
 if (app) {
+  app.requestHardwareAccelerationValue().then((response: boolean) => {
+    systemStore.setIsHardwareAccelerationEnabled(response)
+  })
+
+  app.requestLaunchAtSystemStartupValue().then((response: boolean) => {
+    systemStore.setLaunchAtSystemStartup(response)
+  })
+
   app.mainMessage((payload) => {
     switch (payload.action) {
       case 'log': {
@@ -109,7 +118,7 @@ if (app) {
         autoUpdateStore.setUpdate(newUpdateDetails)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({  text: 'A new version is available.' })
+          toastStore.add({ text: 'A new version is available.' })
         }
 
         // TODO: add click event that opens the update change log
@@ -129,18 +138,10 @@ if (app) {
         autoUpdateStore.setIsUpdateAvailable(false)
 
         if (autoUpdateStore.isManualCheck) {
-          toastStore.add({  text: 'You already have the latest version !' })
+          toastStore.add({ text: 'You already have the latest version !' })
           autoUpdateStore.setIsManualCheck(false)
         }
 
-        break
-      }
-      case 'isHwAccelerationDisabled': {
-        systemStore.setIsHardwareAccelerationDisabled(payload.data.value)
-        break
-      }
-      case 'launchAtSystemStartup': {
-        systemStore.setLaunchAtSystemStartup(payload.data.value)
         break
       }
       case 'notification': {
@@ -189,5 +190,4 @@ const toggleConfirmRestartDialog = () => {
 
 <style>
 @import './assets/fonts.css';
-
 </style>
