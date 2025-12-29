@@ -540,7 +540,7 @@ ipcMain.handle('getNotifications', (event, payload): Notification[] => {
   }) as Notification[]
 })
 
-function insertNotification(payload: Notification) {
+ipcMain.handle('addNotification', async (event, payload: Notification) => {
   const insertExpenseStatement = db.prepare(
     'INSERT INTO notifications (title, content, type, read, error, created_at) VALUES (@title, @content, @type, @read, @error, @createdAt)',
   )
@@ -555,9 +555,6 @@ function insertNotification(payload: Notification) {
   })
 
   return result.lastInsertRowid
-}
-ipcMain.handle('addNotification', async (event, payload: Notification) => {
-  insertNotification(payload)
 })
 ipcMain.handle('markNotificationAsRead', async (event, payload: number) => {
   const markNotificationAsReadStatement = db.prepare(

@@ -30,12 +30,9 @@ export const useImportStore = defineStore('importStore', () => {
         header: true,
         chunkSize: Papa.LocalChunkSize,
         chunk: async (results: ParseStepResult<any>, parser: Parser) => {
-          console.log('chunkResults', results)
-
           try {
             parser.pause()
             const importResult: DbImportResult = await expensesDb.import(results.data)
-            console.log('importResult', importResult)
             if (importResult.errors.length > 0) {
               console.error('importErrors', importResult.errors[1])
               return
@@ -51,9 +48,9 @@ export const useImportStore = defineStore('importStore', () => {
           }
         },
         complete: (results: ParseStepResult<any>, file: File) => {
-          console.log('parsedComplete')
+         /* console.log('parsedComplete')
           console.log('insertedCount', insertedCount)
-          console.log('duplicatedCount', duplicatedCount)
+          console.log('duplicatedCount', duplicatedCount)*/
 
           let notificationTitle = 'Import successfully completed'
           let notificationContent = `${insertedCount} new entries imported`

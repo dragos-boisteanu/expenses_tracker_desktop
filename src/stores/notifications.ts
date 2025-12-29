@@ -35,7 +35,7 @@ export const useNotificationStore = defineStore('notifications', () => {
         title: notification.title,
         content: notification.content,
         type: notification.type,
-        isNew: !!notification.read,
+        isNew: payload.isNew,
         isError: notification.isError,
         createdAt: notification.createdAt,
         formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
@@ -57,7 +57,7 @@ export const useNotificationStore = defineStore('notifications', () => {
       const viewNotifications: ViewNotification[] = notifications.map(
         (notification: Notification): ViewNotification => {
           return {
-            id: notification.id,
+            id: Number(notification.id),
             title: notification.title,
             content: notification.content,
             type: notification.type,
@@ -89,12 +89,13 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const markAsRead = async (id: number) => {
     try {
-      const notificationDb = NotificationsDB.instance
-      await notificationDb.markNotificationAsRead(id)
 
       const notificationIndex = list.value.findIndex((n) => n.id === id)
       if (notificationIndex > -1) {
         if (list.value[notificationIndex]) {
+          const notificationDb = NotificationsDB.instance
+          await notificationDb.markNotificationAsRead(id)
+
           list.value[notificationIndex].isNew = false
         }
       }
