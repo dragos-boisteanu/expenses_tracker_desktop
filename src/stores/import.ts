@@ -10,59 +10,59 @@ export const useImportStore = defineStore('importStore', () => {
   const isImporting = ref<boolean>(false)
 
   const importExpenses = async (file: File): Promise<void> => {
-    const toastStore = useToastStore()
-    const notificationStore = useNotificationStore()
+    return new Promise(resolve => {
+      const toastStore = useToastStore()
+      const notificationStore = useNotificationStore()
 
-    try {
-      //TODO: paginate data when reading from csv so
-      // it won't overload the memory in case of large data
-      isImporting.value = true
-      toastStore.add({ id: -1, text: 'Import in progress. Do not close the app !' })
+        //TODO: paginate data when reading from csv so
+        // it won't overload the memory in case of large data
+        isImporting.value = true
+        toastStore.add({ id: -1, text: 'Import in progress. Do not close the app !' })
 
 
-      const expensesDb = ExpensesDB.instance
-      let insertedCount = 0
-      let duplicatedCount = 0
-      // let errors: any[] =  []
+        const expensesDb = ExpensesDB.instance
+        let insertedCount = 0
+        let duplicatedCount = 0
+        // let errors: any[] =  []
 
-      // @ts-ignore
-      Papa.parse(file, {
-        header: true,
-        chunkSize: Papa.LocalChunkSize,
-        chunk: async (results: ParseStepResult<any>, parser: Parser) => {
-          try {
-            parser.pause()
-            const importResult: DbImportResult = await expensesDb.import(results.data)
-            if (importResult.errors.length > 0) {
-              console.error('importErrors', importResult.errors[1])
-              return
+        // @ts-ignore
+        Papa.parse(file, {
+          header: true,
+          chunkSize: Papa.LocalChunkSize,
+          chunk: async (results: ParseStepResult<any>, parser: Parser) => {
+            try {
+              parser.pause()
+              const importResult: DbImportResult = await expensesDb.import(results.data)
+              if (importResult.errors.length > 0) {
+                console.error('importErrors', importResult.errors[1])
+                return
+              }
+
+              duplicatedCount += importResult.duplicates
+              insertedCount += importResult.inserted
+              // errors.push(...importResult.errors)
+            } catch (e) {
+              console.error(e)
+            } finally {
+              parser.resume()
             }
+          },
+          complete: (results: ParseStepResult<any>, file: File) => {
+            /* console.log('parsedComplete')
+             console.log('insertedCount', insertedCount)
+             console.log('duplicatedCount', duplicatedCount)*/
 
-            duplicatedCount += importResult.duplicates
-            insertedCount += importResult.inserted
-            // errors.push(...importResult.errors)
-          } catch (e) {
-            console.error(e)
-          } finally {
-            parser.resume()
-          }
-        },
-        complete: (results: ParseStepResult<any>, file: File) => {
-         /* console.log('parsedComplete')
-          console.log('insertedCount', insertedCount)
-          console.log('duplicatedCount', duplicatedCount)*/
-
-          let notificationTitle = 'Import successfully completed'
-          let notificationContent = `${insertedCount} new entries imported`
-          let toast = `${insertedCount} new entries imported`
+            let notificationTitle = 'Import successfully completed'
+            let notificationContent = `${insertedCount} new entries imported`
+            let toast = `${insertedCount} new entries imported`
 
 
-         //  TODO: handle errors
-         /* if(errors.length > 0) {
-            notificationTitle = 'Import failed'
-            notificationContent = 'Errors prevent importing data'
+            //  TODO: handle errors
+            /* if(errors.length > 0) {
+               notificationTitle = 'Import failed'
+               notificationContent = 'Errors prevent importing data'
 
-          } else */
+             } else */
 
             if (insertedCount === duplicatedCount) {
               notificationTitle = 'Duplicate data'
@@ -78,37 +78,24 @@ export const useImportStore = defineStore('importStore', () => {
               toast = `Partial data import.  ${duplicatedCount} duplicates. ${insertedCount} entries inserted`
             }
 
-          notificationStore
-            .addNotification({
-              title: notificationTitle,
-              content: notificationContent,
-              type: 'data',
-              isNew: false,
-              isError: false,
-            })
-            .catch((error) => console.error('failedToSaveNotification', error))
+            notificationStore
+              .addNotification({
+                title: notificationTitle,
+                content: notificationContent,
+                type: 'data',
+                isNew: false,
+                isError: false,
+              })
+              .catch((error) => console.error('failedToSaveNotification', error))
 
-          toastStore.add({ text: toast })
+            toastStore.add({ text: toast })
 
-        }
-      })
-    } catch (error) {
-      console.error('getAllError', error)
+            resolve()
 
-      notificationStore
-        .addNotification({
-          title: 'Import failed !',
-          content: 'Your data was not imported !',
-          type: 'data',
-          isNew: false,
-          isError: false,
+            isImporting.value = false
+          }
         })
-        .catch((error) => console.error('failedToSaveNotification', error))
-
-      toastStore.add({text: 'Data import failed !' })
-    } finally {
-      isImporting.value = false
-    }
+      })
   }
 
   return {
