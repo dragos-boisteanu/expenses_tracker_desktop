@@ -522,7 +522,7 @@ ipcMain.handle(
     const result = transaction(expenses) as Expense[]
 
     return {
-      inserted: result,
+      inserted: result.length,
       duplicates,
       errors,
     }
