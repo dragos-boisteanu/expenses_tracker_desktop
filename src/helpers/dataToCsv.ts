@@ -1,8 +1,7 @@
 import type { Expense } from '@/types/expense'
-import Papa, { Parser, ParseStepResult } from 'papaparse'
+import Papa from 'papaparse'
 
-export class CsvService {
-  async export(data: Expense[], header: boolean = true) {
+export const dataToCsv = async (data: Expense[], header: boolean = true): Promise<Blob> => {
     if (!Array.isArray(data) || data.length === 0) {
       throw new Error('Data must be a non-empty array.')
     }
@@ -13,4 +12,3 @@ export class CsvService {
 
     return new Blob([csvContent], { type: 'text/csv;charset=utf-8,' })
   }
-}

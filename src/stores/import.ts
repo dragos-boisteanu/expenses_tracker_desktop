@@ -64,19 +64,22 @@ export const useImportStore = defineStore('importStore', () => {
 
              } else */
 
-            if (insertedCount === duplicatedCount) {
-              notificationTitle = 'Duplicate data'
-              notificationContent = `${duplicatedCount} duplicates. No new data imported. Data already exists`
-              toast = 'No new data imported. Data already exists'
-            } else if (duplicatedCount > 0 && insertedCount === 0) {
-              notificationTitle = 'Nothing to import'
-              notificationContent = `Found ${duplicatedCount} duplicates and 0 new entries.`
-              toast = `Found ${duplicatedCount} duplicates. No data inserted.`
+            if (insertedCount === duplicatedCount || duplicatedCount > 0 && insertedCount === 0) {
+              notificationTitle = 'All entries already exists'
+              notificationContent = `${duplicatedCount} duplicates. Nothing to import.`
+              toast = notificationContent
             } else if (duplicatedCount > 0 && insertedCount > 0) {
               notificationTitle = 'Partial data import'
-              notificationContent = `Found ${duplicatedCount} duplicates and ${insertedCount} new entries. Skip import.`
-              toast = `Partial data import.  ${duplicatedCount} duplicates. ${insertedCount} entries inserted`
-            }
+              notificationContent = `Found ${duplicatedCount} duplicates and ${insertedCount} new entries.`
+              toast = `Partial data import. ${duplicatedCount} duplicates. ${insertedCount} entries added`
+            } else {
+                notificationTitle = 'New data added'
+                notificationContent = `${insertedCount} new entries imported.`
+                toast = `${insertedCount} entries imported`
+              }
+
+
+
 
             notificationStore
               .addNotification({
@@ -93,10 +96,11 @@ export const useImportStore = defineStore('importStore', () => {
             resolve()
 
             isImporting.value = false
-          }
-        })
+            }
+            })
       })
-  }
+    }
+
 
   return {
     isImporting,

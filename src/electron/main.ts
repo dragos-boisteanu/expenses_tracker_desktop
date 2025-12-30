@@ -5,12 +5,12 @@ import path from 'path'
 import Database from 'better-sqlite3'
 import { Expense } from '../types/expense'
 import electronUpdater from 'electron-updater'
-import { CsvService } from '../services/csvService.js'
 import fsp from 'fs/promises'
 import { ImportedExpense } from '../types/importedExpense'
 import { DbImportResult } from '../types/dbImportResult'
 import sleep from '../helpers/sleep.js'
 import { Notification } from '../types/notification'
+import { dataToCsv } from '../helpers/dataToCsv.js'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -446,10 +446,11 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
 
     let expensesCount = expenses.length
     if (expensesCount > 0) {
-      const csvService = new CsvService()
-      const csvBlob = await csvService.export(expenses)
+      const csvBlob = await dataToCsv(expenses)
       const csvArrayBuffer = await csvBlob.arrayBuffer()
+
       const buffer = Buffer.from(csvArrayBuffer)
+
       await saveFile({
         fileName,
         buffer,
@@ -466,7 +467,7 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
 
         expensesCount = expenses.length
         if (expensesCount > 0) {
-          const csvBlob = await csvService.export(expenses, false)
+          const csvBlob = await dataToCsv(expenses, false)
           const csvArrayBuffer = await csvBlob.arrayBuffer()
           let buffer = Buffer.from(csvArrayBuffer)
           buffer = Buffer.concat([buffer, Buffer.from('\n')])
