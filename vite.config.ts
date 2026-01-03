@@ -13,7 +13,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
-  define: {
-    __LIFECYCLE__: JSON.stringify(process.env.npm_lifecycle_event),
-  },
 })
