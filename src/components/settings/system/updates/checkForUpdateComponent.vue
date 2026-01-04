@@ -41,9 +41,15 @@ const downloadUpdate = async () => {
   <div class="flex items-center justify-between gap-x-2">
     <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
     <div>
-      <div class="font-semibold">Check for updates</div>
+      <div class="font-semibold">
+        <span v-if="updateStore.isUpdateDownloaded">Install update</span>
+        <span v-else>Check for updates</span>
+      </div>
       <div class="text-xs text-neutral-500 dark:text-neutral-400">
-        Check and download new updates
+        <span v-if="updateStore.isUpdateDownloaded"
+          >Updates downloaded and ready to be installed</span
+        >
+        <span v-else> Check and download new updates</span>
       </div>
     </div>
     <general-button-component

@@ -64,7 +64,10 @@ try {
 
   console.log('isHardwareAccelerationEnabled', isHardwareAccelerationEnabled)
 
-  if (isHardwareAccelerationEnabled === undefined || (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)) {
+  if (
+    isHardwareAccelerationEnabled === undefined ||
+    (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)
+  ) {
     isHardwareAccelerationEnabled = true
     // app.commandLine.appendSwitch('disable-gpu-rasterization')
   } else {
@@ -132,15 +135,11 @@ const createWindow = () => {
         mainWindow.loadFile(join(__dirname, '../index.html'))
       }
 
-
       mainWindow.on('closed', () => {
         mainWindow = null
       })
 
       mainWindow.on('ready-to-show', () => {
-
-
-
         sendLogToRender('readyToShow', 'log')
         // sendLogToRender('readyToShow', 'error')
         resolve(true)
@@ -167,7 +166,7 @@ function setAutoUpdate(value: boolean): void {
 async function getAutoUpdate() {
   try {
     let autoUpdate = await readConfigData('autoUpdate')
-    sendLogToRender(`autoupdate ${autoUpdate}`, 'log')
+
     if (typeof autoUpdate === 'undefined') {
       await writeConfigData('autoUpdate', true)
       autoUpdate = true
@@ -210,8 +209,6 @@ app.whenReady().then(async () => {
 
   await createWindow()
 
-
-
   if (!isDev) {
     getAutoUpdate()
       .then((result) => {
@@ -222,10 +219,12 @@ app.whenReady().then(async () => {
       .catch((error) => {
         console.error(error)
       })
+
     autoUpdater.on('checking-for-update', () => {
       console.log('checking for update')
       sendLogToRender('checking for update', 'log')
     })
+
     autoUpdater.on('update-available', (event) => {
       console.log('update available')
 
@@ -251,45 +250,55 @@ app.whenReady().then(async () => {
         },
       })
     })
+
     autoUpdater.on('update-not-available', () => {
       mainWindow.webContents.send('mainMessage', {
         action: 'updateNotAvailable',
       })
     })
+
     autoUpdater.on('download-progress', (event) => {
       sendLogToRender(`downloadProgress ${JSON.stringify(event)}`, 'log')
     })
-    autoUpdater.on('update-downloaded', (event) => {
-      const version = event.version
-      const releaseDate = event.releaseDate
-      const releaseNote = event.releaseNotes
 
-      mainWindow.webContents.send('mainMessage', {
-        action: 'updateDownloaded',
-        data: {
-          content: releaseNote,
-          date: releaseDate,
-          version,
-        },
+    autoUpdater.on('update-downloaded', (event) => {
+      readAutoRestartConfig().then((value) => {
+        const version = event.version
+        const releaseDate = event.releaseDate
+        const releaseNote = event.releaseNotes
+
+        mainWindow.webContents.send('mainMessage', {
+          action: 'updateDownloaded',
+          data: {
+            content: releaseNote,
+            date: releaseDate,
+            version: version,
+            autoRestart: value,
+          },
+        })
+
+        if (value) {
+          autoUpdater.quitAndInstall()
+        }
       })
     })
+
     //TODO: add a notification than an update has been downloaded
     // title: New Update Downloaded <version>
     // body: <come up with something>
-
-    app.on('activate', function () {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (BrowserWindow.getAllWindows().length === 0) createWindow()
-    })
   }
+
+  app.on('activate', function () {
+    // On macOS it's common to re-create a window in the app when the
+    // dock icon is clicked and there are no other windows open.
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
 })
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
   }
 })
-
 
 ipcMain.handle('requestHardwareAccelerationValue', () => {
   return isHardwareAccelerationEnabled
@@ -299,6 +308,31 @@ ipcMain.handle('requestLaunchAtSystemStartupValue', () => {
   const login = app.getLoginItemSettings()
   return login.openAtLogin
 })
+
+ipcMain.handle('requestAutoRestartValue', async () => {
+  return new Promise<boolean>(async (resolve, reject) => {
+    try {
+      const autoRestart = await readAutoRestartConfig()
+      resolve(autoRestart)
+    } catch (error) {
+      reject(error)
+    }
+  })
+})
+
+async function readAutoRestartConfig(): Promise<boolean> {
+  try {
+    const autoRestart = await readConfigData('autoRestart')
+    if (autoRestart === undefined) {
+      return false
+    } else {
+      return autoRestart
+    }
+  } catch (error) {
+    console.error(error)
+    return false
+  }
+}
 
 ipcMain.on('closeApp', () => {
   mainWindow.close()
@@ -313,37 +347,51 @@ ipcMain.on('restartNow', () => {
 })
 
 ipcMain.handle('checkForUpdate', () => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     autoUpdater
       .checkForUpdates()
       .then(() => {
-        resolve(true)
+        resolve()
       })
       .catch((error) => reject(error))
   })
 })
+
 ipcMain.handle('downloadUpdate', () => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     autoUpdater
       .downloadUpdate()
       .then(() => {
-        resolve(true)
+        resolve()
       })
       .catch((error) => reject(error))
   })
 })
+
 ipcMain.handle('setAutoUpdate', (event, payload: boolean) => {
-  console.log('setAutoUpdate', payload)
-  return new Promise(async (resolve, reject) => {
+  return new Promise<void>(async (resolve, reject) => {
     try {
       setAutoUpdate(payload)
       await writeConfigData('autoUpdate', payload)
-      resolve(true)
+      resolve()
     } catch (error) {
       reject(error)
     }
   })
 })
+
+// set auto restart after an update is downloaded (auto install update)
+ipcMain.handle('setAutoRestart', async (event, payload: boolean) => {
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+      await writeConfigData('autoRestart', payload)
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+})
+
 ipcMain.on('quitAndInstall', () => {
   autoUpdater.quitAndInstall()
 })
@@ -381,10 +429,6 @@ ipcMain.handle('checkForUpdates', (event) => {
 
 ipcMain.on('downloadUpdate', () => {
   autoUpdater.downloadUpdate().then((result) => console.log('download result', result))
-})
-
-ipcMain.on('installUpdate', () => {
-  autoUpdater.quitAndInstall()
 })
 
 ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {

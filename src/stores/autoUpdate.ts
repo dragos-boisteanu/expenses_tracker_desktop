@@ -8,6 +8,11 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
     autoUpdate.value = payload
   }
 
+  const autoRestart = ref<boolean>(false)
+  const setAutoRestart = (payload) => {
+    autoRestart.value = payload
+  }
+
   const isManualCheck = ref<boolean>(false)
   const setIsManualCheck = (value: boolean) => {
     isManualCheck.value = value
@@ -33,6 +38,7 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
     content: '',
     date: '',
   })
+
   const setUpdate = (payload: UpdateType | null) => {
     if (payload) {
       update.value = payload
@@ -48,6 +54,9 @@ export const useAutoUpdateStore = defineStore('autoUpdate', () => {
   return {
     autoUpdate,
     setAutoUpdate,
+
+    autoRestart,
+    setAutoRestart,
 
     isManualCheck,
     setIsManualCheck,

@@ -3,9 +3,10 @@ import DialogComponent from '@/components/dialogComponent.vue'
 import DataSettingComponent from '@/components/settings/data/dataSettingComponent.vue'
 import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
 import SystemStartUp from '@/components/settings/system/systemStartUp.vue'
-import AutoUpdateComponent from '@/components/settings/system/autoUpdateComponent.vue'
-import CheckForUpdateComponent from '@/components/settings/system/checkForUpdateComponent.vue'
+import AutoUpdateComponent from '@/components/settings/system/updates/autoUpdateComponent.vue'
+import CheckForUpdateComponent from '@/components/settings/system/updates/checkForUpdateComponent.vue'
 import HardwareAccelerationSettingComponent from '@/components/settings/system/hardwareAccelerationSettingComponent.vue'
+import AutoInstallUpdateComponent from '@/components/settings/system/updates/autoInstallUpdateComponent.vue'
 
 const emits = defineEmits(['close'])
 
@@ -24,6 +25,7 @@ const close = () => {
         <theme-toggle-component />
         <hr class="text-neutral-300 dark:text-neutral-600" />
         <auto-update-component />
+        <auto-install-update-component />
         <check-for-update-component />
         <hr class="text-neutral-300 dark:text-neutral-600" />
         <system-start-up />

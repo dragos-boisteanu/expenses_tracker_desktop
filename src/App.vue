@@ -64,6 +64,10 @@ if (app) {
     systemStore.setLaunchAtSystemStartup(response)
   })
 
+  app.requestAutoRestartValue().then((response: boolean) => {
+    autoUpdateStore.setAutoRestart(response)
+  })
+
   app.mainMessage((payload) => {
     switch (payload.action) {
       case 'log': {
@@ -93,8 +97,6 @@ if (app) {
         autoUpdateStore.setUpdate(newUpdateDetails)
         autoUpdateStore.setIsUpdateDownloaded(true)
 
-        showConfirmRestartDialog.value = true
-
         // TODO: add click event that opens the update change log
         notificationStore.addNotification({
           title: `New version downloaded v${payload.data.version}`,
@@ -103,6 +105,10 @@ if (app) {
           isNew: true,
           isError: false,
         })
+
+        if (!payload.data.autoRestart) {
+          showConfirmRestartDialog.value = true
+        }
 
         break
       }
@@ -129,6 +135,10 @@ if (app) {
           isNew: true,
           isError: false,
         })
+
+        // TODO: show a dialog that display the change log and option to
+        // Download ( ignore auto restart)
+        // Download && Install (app restart)
 
         break
       }

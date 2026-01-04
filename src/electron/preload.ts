@@ -10,12 +10,14 @@ contextBridge.exposeInMainWorld('app', {
 
   requestHardwareAccelerationValue: () => ipcRenderer.invoke('requestHardwareAccelerationValue'),
   requestLaunchAtSystemStartupValue: () => ipcRenderer.invoke('requestLaunchAtSystemStartupValue'),
+  requestAutoRestartValue: () => ipcRenderer.invoke('requestAutoRestartValue'),
 
   setHardwareAcceleration: (value: boolean) => ipcRenderer.invoke('setHardwareAcceleration', value),
 
   checkForUpdate: () => ipcRenderer.invoke('checkForUpdate'),
   downloadUpdate: () => ipcRenderer.invoke('downloadUpdate'),
   setAutoUpdate: (value: boolean) => ipcRenderer.invoke('setAutoUpdate', value),
+  setAutoRestart: (value: boolean) => ipcRenderer.invoke('setAutoRestart', value),
 
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
     const listener = (_event: Electron.IpcRendererEvent, payload: any) => handler(payload)
