@@ -3,9 +3,16 @@ import { CheckIcon, ExclamationCircleIcon } from '@heroicons/vue/24/outline'
 import { computed } from 'vue'
 import dayjs from 'dayjs'
 import { useTimeStore } from '@/stores/time'
+import NotificationPlaceholder from '@/components/notification/notificationPlaceholder.vue'
+import { ViewNotification } from '@/types/viewNotification'
 
-const props = defineProps({
-  notification: { type: Object, required: true },
+interface PropsType {
+  notification: ViewNotification
+  placeholder?: boolean
+}
+
+const props = withDefaults(defineProps<PropsType>(), {
+  placeholder: false
 })
 const emits = defineEmits(['select'])
 const timeStore = useTimeStore()
@@ -34,11 +41,13 @@ const formattedCreatedAt = computed(() => {
 </script>
 
 <template>
+  <notification-placeholder v-if="placeholder" />
   <div
+    v-else
     @click="selectNotification"
     class="flex cursor-pointer items-center gap-x-2 rounded-lg p-2 text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow active:bg-neutral-100/60 dark:text-gray-200 dark:hover:bg-neutral-700/50 dark:hover:text-gray-100 dark:active:bg-neutral-700/75"
   >
-    <div class="icon min-h-9 min-w-9">
+    <div class="icon size-9">
       <ExclamationCircleIcon
         v-if="notification.isError"
         class="text-red-600"

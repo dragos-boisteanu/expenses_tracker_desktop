@@ -102,7 +102,6 @@ const handleOnScroll = async (e) => {
 
     if (e + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
-      await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
       allLoaded.value = await notificationsStore.getNotifications(true)
     }
   } catch (error) {
@@ -119,10 +118,10 @@ const close = () => emits('close')
   <dialog-component @close="close" position="top">
     <template #title>Notifications</template>
     <div class="relative h-full overflow-hidden rounded-lg">
-<!--      TODO: why does this create extra scrollbar ? -->
-<!--      <div class="absolute bottom-2 z-99 flex size-6 w-full justify-center" v-if="isLoadingMore">-->
-<!--        <loading-indicator />-->
-<!--      </div>-->
+      <!--      TODO: why does this create extra scrollbar ? -->
+      <!--      <div class="absolute bottom-2 z-99 flex size-6 w-full justify-center" v-if="isLoadingMore">-->
+      <!--        <loading-indicator />-->
+      <!--      </div>-->
       <div ref="rootRef" data-overlayscrollbars-initialize="">
         <VList
           ref="virtualListRef"
@@ -131,7 +130,11 @@ const close = () => emits('close')
           #default="{ item }"
           @scroll="handleOnScroll"
         >
-          <notification :notification="item" @select="handleNotificationSelected" />
+          <notification
+            :notification="item"
+            :placeholder="item.isPlaceholder"
+            @select="handleNotificationSelected"
+          />
         </VList>
       </div>
     </div>

@@ -51,6 +51,30 @@ export const useNotificationStore = defineStore('notifications', () => {
         return true
       }
 
+      const notificationsCount = list.value.length
+      const placeholders: ViewNotification[] = []
+      for (let i = notificationsCount; i < notificationsCount + 3; i++) {
+        placeholders.push({
+          id: i,
+          content: '',
+          createdAt: 0,
+          formattedCreatedAt: '',
+          isError: false,
+          isNew: false,
+          title: '',
+          type: '',
+          isPlaceholder: true,
+        })
+      }
+
+      if (nextPage) {
+        list.value.push(...placeholders)
+      } else {
+        list.value = placeholders
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
+
       const notificationsDB = NotificationsDB.instance
 
       const notifications = await notificationsDB.getNotifications(offset, limit)
@@ -68,6 +92,8 @@ export const useNotificationStore = defineStore('notifications', () => {
           }
         },
       )
+
+      list.value = list.value.filter((notification) => !notification.isPlaceholder)
 
       if (nextPage) {
         list.value.push(...viewNotifications)

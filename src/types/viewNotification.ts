@@ -7,4 +7,5 @@ export type ViewNotification = {
   isError: boolean
   createdAt: number
   formattedCreatedAt: string
+  isPlaceholder?: boolean
 }
