@@ -116,12 +116,13 @@ const close = () => emits('close')
 </script>
 
 <template>
-  <dialog-component @close="close">
+  <dialog-component @close="close" position="top">
     <template #title>Notifications</template>
     <div class="relative h-full overflow-hidden rounded-lg">
-      <div class="absolute bottom-2 z-99 flex size-6 w-full justify-center" v-if="isLoadingMore">
-        <loading-indicator />
-      </div>
+<!--      TODO: why does this create extra scrollbar ? -->
+<!--      <div class="absolute bottom-2 z-99 flex size-6 w-full justify-center" v-if="isLoadingMore">-->
+<!--        <loading-indicator />-->
+<!--      </div>-->
       <div ref="rootRef" data-overlayscrollbars-initialize="">
         <VList
           ref="virtualListRef"

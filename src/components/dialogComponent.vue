@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import CloseButtonComponent from '@/components/buttons/closeButtonComponent.vue'
-import { onMounted, ref } from 'vue'
+import { onMounted, PropType, ref } from 'vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 
 const emits = defineEmits(['close'])
 const rootRef = ref<HTMLDivElement | null>(null)
+
+const props = defineProps({
+  position: {
+    type: String as PropType<'top' | 'center' | 'button'>,
+    required: false,
+    default: 'center',
+  },
+})
 
 onMounted(() => {
   if (!rootRef.value) {
@@ -38,7 +46,10 @@ onMounted(() => {
 <template>
   <Teleport to="#app-container">
     <slot name="dialog"></slot>
-    <div class="fixed top-0 left-0 z-10 flex size-full items-center justify-center bg-black/75">
+    <div
+      class="fixed top-0 left-0 z-10 flex size-full items-center justify-center bg-black/75 overflow-hidden"
+      :class="{ 'items-start pt-8': props.position === 'top' }"
+    >
       <div
         class="max-w-[90%] min-w-[90%] rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800"
         ref="dialogContent"
