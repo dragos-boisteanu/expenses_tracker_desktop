@@ -23,7 +23,7 @@ const dayLimiter = computed<string>((): string => {
 
   let dayLimiter = ''
 
-  const previousExpenseDate = dayjs(previousDate, 'DD/MM/YY HH:mm')
+  const previousExpenseDate = dayjs.unix(previousDate)
   const expenseDate = dayjs(props.date, 'DD/MM/YY HH:mm')
 
   if (
@@ -44,13 +44,13 @@ const dayLimiter = computed<string>((): string => {
 })
 
 const getPreviousDate = (id: number) => {
-  let date: string = ''
+  let date: number = 0
 
   const index = expensesStore.list.findIndex((expense) => expense.id === id)
   if (index > -1) {
     const prevDate = expensesStore.list[index + 1]
     if (prevDate) {
-      date = prevDate.date
+      date = prevDate.unixDate
     }
   }
 
@@ -72,7 +72,7 @@ const selectExpense = () => {
       </div>
     </div>
     <div
-      class="h-fit flex-1 border-b-[1px] border-dashed border-b-gray-800 dark:border-b-gray-500"
+      class="h-fit flex-1 border-b border-dashed border-b-gray-800 dark:border-b-gray-500"
     ></div>
     <div>{{ props.date }}</div>
   </div>
@@ -80,9 +80,9 @@ const selectExpense = () => {
     v-if="dayLimiter"
     class="flex h-9 w-full items-center justify-between gap-1.5 py-2 text-xs text-indigo-600 dark:text-indigo-500"
   >
-    <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600 dark:border-b-indigo-500"></div>
+    <div class="h-fit flex-1 border-b border-b-indigo-600 dark:border-b-indigo-500"></div>
     <div>{{ dayLimiter }}</div>
-    <div class="h-fit flex-1 border-b-[1px] border-b-indigo-600 dark:border-b-indigo-500"></div>
+    <div class="h-fit flex-1 border-b border-b-indigo-600 dark:border-b-indigo-500"></div>
   </div>
 </template>
 

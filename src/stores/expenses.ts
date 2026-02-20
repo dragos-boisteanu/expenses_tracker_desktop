@@ -68,7 +68,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       const viewExpense: ViewExpense = {
         id,
         value: currencyFormat(value, code, getLocale()),
-        date: expenseDate.format('DD/MM/YY HH:mm'),
+        date: expenseDate.format('hh:mm'),
         unixDate: unixDate,
       }
 
