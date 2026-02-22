@@ -8,7 +8,9 @@ const props = defineProps({
   value: { type: String, required: true },
   currency: { type: String, required: false, default: 'RON' },
   date: { type: String, required: true },
+  unixDate: { type: Number, required: true },
   id: { type: Number, required: true },
+  index: { type: Number, required: true },
 })
 const dayjs = useDayjs()
 const timeStore = useTimeStore()
@@ -16,7 +18,7 @@ const emits = defineEmits(['select'])
 const expensesStore = useExpensesStore()
 
 const dayLimiter = computed<string>((): string => {
-  const previousDate = getPreviousDate(props.id)
+  const previousDate = getPreviousDate()
   if (!previousDate) {
     return ''
   }
@@ -24,10 +26,9 @@ const dayLimiter = computed<string>((): string => {
   let dayLimiter = ''
 
   const previousExpenseDate = dayjs.unix(previousDate)
-  const expenseDate = dayjs(props.date, 'DD/MM/YY HH:mm')
+  const expenseDate = dayjs.unix(props.unixDate)
 
   if (
-    previousExpenseDate &&
     !expenseDate.startOf('day').isSame(previousExpenseDate.startOf('day'))
   ) {
     const yesterday = dayjs(timeStore.now).subtract(1, 'day').startOf('day')
@@ -43,16 +44,15 @@ const dayLimiter = computed<string>((): string => {
   return dayLimiter
 })
 
-const getPreviousDate = (id: number) => {
+const getPreviousDate = (): number => {
   let date: number = 0
 
-  const index = expensesStore.list.findIndex((expense) => expense.id === id)
-  if (index > -1) {
-    const prevDate = expensesStore.list[index + 1]
-    if (prevDate) {
-      date = prevDate.unixDate
-    }
+  const prevItem = expensesStore.list[props.index + 1]
+  if (!prevItem) {
+    return 0
   }
+
+  date = prevItem.unixDate
 
   return date
 }
@@ -71,9 +71,7 @@ const selectExpense = () => {
         {{ props.value }}
       </div>
     </div>
-    <div
-      class="h-fit flex-1 border-b border-dashed border-b-gray-800 dark:border-b-gray-500"
-    ></div>
+    <div class="h-fit flex-1 border-b border-dashed border-b-gray-800 dark:border-b-gray-500"></div>
     <div>{{ props.date }}</div>
   </div>
   <div

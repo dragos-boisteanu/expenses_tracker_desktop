@@ -112,11 +112,13 @@ const handleOnScroll = async (e) => {
         :data="expensesStore.list"
         :style="{ height: 'none' }"
         class="rounded-2xl"
-        #default="{ item }"
+        #default="{ item, index }"
         @scroll="handleOnScroll"
       >
         <expense-component
+          :index="index"
           :date="item.date"
+          :unixDate="item.unixDate"
           :value="item.value"
           :currency="item.currency"
           :id="item.id"

@@ -13,6 +13,6 @@ export const formatExpense = (expense: Expense): ViewExpense => {
     value: currencyFormat(expense.value, expense.currency, locale),
     currency: expense.currency || '',
     date: expenseDate,
-    unixDate: expense.date,
+    unixDate: Number(expense.date),
   }
 }

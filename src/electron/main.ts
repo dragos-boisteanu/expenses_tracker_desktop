@@ -445,7 +445,7 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
   const result = insertExpenseStatement.run({
     value: expense.value,
     currency: expense.currency,
-    date: expense.date,
+    date: expense.date.toString(),
   })
 
   return result.lastInsertRowid

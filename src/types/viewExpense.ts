@@ -3,5 +3,5 @@ export type ViewExpense = {
   value: string
   currency?: string
   date: string
-  unixDate: number | null
+  unixDate: number
 }
