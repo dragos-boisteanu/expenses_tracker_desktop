@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useDayjs } from '@/composable/useDayjs'
-import { useTimeStore } from '@/stores/time'
 import { useExpensesStore } from '@/stores/expenses'
+import isYesterday from '@/helpers/isYesterday'
+import isSameDay from '@/helpers/isSameDay'
+import ExpenseDateLineComponent from '@/components/expenses/expenseDateLineComponent.vue'
 
 const props = defineProps({
   value: { type: String, required: true },
@@ -13,38 +15,49 @@ const props = defineProps({
   index: { type: Number, required: true },
 })
 const dayjs = useDayjs()
-const timeStore = useTimeStore()
 const emits = defineEmits(['select'])
 const expensesStore = useExpensesStore()
 
-const dayLimiter = computed<string>((): string => {
-  const previousDate = getPreviousDate()
-  if (!previousDate) {
+const previousDateLine = computed(() => {
+  const nextUnix = getNextDate()
+  if (!nextUnix) return ''
+
+  const currentUnix = props.unixDate
+
+  // 1. If same day, don't show a date line
+  if (isSameDay(currentUnix, nextUnix)) {
     return ''
   }
 
-  let dayLimiter = ''
-
-  const previousExpenseDate = dayjs.unix(previousDate)
-  const expenseDate = dayjs.unix(props.unixDate)
-
-  if (
-    !expenseDate.startOf('day').isSame(previousExpenseDate.startOf('day'))
-  ) {
-    const yesterday = dayjs(timeStore.now).subtract(1, 'day').startOf('day')
-    const previousExpenseDateStartOfDay = previousExpenseDate.startOf('day')
-
-    if (previousExpenseDateStartOfDay.isSame(yesterday)) {
-      dayLimiter = 'Yesterday'
-    } else if (previousExpenseDateStartOfDay.isBefore(yesterday)) {
-      dayLimiter = `${previousExpenseDate.format('DD/MM/YYYY')}`
-    }
+  // 2. Check for Yesterday (Relative to now)
+  if (isYesterday(nextUnix)) {
+    return 'Yesterday'
   }
 
-  return dayLimiter
+  // 3. Fallback to Day.js for specific formatting
+  // Only create one Day.js object at the very end if needed
+  return dayjs.unix(nextUnix).format('DD/MM/YYYY')
 })
 
-const getPreviousDate = (): number => {
+const currentDateLine = computed<string>((): string => {
+  const prevIndex = props.index - 1
+  if (prevIndex >= 0) {
+    return ''
+  }
+
+  let currentDate = ''
+
+  const nowInSeconds = Math.floor(Date.now() / 1000)
+  if (isSameDay(props.unixDate, nowInSeconds)) {
+    currentDate = 'Today'
+  } else {
+    currentDate = dayjs(props.unixDate).format('DD/MM/YYYY')
+  }
+
+  return currentDate
+})
+
+const getNextDate = (): number => {
   let date: number = 0
 
   const prevItem = expensesStore.list[props.index + 1]
@@ -56,12 +69,14 @@ const getPreviousDate = (): number => {
 
   return date
 }
+
 const selectExpense = () => {
   emits('select')
 }
 </script>
 
 <template>
+  <expense-date-line-component v-if="currentDateLine" :date="currentDateLine" />
   <div
     @click.prevent="selectExpense"
     class="flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow active:bg-neutral-100/60 dark:text-gray-200 dark:hover:bg-neutral-700/50 dark:hover:text-gray-100 dark:active:bg-neutral-700/75"
@@ -74,14 +89,7 @@ const selectExpense = () => {
     <div class="h-fit flex-1 border-b border-dashed border-b-gray-800 dark:border-b-gray-500"></div>
     <div>{{ props.date }}</div>
   </div>
-  <div
-    v-if="dayLimiter"
-    class="flex h-9 w-full items-center justify-between gap-1.5 py-2 text-xs text-indigo-600 dark:text-indigo-500"
-  >
-    <div class="h-fit flex-1 border-b border-b-indigo-600 dark:border-b-indigo-500"></div>
-    <div>{{ dayLimiter }}</div>
-    <div class="h-fit flex-1 border-b border-b-indigo-600 dark:border-b-indigo-500"></div>
-  </div>
+  <expense-date-line-component v-if="previousDateLine" :date="previousDateLine" />
 </template>
 
 <style scoped></style>
