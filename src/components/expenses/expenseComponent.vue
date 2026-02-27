@@ -5,6 +5,8 @@ import { useExpensesStore } from '@/stores/expenses'
 import isYesterday from '@/helpers/isYesterday'
 import isSameDay from '@/helpers/isSameDay'
 import ExpenseDateLineComponent from '@/components/expenses/expenseDateLineComponent.vue'
+import { useTimeStore } from '@/stores/time'
+import { timestamp } from '@vueuse/core'
 
 const props = defineProps({
   value: { type: String, required: true },
@@ -14,53 +16,40 @@ const props = defineProps({
   id: { type: Number, required: true },
   index: { type: Number, required: true },
 })
+
 const dayjs = useDayjs()
-const emits = defineEmits(['select'])
+const timeStore = useTimeStore()
+const emits = defineEmits(['select', 'dateClicked'])
 const expensesStore = useExpensesStore()
 
-const previousDateLine = computed(() => {
-  const nextUnix = getNextDate()
-  if (!nextUnix) return ''
-
-  const currentUnix = props.unixDate
-
-  // 1. If same day, don't show a date line
-  if (isSameDay(currentUnix, nextUnix)) {
-    return ''
-  }
-
-  // 2. Check for Yesterday (Relative to now)
-  if (isYesterday(nextUnix)) {
-    return 'Yesterday'
-  }
-
-  // 3. Fallback to Day.js for specific formatting
-  // Only create one Day.js object at the very end if needed
-  return dayjs.unix(nextUnix).format('DD/MM/YYYY')
-})
 
 const currentDateLine = computed<string>((): string => {
-  const prevIndex = props.index - 1
-  if (prevIndex >= 0) {
+  const nextUnix = getPreviousDate()
+  const currentUnix = props.unixDate
+
+  if (nextUnix > 0 && isSameDay(currentUnix, nextUnix)) {
     return ''
   }
 
   let currentDate = ''
 
-  const nowInSeconds = Math.floor(Date.now() / 1000)
-  if (isSameDay(props.unixDate, nowInSeconds)) {
+  const nowInSeconds = Math.floor(timeStore.now / 1000)
+
+  if (isSameDay(currentUnix, nowInSeconds)) {
     currentDate = 'Today'
+  } else if (isYesterday(currentUnix)) {
+    currentDate = 'Yesterday'
   } else {
-    currentDate = dayjs(props.unixDate).format('DD/MM/YYYY')
+    currentDate = dayjs.unix(currentUnix).format('DD/MM/YYYY')
   }
 
   return currentDate
 })
 
-const getNextDate = (): number => {
+const getPreviousDate = (): number => {
   let date: number = 0
 
-  const prevItem = expensesStore.list[props.index + 1]
+  const prevItem = expensesStore.list[props.index - 1]
   if (!prevItem) {
     return 0
   }
@@ -73,10 +62,18 @@ const getNextDate = (): number => {
 const selectExpense = () => {
   emits('select')
 }
+
+const dateClickedHandler = () => {
+  emits('dateClicked', props.unixDate)
+}
 </script>
 
 <template>
-  <expense-date-line-component v-if="currentDateLine" :date="currentDateLine" />
+  <expense-date-line-component
+    v-if="currentDateLine"
+    :date="currentDateLine"
+    @date-clicked="dateClickedHandler()"
+  />
   <div
     @click.prevent="selectExpense"
     class="flex w-full cursor-pointer items-baseline justify-between gap-1.5 rounded-lg p-2 text-sm text-gray-700 hover:bg-neutral-100 hover:text-gray-800 hover:shadow active:bg-neutral-100/60 dark:text-gray-200 dark:hover:bg-neutral-700/50 dark:hover:text-gray-100 dark:active:bg-neutral-700/75"
@@ -89,7 +86,6 @@ const selectExpense = () => {
     <div class="h-fit flex-1 border-b border-dashed border-b-gray-800 dark:border-b-gray-500"></div>
     <div>{{ props.date }}</div>
   </div>
-  <expense-date-line-component v-if="previousDateLine" :date="previousDateLine" />
 </template>
 
 <style scoped></style>

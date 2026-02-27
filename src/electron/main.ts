@@ -1,7 +1,6 @@
-import { join } from 'path'
+import path, { join } from 'path'
 import { app, BrowserWindow, ipcMain } from 'electron'
 import { fileURLToPath } from 'url'
-import path from 'path'
 import Database from 'better-sqlite3'
 import { Expense } from '../types/expense'
 import electronUpdater from 'electron-updater'
@@ -573,24 +572,36 @@ ipcMain.handle(
     }
   },
 )
+ipcMain.handle('getExpensesForDate', async (event, date) => {
+  const getExpensesListStatement = db.prepare(
+    `SELECT SUM(value) as total, currency FROM expenses
+     WHERE date >= strftime('%s', @date, 'unixepoch','localtime', 'start of day', 'utc')
+     AND date < strftime('%s', @date, 'unixepoch',  'localtime', 'start of day', '+1 day', 'utc')
+     GROUP BY currency
+     ORDER BY date DESC;`,
+  )
+  return getExpensesListStatement.all({
+    date,
+  })
+})
 
 // NOTIFICATIONS
 ipcMain.handle('getNotifications', (event, payload): Notification[] => {
-  const getExpensesListStatement = db.prepare(
+  const getNotificationsStatement = db.prepare(
     'SELECT id, title, content, read, type, error as isError, created_at as createdAt FROM notifications ORDER BY notifications.created_at DESC LIMIT @limit OFFSET @offset',
   )
-  return getExpensesListStatement.all({
+  return getNotificationsStatement.all({
     offset: payload.offset,
     limit: payload.limit,
   }) as Notification[]
 })
 
 ipcMain.handle('addNotification', async (event, payload: Notification) => {
-  const insertExpenseStatement = db.prepare(
+  const addNotificationStatement = db.prepare(
     'INSERT INTO notifications (title, content, type, read, error, created_at) VALUES (@title, @content, @type, @read, @error, @createdAt)',
   )
 
-  const result = insertExpenseStatement.run({
+  const result = addNotificationStatement.run({
     title: payload.title,
     content: payload.content,
     type: payload.type,

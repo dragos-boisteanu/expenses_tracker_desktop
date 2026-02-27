@@ -41,4 +41,8 @@ export default class ExpensesDB implements IExpensesSource {
   async deleteAllData() {
     return await this.db.deleteAllData()
   }
+
+  async getExpensesForDate(date: number) {
+    return await this.db.getExpensesForDate(date)
+  }
 }

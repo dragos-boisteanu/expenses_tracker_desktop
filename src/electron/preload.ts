@@ -46,4 +46,6 @@ contextBridge.exposeInMainWorld('db', {
   markAllNotificationsAsRead: () => ipcRenderer.invoke('markAllNotificationsAsRead'),
   deleteNotification: (id: number) => ipcRenderer.invoke('deleteNotification', id),
   deleteNotifications: () => ipcRenderer.invoke('deleteNotifications'),
+
+  getExpensesForDate: (date: number) => ipcRenderer.invoke('getExpensesForDate', date),
 })

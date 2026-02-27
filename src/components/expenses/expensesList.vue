@@ -94,6 +94,12 @@ const handleOnScroll = async (e) => {
     isLoadingMore.value = false
   }
 }
+
+const handleDateClicked = (date: number) => {
+  console.log('dateClicked', date)
+  const expenses = expensesStore.getExpensesForDate(date)
+  // TODO: show the results in a dialog
+}
 </script>
 
 <template>
@@ -122,6 +128,7 @@ const handleOnScroll = async (e) => {
           :value="item.value"
           :currency="item.currency"
           :id="item.id"
+          @dateClicked="handleDateClicked"
           @select="handleExpenseSelected(item)"
         />
       </VList>

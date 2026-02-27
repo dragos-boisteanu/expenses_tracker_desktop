@@ -7,6 +7,8 @@ import dayjs from '@/plugins/dayjs'
 import currencyFormat from '@/helpers/currencyFormat'
 import getLocale from '@/helpers/getLocale'
 import ExpensesDB from '@/repositories/ExpensesDB'
+import isSameDay from '@/helpers/isSameDay'
+import isYesterday from '@/helpers/isYesterday'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -113,6 +115,34 @@ export const useExpensesStore = defineStore('expenses', () => {
       .sort((a, b) => (b.unixDate as number) - (a.unixDate as number))
   }
 
+  const getExpensesForDate = async (date: number) => {
+    try {
+      // TODO: make a type for the result
+      const dataSource = ExpensesDB.instance
+      const results = await dataSource.getExpensesForDate(date)
+      results.forEach((result) =>
+        console.log('formattedResult', currencyFormat(result.total, result.currency, getLocale())),
+      )
+
+      const nowInSeconds = Math.floor(Date.now() / 1000)
+
+      let currentDate = ''
+      if (isSameDay(date, nowInSeconds)) {
+        currentDate = 'Today'
+      } else if (isYesterday(date)) {
+        currentDate = 'Yesterday'
+      } else {
+        currentDate = dayjs.unix(date).format('DD/MM/YYYY')
+      }
+
+      console.log('currentDate', currentDate)
+
+    } catch (error) {
+      throw error
+    }
+
+  }
+
   return {
     list,
     allLoaded,
@@ -123,6 +153,8 @@ export const useExpensesStore = defineStore('expenses', () => {
     deleteAll,
 
     importExpenses,
+
+    getExpensesForDate,
 
     isDeletingAllData,
   }
