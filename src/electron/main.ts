@@ -10,6 +10,7 @@ import { DbImportResult } from '../types/dbImportResult'
 import sleep from '../helpers/sleep.js'
 import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
+import runMigrations from '../migrations/runMigrations.js'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -77,37 +78,9 @@ try {
   console.error(error)
 }
 
-const db = new Database(dbPath, {})
-db.pragma('journal_mode = WAL')
+let db
 
-db.exec(`
-    CREATE TABLE IF NOT EXISTS expenses (
-      id INTEGER PRIMARY KEY,
-      value  REAL NOT NULL,
-      currency TEXT,
-      date TEXT NOT NULL
-    )
-`)
-db.exec(`
-  CREATE UNIQUE INDEX IF NOT EXISTS  unique_expense ON expenses (value, currency, date);
-`)
-db.exec(`
-  CREATE UNIQUE INDEX IF NOT EXISTS  expense_id ON expenses (id);
-`)
-db.exec(`
-    CREATE TABLE IF NOT EXISTS notifications (
-      id INTEGER PRIMARY KEY,
-      title TEXT NOT NULL,
-      content TEXT NOT NULL,
-      read INTEGER CHECK(read IN (0, 1)) NOT NULL default 0,
-      type TEXT CHECK(type IN ('data', 'update')) NOT NULL,
-      error INTEGER CHECK(error IN (0, 1)) NOT NULL default 0,
-      created_at TEXT NOT NULL
-    )
-`)
-db.exec(`
-  CREATE UNIQUE INDEX IF NOT EXISTS  notification_id ON notifications (id);
-`)
+
 let mainWindow: BrowserWindow
 
 const createWindow = () => {
@@ -186,113 +159,117 @@ async function getAutoUpdate() {
   }
 }
 
-const getInstanceLock = () => {
-  const gotTheLock = app.requestSingleInstanceLock()
+const gotTheLock = app.requestSingleInstanceLock()
 
-  if (!gotTheLock) {
-    app.quit()
-  } else {
-    app.on('second-instance', () => {
-      if (mainWindow) {
-        if (mainWindow.isMinimized()) {
-          mainWindow.restore()
-        }
-        mainWindow.setSkipTaskbar(false)
-        mainWindow.focus()
+if (gotTheLock) {
+  app.on('second-instance', () => {
+    if (mainWindow) {
+      if (mainWindow.isMinimized()) {
+        mainWindow.restore()
       }
-    })
-  }
-}
-app.whenReady().then(async () => {
-  getInstanceLock()
+      mainWindow.setSkipTaskbar(false)
+      mainWindow.focus()
+    }
+  })
 
-  await createWindow()
+  app.whenReady().then(async () => {
+    db = new Database(dbPath, {})
+    db.pragma('journal_mode = WAL')
 
-  if (!isDev) {
-    getAutoUpdate()
-      .then((result) => {
-        if (result) {
-          autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
-        }
+    runMigrations(db)
+
+    await createWindow()
+
+    if (!isDev) {
+      getAutoUpdate()
+        .then((result) => {
+          if (result) {
+            autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
+          }
+        })
+        .catch((error) => {
+          console.error(error)
+        })
+
+      autoUpdater.on('checking-for-update', () => {
+        console.log('checking for update')
+        sendLogToRender('checking for update', 'log')
       })
-      .catch((error) => {
-        console.error(error)
-      })
 
-    autoUpdater.on('checking-for-update', () => {
-      console.log('checking for update')
-      sendLogToRender('checking for update', 'log')
-    })
+      autoUpdater.on('update-available', (event) => {
+        console.log('update available')
 
-    autoUpdater.on('update-available', (event) => {
-      console.log('update available')
-
-      const version = event.version
-      const releaseDate = event.releaseDate
-      const releaseNote = event.releaseNotes
-
-      // const notification: Notification = {
-      //   title: `New update available v${version} from ${formatDate(releaseDate)}`,
-      //   content: releaseNote.toString(),
-      //   type: 'update',
-      //   read: 0,
-      //   isError: false,
-      //   createdAt: Math.floor(Date.now() / 1000),
-      // }
-
-      mainWindow.webContents.send('mainMessage', {
-        action: 'updateAvailable',
-        data: {
-          content: releaseNote,
-          date: releaseDate,
-          version,
-        },
-      })
-    })
-
-    autoUpdater.on('update-not-available', () => {
-      mainWindow.webContents.send('mainMessage', {
-        action: 'updateNotAvailable',
-      })
-    })
-
-    autoUpdater.on('download-progress', (event) => {
-      sendLogToRender(`downloadProgress ${JSON.stringify(event)}`, 'log')
-    })
-
-    autoUpdater.on('update-downloaded', (event) => {
-      readAutoRestartConfig().then((value) => {
         const version = event.version
         const releaseDate = event.releaseDate
         const releaseNote = event.releaseNotes
 
+        // const notification: Notification = {
+        //   title: `New update available v${version} from ${formatDate(releaseDate)}`,
+        //   content: releaseNote.toString(),
+        //   type: 'update',
+        //   read: 0,
+        //   isError: false,
+        //   createdAt: Math.floor(Date.now() / 1000),
+        // }
+
         mainWindow.webContents.send('mainMessage', {
-          action: 'updateDownloaded',
+          action: 'updateAvailable',
           data: {
             content: releaseNote,
             date: releaseDate,
-            version: version,
-            autoRestart: value,
+            version,
           },
         })
-
-        if (value) {
-          autoUpdater.quitAndInstall()
-        }
       })
+
+      autoUpdater.on('update-not-available', () => {
+        mainWindow.webContents.send('mainMessage', {
+          action: 'updateNotAvailable',
+        })
+      })
+
+      autoUpdater.on('download-progress', (event) => {
+        sendLogToRender(`downloadProgress ${JSON.stringify(event)}`, 'log')
+      })
+
+      autoUpdater.on('update-downloaded', (event) => {
+        readAutoRestartConfig().then((value) => {
+          const version = event.version
+          const releaseDate = event.releaseDate
+          const releaseNote = event.releaseNotes
+
+          mainWindow.webContents.send('mainMessage', {
+            action: 'updateDownloaded',
+            data: {
+              content: releaseNote,
+              date: releaseDate,
+              version: version,
+              autoRestart: value,
+            },
+          })
+
+          if (value) {
+            autoUpdater.quitAndInstall()
+          }
+        })
+      })
+
+      //TODO: add a notification than an update has been downloaded
+      // title: New Update Downloaded <version>
+      // body: <come up with something>
+    }
+
+    app.on('activate', function () {
+      // On macOS it's common to re-create a window in the app when the
+      // dock icon is clicked and there are no other windows open.
+      if (BrowserWindow.getAllWindows().length === 0) createWindow()
     })
-
-    //TODO: add a notification than an update has been downloaded
-    // title: New Update Downloaded <version>
-    // body: <come up with something>
-  }
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
-})
+} else {
+  app.quit()
+
+}
+
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit()
