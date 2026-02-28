@@ -5,7 +5,7 @@ import currencyFormat from '@/helpers/currencyFormat'
 import getLocale from '@/helpers/getLocale'
 
 export const formatExpense = (expense: Expense): ViewExpense => {
-  const expenseDate = dayjs.unix(expense.date).format('hh:mm')
+  const expenseDate = dayjs.unix(expense.date).format('HH:mm')
   const locale = getLocale()
 
   return {
