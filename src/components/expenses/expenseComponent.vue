@@ -6,7 +6,6 @@ import isYesterday from '@/helpers/isYesterday'
 import isSameDay from '@/helpers/isSameDay'
 import ExpenseDateLineComponent from '@/components/expenses/expenseDateLineComponent.vue'
 import { useTimeStore } from '@/stores/time'
-import { timestamp } from '@vueuse/core'
 
 const props = defineProps({
   value: { type: String, required: true },
@@ -64,7 +63,7 @@ const selectExpense = () => {
 }
 
 const dateClickedHandler = () => {
-  emits('dateClicked', props.unixDate)
+  emits('dateClicked', {date:  props.unixDate, formattedDate: currentDateLine.value})
 }
 </script>
 

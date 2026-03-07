@@ -7,6 +7,9 @@ import type { ViewExpense } from '@/types/viewExpense'
 import { VList } from 'virtua/vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import LoadingIndicator from '@/components/loadingIndicator.vue'
+import { DayTotalType } from '@/types/DayTotalType'
+import { DateClickedPayloadType } from '@/types/DateClickedPayloadType'
+import DayTotalsDialog from '@/components/expenses/dayTotalsDialog.vue'
 
 const expensesStore = useExpensesStore()
 
@@ -95,14 +98,19 @@ const handleOnScroll = async (e) => {
   }
 }
 
-const handleDateClicked = (date: number) => {
-  console.log('dateClicked', date)
-  const expenses = expensesStore.getExpensesForDate(date)
-  // TODO: show the results in a dialog
+const dayTotals = ref<DayTotalType>(null)
+const handleDateClicked = async (payload: DateClickedPayloadType) => {
+  const expenses = await expensesStore.getExpensesForDate(payload.date)
+  dayTotals.value = {
+    expenses,
+    date: payload.formattedDate,
+  }
 }
+const closeTotals = () => (dayTotals.value = null)
 </script>
 
 <template>
+  <day-totals-dialog v-if="dayTotals" :totals="dayTotals" @close="closeTotals"/>
   <div class="relative size-full flex-col rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800">
     <delete-expense-dialog
       v-if="showDeleteDialog"
