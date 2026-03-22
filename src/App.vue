@@ -89,11 +89,13 @@ if (app) {
         break
       }
       case 'updateDownloaded': {
+        console.log('updateDownloaded', JSON.stringify(payload.data, null, 2))
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
           date: payload.data.date,
         }
+
         autoUpdateStore.setUpdate(newUpdateDetails)
         autoUpdateStore.setIsUpdateDownloaded(true)
 
@@ -113,7 +115,7 @@ if (app) {
         break
       }
       case 'updateAvailable': {
-        console.log('updateAvailable', payload)
+        console.log('updateAvailable', JSON.stringify(payload.data, null, 2))
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -143,7 +145,7 @@ if (app) {
         break
       }
       case 'updateNotAvailable': {
-        console.log('updateNotAvailable', payload.data)
+        console.log('updateAvailable', payload.data)
         autoUpdateStore.setUpdate(null)
         autoUpdateStore.setIsUpdateAvailable(false)
 
