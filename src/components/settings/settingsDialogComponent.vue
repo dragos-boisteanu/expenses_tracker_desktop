@@ -7,8 +7,11 @@ import AutoUpdateComponent from '@/components/settings/system/updates/autoUpdate
 import CheckForUpdateComponent from '@/components/settings/system/updates/checkForUpdateComponent.vue'
 import HardwareAccelerationSettingComponent from '@/components/settings/system/hardwareAccelerationSettingComponent.vue'
 import AutoInstallUpdateComponent from '@/components/settings/system/updates/autoInstallUpdateComponent.vue'
+import { useAutoUpdateStore } from '@/stores/autoUpdate'
 
 const emits = defineEmits(['close'])
+
+const autoUpdateStore = useAutoUpdateStore()
 
 const close = () => {
   emits('close')
@@ -25,7 +28,7 @@ const close = () => {
         <theme-toggle-component />
         <hr class="text-neutral-300 dark:text-neutral-600" />
         <auto-update-component />
-        <auto-install-update-component />
+        <auto-install-update-component v-if="autoUpdateStore.autoUpdate" />
         <check-for-update-component />
         <hr class="text-neutral-300 dark:text-neutral-600" />
         <system-start-up />
