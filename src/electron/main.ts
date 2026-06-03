@@ -11,6 +11,7 @@ import sleep from '../helpers/sleep.js'
 import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
+import * as fs from 'node:fs'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -30,56 +31,35 @@ if (isDev) {
 const dataPath = app.getPath('userData')
 const configFilePath = path.join(dataPath, 'config.json')
 async function writeConfigData(key: string, value: string | boolean) {
-  try {
-    const content = await parseConfigData()
-    content[key] = value
-
-    await fsp.writeFile(configFilePath, JSON.stringify(content, null, 2))
-  } catch (error) {
-    throw error
-  }
+  const content = parseConfigData()
+  content[key] = value
+  fs.writeFileSync(configFilePath, JSON.stringify(content, null, 2))
 }
 
-async function readConfigData(key: string) {
-  try {
-    const content = await parseConfigData()
-    return content[key]
-  } catch (error) {
-    throw error
-  }
+function readConfigData(key: string) {
+  const content = parseConfigData()
+  return content[key]
 }
 
-async function parseConfigData() {
-  try {
-    const dataFromFile = await fsp.readFile(configFilePath, 'utf8')
-    return JSON.parse(dataFromFile)
-  } catch (error) {
-    return {}
-  }
+function parseConfigData() {
+  const dataFromFile = fs.readFileSync(configFilePath, 'utf8')
+  return JSON.parse(dataFromFile)
 }
 
 let isHardwareAccelerationEnabled: boolean = false
-try {
-  isHardwareAccelerationEnabled = await readConfigData('hardwareAcceleration')
-
-  console.log('isHardwareAccelerationEnabled', isHardwareAccelerationEnabled)
-
-  if (
-    isHardwareAccelerationEnabled === undefined ||
-    (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)
-  ) {
-    isHardwareAccelerationEnabled = true
-    // app.commandLine.appendSwitch('disable-gpu-rasterization')
-  } else {
-    app.disableHardwareAcceleration()
-    isHardwareAccelerationEnabled = false
-  }
-} catch (error) {
-  console.error(error)
+isHardwareAccelerationEnabled = readConfigData('hardwareAcceleration')
+if (
+  isHardwareAccelerationEnabled === undefined ||
+  (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)
+) {
+  isHardwareAccelerationEnabled = true
+  // app.commandLine.appendSwitch('disable-gpu-rasterization')
+} else {
+  app.disableHardwareAcceleration()
+  isHardwareAccelerationEnabled = false
 }
 
 let db
-
 
 let mainWindow: BrowserWindow
 
@@ -106,6 +86,8 @@ const createWindow = () => {
       } else {
         mainWindow.loadFile(join(__dirname, '../index.html'))
       }
+      // mainWindow.loadURL('chrome://gpu')
+      // mainWindow.webContents.openDevTools()
 
       mainWindow.on('closed', () => {
         mainWindow = null
@@ -113,6 +95,8 @@ const createWindow = () => {
 
       mainWindow.on('ready-to-show', () => {
         sendLogToRender('readyToShow', 'log')
+        sendLogToRender(`hardwareAcceleration ${isHardwareAccelerationEnabled}`, 'log')
+
         // sendLogToRender('readyToShow', 'error')
         resolve(true)
       })
@@ -135,28 +119,24 @@ function setAutoUpdate(value: boolean): void {
   }
 }
 
-async function getAutoUpdate() {
-  try {
-    let autoUpdate = await readConfigData('autoUpdate')
+function getAutoUpdate() {
+  let autoUpdate = readConfigData('autoUpdate')
 
-    if (typeof autoUpdate === 'undefined') {
-      await writeConfigData('autoUpdate', true)
-      autoUpdate = true
-    }
-
-    setAutoUpdate(autoUpdate)
-
-    mainWindow.webContents.send('mainMessage', {
-      action: 'autoUpdate',
-      data: {
-        value: autoUpdate,
-      },
-    })
-
-    return autoUpdate
-  } catch (error) {
-    console.error(error)
+  if (typeof autoUpdate === 'undefined') {
+    writeConfigData('autoUpdate', true)
+    autoUpdate = true
   }
+
+  setAutoUpdate(autoUpdate)
+
+  mainWindow.webContents.send('mainMessage', {
+    action: 'autoUpdate',
+    data: {
+      value: autoUpdate,
+    },
+  })
+
+  return autoUpdate
 }
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -267,7 +247,6 @@ if (gotTheLock) {
   })
 } else {
   app.quit()
-
 }
 
 app.on('window-all-closed', () => {
@@ -345,27 +324,13 @@ ipcMain.handle('downloadUpdate', () => {
 })
 
 ipcMain.handle('setAutoUpdate', (event, payload: boolean) => {
-  return new Promise<void>(async (resolve, reject) => {
-    try {
-      setAutoUpdate(payload)
-      await writeConfigData('autoUpdate', payload)
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
+  setAutoUpdate(payload)
+  writeConfigData('autoUpdate', payload)
 })
 
 // set auto restart after an update is downloaded (auto install update)
 ipcMain.handle('setAutoRestart', async (event, payload: boolean) => {
-  return new Promise<void>(async (resolve, reject) => {
-    try {
-      await writeConfigData('autoRestart', payload)
-      resolve()
-    } catch (error) {
-      reject(error)
-    }
-  })
+  writeConfigData('autoRestart', payload)
 })
 
 ipcMain.on('quitAndInstall', () => {
@@ -373,17 +338,10 @@ ipcMain.on('quitAndInstall', () => {
 })
 
 ipcMain.handle('setHardwareAcceleration', (event, value: boolean) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      console.log('setHardwareAcceleration', value)
-      //TODO: fix this, it is not working
-      await writeConfigData('hardwareAcceleration', value)
-      resolve(true)
-    } catch (error) {
-      reject(error)
-    }
-  })
+  console.log('setHardwareAcceleration', value)
+  writeConfigData('hardwareAcceleration', value)
 })
+
 ipcMain.handle('checkForUpdates', (event) => {
   return new Promise(async (reject, resolve) => {
     try {
