@@ -57,9 +57,6 @@ export const useExpensesStore = defineStore('expenses', () => {
       const expenseDate = dayjs()
       const unixDate = expenseDate.unix()
       const formatedValue = toDatabaseValue(value, code)
-      console.log('value', value)
-      console.log('formatedValue', formatedValue)
-      console.log('formatedValue 2', formatValue(formatedValue, code))
 
       const expense: Expense = {
         value: formatedValue,
