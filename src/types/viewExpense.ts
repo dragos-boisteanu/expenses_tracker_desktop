@@ -1,7 +1,11 @@
+import { JSONContent } from '@tiptap/vue-3'
+
 export type ViewExpense = {
-  id: number | null
+  id?: number
   value: string
   currency?: string
+  description?: JSONContent
   date: string
   unixDate: number
+  updatedAt?: number
 }

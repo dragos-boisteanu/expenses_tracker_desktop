@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('app', {
   setAutoRestart: (value: boolean) => ipcRenderer.invoke('setAutoRestart', value),
 
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
-    const listener = (_event: Electron.IpcRendererEvent, payload: any) => handler(payload)
+    const listener = (_event: Electron.IpcRendererEvent, payload: never) => handler(payload)
     ipcRenderer.on('mainMessage', listener)
 
     // Return unsubscribe function
@@ -33,11 +33,14 @@ contextBridge.exposeInMainWorld('app', {
 // TODO: handle errors for all calls
 contextBridge.exposeInMainWorld('db', {
   insert: (expense) => ipcRenderer.invoke('insertExpense', expense),
-  delete: (expenseId) => ipcRenderer.invoke('deleteExpense', expenseId),
+  delete: (expenseId: number) => ipcRenderer.invoke('deleteExpense', expenseId),
   deleteAllData: () => ipcRenderer.invoke('deleteAllData'),
-  getList: (offset, limit) => ipcRenderer.invoke('getExpenses', { offset, limit }),
-  exportExpenses: (fileName) => ipcRenderer.invoke('exportExpenses', fileName),
+  getList: (offset: number, limit: number) => ipcRenderer.invoke('getExpenses', { offset, limit }),
+  exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
   importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
+  updateExpense: (id: number, description: string): number =>
+    ipcRenderer.invoke('updateExpense', { id, description }),
+
   getNotifications: (offset: number, limit: number) =>
     ipcRenderer.invoke('getNotifications', { offset, limit }),
   addNotification: (notification: Notification) =>

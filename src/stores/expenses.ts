@@ -8,6 +8,7 @@ import currencyFormat from '@/helpers/currencyFormat'
 import getLocale from '@/helpers/getLocale'
 import ExpensesDB from '@/repositories/ExpensesDB'
 import { ExpenseForDateType } from '@/types/ExpenseForDateType'
+import { JSONContent } from '@tiptap/vue-3'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -44,7 +45,6 @@ export const useExpensesStore = defineStore('expenses', () => {
       if (nextPage) {
         list.value.push(...viewExpenses)
       } else {
-        console.log('addImportedExpenses')
         list.value = viewExpenses
       }
     } catch (error) {
@@ -52,7 +52,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  const addExpense = async (value: number, code: string) => {
+  const addExpense = async (value: number, code: string, description?: JSONContent) => {
     try {
       const expenseDate = dayjs()
       const unixDate = expenseDate.unix()
@@ -63,6 +63,10 @@ export const useExpensesStore = defineStore('expenses', () => {
         date: unixDate,
       }
 
+      if (description) {
+        expense.description = JSON.stringify(description)
+      }
+
       const dataSource = ExpensesDB.instance
       const id = await dataSource.add(expense)
 
@@ -71,11 +75,30 @@ export const useExpensesStore = defineStore('expenses', () => {
         value: currencyFormat(value, code, getLocale()),
         date: expenseDate.format('hh:mm'),
         unixDate: unixDate,
+        description,
       }
 
       list.value.unshift(viewExpense)
     } catch (error) {
       throw error
+    }
+  }
+
+  const updateExpense = async (id: number, description: JSONContent) => {
+    try {
+      const expenseIndex = list.value.findIndex((expense) => expense.id === id)
+      if (expenseIndex === -1) {
+        return
+      }
+
+      const dataSource = ExpensesDB.instance
+      const updatedAt = await dataSource.updateExpense(id, JSON.stringify(description))
+
+      console.log('updatedAt', updatedAt)
+      list.value[expenseIndex].description = description
+      // list.value[expenseIndex].updatedAt = updatedAt
+    } catch (e) {
+      throw e
     }
   }
 
@@ -122,11 +145,9 @@ export const useExpensesStore = defineStore('expenses', () => {
       return results.map((result: ExpenseForDateType) =>
         currencyFormat(result.total, result.currency, getLocale()),
       )
-
     } catch (error) {
       throw error
     }
-
   }
 
   return {
@@ -135,6 +156,7 @@ export const useExpensesStore = defineStore('expenses', () => {
 
     getExpenses,
     addExpense,
+    updateExpense,
     removeExpense,
     deleteAll,
 

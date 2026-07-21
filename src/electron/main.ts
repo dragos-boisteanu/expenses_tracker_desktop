@@ -12,11 +12,11 @@ import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
 import * as fs from 'node:fs'
-
+import { JSONContent } from '@tiptap/vue-3'
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
 const { autoUpdater } = electronUpdater
-let autoCheckFoUpdateInterval = null
+let autoCheckFoUpdateInterval: any | null = null
 const AUTO_UPDATE_CHECK_TIME = 60 * 60000
 
 const __filename = fileURLToPath(import.meta.url)
@@ -59,9 +59,10 @@ if (
   isHardwareAccelerationEnabled = false
 }
 
-let db
+// @ts-ignore
+let db: Database | undefined
 
-let mainWindow: BrowserWindow
+let mainWindow: BrowserWindow | undefined
 
 const createWindow = () => {
   return new Promise((resolve, reject) => {
@@ -90,7 +91,7 @@ const createWindow = () => {
       // mainWindow.webContents.openDevTools()
 
       mainWindow.on('closed', () => {
-        mainWindow = null
+        mainWindow = undefined
       })
 
       mainWindow.on('ready-to-show', () => {
@@ -129,7 +130,7 @@ function getAutoUpdate() {
 
   setAutoUpdate(autoUpdate)
 
-  mainWindow.webContents.send('mainMessage', {
+  mainWindow?.webContents.send('mainMessage', {
     action: 'autoUpdate',
     data: {
       value: autoUpdate,
@@ -162,12 +163,12 @@ if (gotTheLock) {
 
     if (!isDev) {
       getAutoUpdate()
-        .then((result) => {
+        .then((result: never) => {
           if (result) {
             autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
           }
         })
-        .catch((error) => {
+        .catch((error: never) => {
           console.error(error)
         })
 
@@ -192,7 +193,7 @@ if (gotTheLock) {
         //   createdAt: Math.floor(Date.now() / 1000),
         // }
 
-        mainWindow.webContents.send('mainMessage', {
+        mainWindow?.webContents.send('mainMessage', {
           action: 'updateAvailable',
           data: {
             content: releaseNote,
@@ -203,7 +204,7 @@ if (gotTheLock) {
       })
 
       autoUpdater.on('update-not-available', () => {
-        mainWindow.webContents.send('mainMessage', {
+        mainWindow?.webContents.send('mainMessage', {
           action: 'updateNotAvailable',
         })
       })
@@ -218,7 +219,7 @@ if (gotTheLock) {
           const releaseDate = event.releaseDate
           const releaseNote = event.releaseNotes
 
-          mainWindow.webContents.send('mainMessage', {
+          mainWindow?.webContents.send('mainMessage', {
             action: 'updateDownloaded',
             data: {
               content: releaseNote,
@@ -290,10 +291,10 @@ async function readAutoRestartConfig(): Promise<boolean> {
 }
 
 ipcMain.on('closeApp', () => {
-  mainWindow.close()
+  mainWindow?.close()
 })
 ipcMain.on('minimizeApp', () => {
-  mainWindow.minimize()
+  mainWindow?.minimize()
 })
 
 ipcMain.on('restartNow', () => {
@@ -342,7 +343,7 @@ ipcMain.handle('setHardwareAcceleration', (event, value: boolean) => {
   writeConfigData('hardwareAcceleration', value)
 })
 
-ipcMain.handle('checkForUpdates', (event) => {
+ipcMain.handle('checkForUpdates', () => {
   return new Promise(async (reject, resolve) => {
     try {
       if (autoUpdater) {
@@ -374,16 +375,37 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
 // EXPENSES
 ipcMain.handle('insertExpense', (event, expense: Expense) => {
   const insertExpenseStatement = db.prepare(
-    'INSERT INTO expenses (value, currency, date) VALUES (@value, @currency, @date)',
+    'INSERT INTO expenses (value, currency, date, description) VALUES (@value, @currency, @date, @description)',
   )
+  let description: string = ''
+
+  if (expense.description) {
+    description = expense.description
+  }
+
   const result = insertExpenseStatement.run({
     value: expense.value,
     currency: expense.currency,
     date: expense.date.toString(),
+    description,
   })
 
   return result.lastInsertRowid
 })
+
+ipcMain.handle('updateExpense', (event, payload: { id: number; description: string }) => {
+  const updateExpenseStatement = db.prepare(
+    'UPDATE  expenses SET description = @description WHERE id = @id',
+  )
+
+  const result = updateExpenseStatement.run({
+    id: payload.id,
+    description: payload.description,
+  })
+
+  return result.changes
+})
+
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
 
@@ -471,7 +493,7 @@ ipcMain.handle(
   'importExpenses',
   async (event, expenses: ImportedExpense[]): Promise<DbImportResult> => {
     let duplicates = 0
-    const errors = []
+    const errors: any[] = []
 
     const insert = db.prepare(
       'INSERT INTO expenses (value, currency, date) VALUES(@value, @currency, @date)',
@@ -487,7 +509,7 @@ ipcMain.handle(
             })
 
             return { ...expense, id: result.lastInsertRowid as number }
-          } catch (error) {
+          } catch (error: any) {
             if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
               duplicates++
             } else {
@@ -590,7 +612,7 @@ const saveFile = async (data: {
     }
 
     await fsp.writeFile(filePath, data.buffer, { flag: flags })
-  } catch (err) {
+  } catch (err: any) {
     if (err.code === 'EEXIST') {
       data.increment++
       await saveFile(data)
@@ -601,7 +623,7 @@ const saveFile = async (data: {
 }
 
 const sendLogToRender = (data: string, type: string) => {
-  mainWindow.webContents.send('mainMessage', { action: 'log', data, type })
+  mainWindow?.webContents.send('mainMessage', { action: 'log', data, type })
 }
 
 /*

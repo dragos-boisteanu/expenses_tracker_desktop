@@ -172,11 +172,7 @@ const toggleConfirmRestartDialog = () => {
 <template>
   <confirm-update-install v-if="showConfirmRestartDialog" @close="toggleConfirmRestartDialog" />
 
-  <div
-    id="app-container"
-    class="relative size-full overflow-hidden"
-    :class="{ dark: themeStore.theme === 'dark' }"
-  >
+  <div ref="appContainerRef" id="app-container" class="relative size-full overflow-hidden">
     <RouterView />
     <div class="absolute bottom-5 z-40 flex w-full flex-col gap-y-3 p-4">
       <toast-container-component />
