@@ -1,5 +1,5 @@
-const currencyFormat = (dbValue: number, code: string, locale: string): string => {
-  const formatter = new Intl.NumberFormat(locale, {
+const formatValue = (dbValue: number, code: string): string => {
+  const formatter = new Intl.NumberFormat(undefined, {
     style: 'currency',
     currency: code,
     currencyDisplay: 'symbol',
@@ -15,4 +15,4 @@ const currencyFormat = (dbValue: number, code: string, locale: string): string =
   return formatter.format(dbValue / divisor)
 }
 
-export default currencyFormat
+export default formatValue

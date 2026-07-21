@@ -4,11 +4,11 @@ import type { ViewExpense } from '@/types/viewExpense'
 import type { Expense } from '@/types/expense'
 import { formatExpense } from '@/helpers/formatExpense'
 import dayjs from '@/plugins/dayjs'
-import currencyFormat from '@/helpers/currencyFormat'
-import getLocale from '@/helpers/getLocale'
+import formatValue from '@/helpers/formatValue'
 import ExpensesDB from '@/repositories/ExpensesDB'
 import { ExpenseForDateType } from '@/types/ExpenseForDateType'
 import { JSONContent } from '@tiptap/vue-3'
+import { toDatabaseValue } from '@/helpers/toDatabaseValue'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -56,9 +56,13 @@ export const useExpensesStore = defineStore('expenses', () => {
     try {
       const expenseDate = dayjs()
       const unixDate = expenseDate.unix()
+      const formatedValue = toDatabaseValue(value, code)
+      console.log('value', value)
+      console.log('formatedValue', formatedValue)
+      console.log('formatedValue 2', formatValue(formatedValue, code))
 
       const expense: Expense = {
-        value,
+        value: formatedValue,
         currency: code,
         date: unixDate,
       }
@@ -72,7 +76,7 @@ export const useExpensesStore = defineStore('expenses', () => {
 
       const viewExpense: ViewExpense = {
         id,
-        value: currencyFormat(value, code, getLocale()),
+        value: formatValue(formatedValue, code),
         date: expenseDate.format('hh:mm'),
         unixDate: unixDate,
         description,
@@ -142,9 +146,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       const dataSource = ExpensesDB.instance
       const results: ExpenseForDateType[] = await dataSource.getExpensesForDate(date)
 
-      return results.map((result: ExpenseForDateType) =>
-        currencyFormat(result.total, result.currency, getLocale()),
-      )
+      return results.map((result: ExpenseForDateType) => formatValue(result.total, result.currency))
     } catch (error) {
       throw error
     }
