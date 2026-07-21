@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
@@ -8,6 +8,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import ExpenseDetailsDescription from '@/components/expenses/expenseDetailsDescription.vue'
 import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import { JSONContent } from '@tiptap/vue-3'
+import dayjs from '@/plugins/dayjs'
 
 const props = defineProps<{
   expense: ViewExpense
@@ -20,6 +21,8 @@ const close = () => {
   }
   emits('close')
 }
+
+const formatedDate = computed(() => dayjs.unix(props.expense.unixDate).format('DD/MM/YYYY HH:mm'))
 
 const updateExpenseDescription = async (): Promise<void> => {
   try {
@@ -73,7 +76,9 @@ const handleEditActive = (value: boolean) => {
         </div>
         <div class="flex-1 rounded-xl bg-neutral-100 p-3 shadow dark:bg-neutral-900">
           <div class="font-semibold text-neutral-800 dark:text-neutral-100">Date</div>
-          <div class="mt-1 text-sm text-neutral-700 dark:text-neutral-400">{{ expense.date }}</div>
+          <div class="mt-1 text-sm text-neutral-700 dark:text-neutral-400">
+            {{ formatedDate }}
+          </div>
         </div>
       </div>
       <expense-details-description
