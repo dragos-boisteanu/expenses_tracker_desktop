@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ExpenseComponent from '@/components/expenses/expenseComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
-import DeleteExpenseDialog from '@/components/deleteExpenseDialog.vue'
+import ExpenseDetailsDialog from '@/components/expenses/expenseDetailsDialog.vue'
 import { onMounted, ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import { VList } from 'virtua/vue'
@@ -110,9 +110,9 @@ const closeTotals = () => (dayTotals.value = null)
 </script>
 
 <template>
-  <day-totals-dialog v-if="dayTotals" :totals="dayTotals" @close="closeTotals"/>
+  <day-totals-dialog v-if="dayTotals" :totals="dayTotals" @close="closeTotals" />
   <div class="relative size-full flex-col rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800">
-    <delete-expense-dialog
+    <expense-details-dialog
       v-if="showDeleteDialog"
       @close="closeDeleteDialog"
       :expense="selectedExpense"

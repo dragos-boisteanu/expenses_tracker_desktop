@@ -2,7 +2,6 @@
 import DialogComponent from '@/components/dialogComponent.vue'
 import { DayTotalType } from '@/types/DayTotalType'
 
-
 // TODO: display individual expense then total for the group
 const props = defineProps<{
   totals: DayTotalType

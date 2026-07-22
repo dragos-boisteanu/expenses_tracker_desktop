@@ -1,7 +1,7 @@
 import { Database } from 'better-sqlite3'
 import migrations from '../migrations/migrations.js'
 
-export default  (db: Database) => {
+export default (db: Database) => {
   db.exec(`
     CREATE TABLE IF NOT EXISTS migrations (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -15,7 +15,7 @@ export default  (db: Database) => {
   const migrationsToRun = migrations.filter((m) => !appliedMigrations.has(m.name))
 
   if (migrationsToRun.length > 0) {
-    const transaction = db.transaction((migs) => {
+    const transaction = db.transaction((migs: any) => {
       for (const m of migs) {
         m.up(db)
         db.prepare('INSERT INTO migrations(name) VALUES (?)').run(m.name)
