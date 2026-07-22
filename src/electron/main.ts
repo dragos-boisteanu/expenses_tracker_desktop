@@ -12,7 +12,6 @@ import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
 import * as fs from 'node:fs'
-import { JSONContent } from '@tiptap/vue-3'
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
 const { autoUpdater } = electronUpdater
@@ -130,7 +129,7 @@ function getAutoUpdate() {
 
   setAutoUpdate(autoUpdate)
 
-  mainWindow?.webContents.send('mainMessage', {
+  mainWindow.webContents.send('mainMessage', {
     action: 'autoUpdate',
     data: {
       value: autoUpdate,
@@ -162,24 +161,16 @@ if (gotTheLock) {
     await createWindow()
 
     if (!isDev) {
-      getAutoUpdate()
-        .then((result: never) => {
-          if (result) {
-            autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
-          }
-        })
-        .catch((error: never) => {
-          console.error(error)
-        })
+      const result = getAutoUpdate()
+      if (result) {
+        autoUpdater.checkForUpdates().catch((error) => console.error('error', error))
+      }
 
       autoUpdater.on('checking-for-update', () => {
-        console.log('checking for update')
         sendLogToRender('checking for update', 'log')
       })
 
       autoUpdater.on('update-available', (event) => {
-        console.log('update available')
-
         const version = event.version
         const releaseDate = event.releaseDate
         const releaseNote = event.releaseNotes
@@ -193,7 +184,7 @@ if (gotTheLock) {
         //   createdAt: Math.floor(Date.now() / 1000),
         // }
 
-        mainWindow?.webContents.send('mainMessage', {
+        mainWindow.webContents.send('mainMessage', {
           action: 'updateAvailable',
           data: {
             content: releaseNote,
@@ -204,7 +195,7 @@ if (gotTheLock) {
       })
 
       autoUpdater.on('update-not-available', () => {
-        mainWindow?.webContents.send('mainMessage', {
+        mainWindow.webContents.send('mainMessage', {
           action: 'updateNotAvailable',
         })
       })
@@ -219,7 +210,7 @@ if (gotTheLock) {
           const releaseDate = event.releaseDate
           const releaseNote = event.releaseNotes
 
-          mainWindow?.webContents.send('mainMessage', {
+          mainWindow.webContents.send('mainMessage', {
             action: 'updateDownloaded',
             data: {
               content: releaseNote,
@@ -291,10 +282,10 @@ async function readAutoRestartConfig(): Promise<boolean> {
 }
 
 ipcMain.on('closeApp', () => {
-  mainWindow?.close()
+  mainWindow.close()
 })
 ipcMain.on('minimizeApp', () => {
-  mainWindow?.minimize()
+  mainWindow.minimize()
 })
 
 ipcMain.on('restartNow', () => {
@@ -623,7 +614,7 @@ const saveFile = async (data: {
 }
 
 const sendLogToRender = (data: string, type: string) => {
-  mainWindow?.webContents.send('mainMessage', { action: 'log', data, type })
+  mainWindow.webContents.send('mainMessage', { action: 'log', data, type })
 }
 
 /*

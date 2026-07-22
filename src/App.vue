@@ -68,7 +68,7 @@ if (app) {
     autoUpdateStore.setAutoRestart(response)
   })
 
-  app.mainMessage((payload) => {
+  app.mainMessage((payload: any) => {
     switch (payload.action) {
       case 'log': {
         switch (payload.type) {
@@ -89,7 +89,7 @@ if (app) {
         break
       }
       case 'updateDownloaded': {
-        console.log('updateDownloaded', JSON.stringify(payload.data, null, 2))
+        // console.log('updateDownloaded', JSON.stringify(payload.data, null, 2))
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -115,7 +115,7 @@ if (app) {
         break
       }
       case 'updateAvailable': {
-        console.log('updateAvailable', JSON.stringify(payload.data, null, 2))
+        // console.log('updateAvailable', JSON.stringify(payload.data, null, 2))
         const newUpdateDetails: UpdateType = {
           version: payload.data.version,
           content: payload.data.content,
@@ -145,7 +145,7 @@ if (app) {
         break
       }
       case 'updateNotAvailable': {
-        console.log('updateAvailable', payload.data)
+        // console.log('updateAvailable', payload.data)
         autoUpdateStore.setUpdate(null)
         autoUpdateStore.setIsUpdateAvailable(false)
 
