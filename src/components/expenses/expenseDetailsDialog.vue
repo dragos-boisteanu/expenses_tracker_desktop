@@ -82,7 +82,6 @@ const handleEditActive = (value: boolean) => {
         </div>
       </div>
       <expense-details-description
-        v-if="expense.description"
         :close-edit="closeEdit"
         :id="expense.id"
         v-model="description"
