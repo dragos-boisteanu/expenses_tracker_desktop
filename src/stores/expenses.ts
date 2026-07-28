@@ -17,6 +17,7 @@ export const useExpensesStore = defineStore('expenses', () => {
   let offset: number = 0
   const limit: number = 15
   const allLoaded = ref<boolean>(false)
+
   const getExpenses = async (
     firstPage: boolean = false,
     nextPage: boolean = false,
@@ -62,6 +63,7 @@ export const useExpensesStore = defineStore('expenses', () => {
         value: formatedValue,
         currency: code,
         date: unixDate,
+        created_at: unixDate,
       }
 
       if (description) {
@@ -69,15 +71,10 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
 
       const dataSource = ExpensesDB.instance
+
       const id = await dataSource.add(expense)
 
-      const viewExpense: ViewExpense = {
-        id,
-        value: formatValue(formatedValue, code),
-        date: expenseDate.format('hh:mm'),
-        unixDate: unixDate,
-        description,
-      }
+      const viewExpense: ViewExpense = formatExpense({ ...expense, id })
 
       list.value.unshift(viewExpense)
     } catch (error) {
@@ -93,11 +90,13 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
 
       const dataSource = ExpensesDB.instance
-      const updatedAt = await dataSource.updateExpense(id, JSON.stringify(description))
 
-      console.log('updatedAt', updatedAt)
+      const updatedAtDayJs = dayjs()
+      const updatedAt = updatedAtDayJs.unix()
+      await dataSource.updateExpense(id, JSON.stringify(description), updatedAt)
+
       list.value[expenseIndex].description = description
-      // list.value[expenseIndex].updatedAt = updatedAt
+      list.value[expenseIndex].updatedAt = updatedAtDayJs.format('DD/MM/YYYY HH:mm')
     } catch (e) {
       throw e
     }
@@ -135,7 +134,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     list.value.push(...expenses)
     list.value = list.value
       .filter((expense) => expense.unixDate !== null)
-      .sort((a, b) => (b.unixDate as number) - (a.unixDate as number))
+      .sort((a, b) => b.unixDate - a.unixDate)
   }
 
   const getExpensesForDate = async (date: number) => {

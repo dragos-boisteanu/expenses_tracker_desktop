@@ -366,7 +366,7 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
 // EXPENSES
 ipcMain.handle('insertExpense', (event, expense: Expense) => {
   const insertExpenseStatement = db.prepare(
-    'INSERT INTO expenses (value, currency, date, description) VALUES (@value, @currency, @date, @description)',
+    'INSERT INTO expenses (value, currency, date, description, created_at) VALUES (@value, @currency, @date, @description, @created_at)',
   )
   let description: string = ''
 
@@ -379,23 +379,28 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
     currency: expense.currency,
     date: expense.date.toString(),
     description,
+    created_at: expense.created_at,
   })
 
   return result.lastInsertRowid
 })
 
-ipcMain.handle('updateExpense', (event, payload: { id: number; description: string }) => {
-  const updateExpenseStatement = db.prepare(
-    'UPDATE  expenses SET description = @description WHERE id = @id',
-  )
+ipcMain.handle(
+  'updateExpense',
+  (event, payload: { id: number; description: string; updatedAt: number }) => {
+    const updateExpenseStatement = db.prepare(
+      'UPDATE  expenses SET description = @description, updated_at = @updatedAt WHERE id = @id',
+    )
 
-  const result = updateExpenseStatement.run({
-    id: payload.id,
-    description: payload.description,
-  })
+    const result = updateExpenseStatement.run({
+      id: payload.id,
+      description: payload.description,
+      updatedAt: payload.updatedAt,
+    })
 
-  return result.changes
-})
+    return result.changes
+  },
+)
 
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')

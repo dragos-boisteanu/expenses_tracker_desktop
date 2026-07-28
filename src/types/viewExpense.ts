@@ -7,5 +7,7 @@ export type ViewExpense = {
   description?: JSONContent
   date: string
   unixDate: number
-  updatedAt?: number
+  unixCreatedAt: number
+  updatedAt?: string
+  createdAt: string
 }

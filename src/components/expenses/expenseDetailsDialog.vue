@@ -87,6 +87,19 @@ const handleEditActive = (value: boolean) => {
         v-model="description"
         @editActive="handleEditActive"
       />
+
+      <div
+        class="mt-1.5 text-end text-xs text-neutral-400 dark:text-neutral-600"
+        v-if="expense.updatedAt"
+      >
+        Last update at: {{ expense.updatedAt }}
+      </div>
+      <div
+        class="mt-1.5 text-end text-xs text-neutral-400 dark:text-neutral-600"
+        v-if="expense.unixCreatedAt !== expense.unixDate"
+      >
+        Created at: {{ expense.createdAt }}
+      </div>
     </div>
 
     <template #actions>

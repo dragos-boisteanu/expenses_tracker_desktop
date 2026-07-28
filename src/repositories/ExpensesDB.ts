@@ -1,7 +1,6 @@
 import type { Expense } from '@/types/expense'
 import type { IExpensesSource } from '@/interfaces/IExpensesSource'
 import type { ImportedExpense } from '@/types/importedExpense'
-import { JSONContent } from '@tiptap/vue-3'
 
 export default class ExpensesDB implements IExpensesSource {
   private db
@@ -47,7 +46,7 @@ export default class ExpensesDB implements IExpensesSource {
     return await this.db.getExpensesForDate(date)
   }
 
-  async updateExpense(id: number, description: string): Promise<number> {
-    return await this.db.updateExpense(id, description)
+  async updateExpense(id: number, description: string, updatedAt: number): Promise<number> {
+    return await this.db.updateExpense(id, description, updatedAt)
   }
 }

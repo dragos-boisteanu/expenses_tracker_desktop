@@ -15,11 +15,15 @@ const expensesStore = useExpensesStore()
 
 const showDeleteDialog = ref<boolean>(false)
 const selectedExpense = ref<ViewExpense>({
+  createdAt: '',
+  description: undefined,
+  updatedAt: '',
   id: null,
   value: '',
   currency: '',
   date: '',
   unixDate: null,
+  unixCreatedAt: 0,
 })
 
 const handleExpenseSelected = (expense: ViewExpense) => {
@@ -28,11 +32,15 @@ const handleExpenseSelected = (expense: ViewExpense) => {
 }
 const closeDeleteDialog = () => {
   selectedExpense.value = {
+    createdAt: undefined,
+    description: undefined,
+    updatedAt: undefined,
     id: null,
     value: '',
     currency: '',
     date: '',
     unixDate: null,
+    unixCreatedAt: 0,
   }
   showDeleteDialog.value = false
 }
@@ -132,7 +140,7 @@ const closeTotals = () => (dayTotals.value = null)
         <expense-component
           :index="index"
           :date="item.date"
-          :unixDate="item.unixDate"
+          :unixDate="Number.parseInt(item.unixDate)"
           :value="item.value"
           :currency="item.currency"
           :id="item.id"
