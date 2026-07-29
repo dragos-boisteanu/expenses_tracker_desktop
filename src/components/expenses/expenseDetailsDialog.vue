@@ -92,7 +92,7 @@ const handleEditActive = (value: boolean) => {
         class="mt-1.5 text-end text-xs text-neutral-400 dark:text-neutral-600"
         v-if="expense.updatedAt"
       >
-        Last update at: {{ expense.updatedAt }}
+        Last update on: {{ expense.updatedAt }}
       </div>
       <div
         class="mt-1.5 text-end text-xs text-neutral-400 dark:text-neutral-600"
