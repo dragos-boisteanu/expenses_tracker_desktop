@@ -6,6 +6,7 @@ import addDescriptionToExpenses from './01_42_56_04_07_2026_add_description_to_e
 import addUpdatedAtToExpenses from './20_30_03_28_07_2026_add_updated_at_to_expenses.js'
 import addCreatedAtToExpenses from './20_31_23_28_07_2026_add_created_at_to_expenses.js'
 import convertExpenseDateToInteger from './23_38_29_28_07_2026_convert_expense_date_to_integer.js'
+import setExpenseCreatedAt from './22_46_18_29_07_2026_set_expense_created_at.js'
 
 export default [
   { name: 'create_expenses_table', up: createExpensesTable },
@@ -15,6 +16,7 @@ export default [
   { name: 'add_updated_at_to_expenses', up: addUpdatedAtToExpenses },
   { name: 'add_created_at_to_expenses', up: addCreatedAtToExpenses },
   { name: 'convert_expense_date_to_integer', up: convertExpenseDateToInteger },
+  { name: 'set_expense_created_at', up: setExpenseCreatedAt },
 
   // 👉 Indexes come AFTER tables
   { name: 'create_expenses_id_date_unique_index', up: createExpensesIdValueUniqueIndex },

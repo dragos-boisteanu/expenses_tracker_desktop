@@ -14,7 +14,6 @@ export const formatExpense = (expense: Expense): ViewExpense => {
   if (expense.date === expense.created_at) {
     createdAt = expenseDate.format('DD/MM/YYYY HH:mm')
   } else {
-    console.log('differ', expense.date, expense.created_at)
     createdAt = dayjs.unix(expense.created_at).format('DD/MM/YYYY HH:mm')
   }
 
