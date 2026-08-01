@@ -38,8 +38,10 @@ contextBridge.exposeInMainWorld('db', {
   getList: (offset: number, limit: number) => ipcRenderer.invoke('getExpenses', { offset, limit }),
   exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
   importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
-  updateExpense: (id: number, description: string, updatedAt: number): number =>
-    ipcRenderer.invoke('updateExpense', { id, description, updatedAt }),
+  updateExpenseDescription: (id: number, description: string, updatedAt: number): number =>
+    ipcRenderer.invoke('updateExpenseDescription', { id, description, updatedAt }),
+  updateExpenseValue: (id: number, value: number, currency: string, updatedAt: number): number =>
+    ipcRenderer.invoke('updateExpenseValue', { id, value, currency, updatedAt }),
 
   getNotifications: (offset: number, limit: number) =>
     ipcRenderer.invoke('getNotifications', { offset, limit }),

@@ -6,9 +6,8 @@ import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vu
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import ExpenseDetailsDescription from '@/components/expenses/expenseDetailsDescription.vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
-import { JSONContent } from '@tiptap/vue-3'
 import dayjs from '@/plugins/dayjs'
+import ExpenseValueDetailComponent from '@/components/expenses/expenseValueDetailComponent.vue'
 
 const props = defineProps<{
   expense: ViewExpense
@@ -23,18 +22,6 @@ const close = () => {
 }
 
 const formatedDate = computed(() => dayjs.unix(props.expense.unixDate).format('DD/MM/YYYY HH:mm'))
-
-const updateExpenseDescription = async (): Promise<void> => {
-  try {
-    const expensesStore = useExpensesStore()
-    await expensesStore.updateExpense(props.expense.id, description.value)
-
-    close()
-  } catch (error) {
-    console.error('updateExpenseDescription', error)
-  }
-}
-const description = ref<JSONContent | undefined>(props.expense.description)
 
 const showConfirmDialog = ref<boolean>(false)
 const toggleConfirmDialog = () => {
@@ -54,12 +41,6 @@ const remove = async () => {
 
 const closeEdit = ref<boolean>(false)
 const isEditing = ref<boolean>(false)
-const handleEditActive = (value: boolean) => {
-  if (value) {
-    closeEdit.value = false
-  }
-  isEditing.value = value
-}
 </script>
 
 <template>
@@ -68,12 +49,12 @@ const handleEditActive = (value: boolean) => {
 
     <div class="w-full">
       <div class="flex items-center justify-between gap-x-2">
-        <div class="flex-1 rounded-xl bg-neutral-100 p-3 shadow dark:bg-neutral-900">
-          <div class="font-semibold text-neutral-800 dark:text-neutral-100">Value</div>
-          <div class="mt-1 text-sm text-neutral-700 dark:text-neutral-400">
-            {{ expense.value }}
-          </div>
-        </div>
+        <expense-value-detail-component
+          :id="expense.id"
+          :value="expense.value"
+          :numericValue="expense.numericValue"
+          :currency="expense.currency"
+        />
         <div class="flex-1 rounded-xl bg-neutral-100 p-3 shadow dark:bg-neutral-900">
           <div class="font-semibold text-neutral-800 dark:text-neutral-100">Date</div>
           <div class="mt-1 text-sm text-neutral-700 dark:text-neutral-400">
@@ -81,12 +62,7 @@ const handleEditActive = (value: boolean) => {
           </div>
         </div>
       </div>
-      <expense-details-description
-        :close-edit="closeEdit"
-        :id="expense.id"
-        v-model="description"
-        @editActive="handleEditActive"
-      />
+      <expense-details-description :id="expense.id" :description="expense.description" />
 
       <div
         class="mt-1.5 text-end text-xs text-neutral-400 dark:text-neutral-600"
@@ -104,12 +80,7 @@ const handleEditActive = (value: boolean) => {
 
     <template #actions>
       <cancel-button-component @click="close">Close</cancel-button-component>
-      <confirm-button-component v-if="isEditing" @click="updateExpenseDescription"
-        >Save</confirm-button-component
-      >
-      <danger-button-component v-else @click="toggleConfirmDialog">
-        Delete
-      </danger-button-component>
+      <danger-button-component @click="toggleConfirmDialog"> Delete </danger-button-component>
     </template>
     <template #dialog v-if="showConfirmDialog">
       <dialog-component @close="toggleConfirmDialog">

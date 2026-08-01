@@ -2,19 +2,14 @@
 import { PlusIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
 import type { Country } from '@/types/country'
-import CountrySelectComponent from '@/components/countrySelectComponent.vue'
-import type { ActionResult } from '@/types/actionResult'
 import { useExpensesStore } from '@/stores/expenses'
 import ExpenseDescriptionInput from '@/components/expenses/expenseDescriptionInput.vue'
 import { JSONContent } from '@tiptap/vue-3'
+import ExpenseValueInput from '@/components/expenses/expenseValueInput.vue'
 
 const value = ref<number | null>(null)
-const hasError = ref<ActionResult>({
-  show: false,
-})
-const isSuccess = ref<ActionResult>({
-  show: false,
-})
+const hasError = ref<boolean>(false)
+const isSuccess = ref<boolean>(false)
 
 const successTimeout = ref<number>(0)
 const errorTimeout = ref<number>(0)
@@ -45,18 +40,18 @@ const addExpense = async (event: never | null, description?: JSONContent) => {
     const expenseStore = useExpensesStore()
     await expenseStore.addExpense(numericValue, selectedCountry.value.code, description)
     value.value = null
-    hasError.value.show = false
-    isSuccess.value.show = true
+    hasError.value = false
+    isSuccess.value = true
 
     showExtraDetailsDialog.value = false
     successTimeout.value = window.setTimeout(() => {
-      isSuccess.value.show = false
+      isSuccess.value = false
     }, 1000)
   } catch (error) {
     console.error('addExpenseError', error)
-    hasError.value.show = true
+    hasError.value = true
     errorTimeout.value = window.setTimeout(() => {
-      hasError.value.show = false
+      hasError.value = false
     }, 1000)
   }
 }
@@ -80,27 +75,12 @@ const toggleExtraDetailsDialog = () => {
   />
   <div class="flex w-full shrink-0 grow-0 flex-col items-center gap-4">
     <div class="relative w-full">
-      <div
-        class="flex w-full items-center gap-x-2 border-b-2 border-transparent bg-neutral-50 p-4 shadow transition-all duration-300 ease-in-out dark:bg-neutral-800"
-        :class="[
-          value ? 'rounded-t-2xl rounded-b-none' : 'rounded-2xl',
-          {
-            'border-b-red-500!': hasError.show && !value,
-            'border-b-green-500!': isSuccess.show && !value,
-          },
-        ]"
-      >
-        <input
-          @keydown="(e) => ['e', 'E', '+', '-'].includes(e.key) && e.preventDefault()"
-          class="size-full bg-transparent text-xl text-gray-700 outline-none dark:text-gray-200"
-          v-model.trim="value"
-          type="number"
-          placeholder="Enter value"
-          @keydown.enter="addExpense"
-        />
-        <country-select-component @countrySelected="handleCountrySelected" />
-      </div>
-
+      <expense-value-input
+        v-model="value"
+        :error="hasError"
+        :success="isSuccess"
+        @countrySelected="handleCountrySelected"
+      />
       <Transition name="slide-down">
         <div
           v-if="value"

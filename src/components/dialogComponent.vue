@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CloseButtonComponent from '@/components/buttons/closeButtonComponent.vue'
-import { PropType } from 'vue'
+import { onBeforeUnmount, onMounted, PropType } from 'vue'
 
 const emits = defineEmits(['close'])
 
@@ -16,6 +16,25 @@ const props = defineProps({
     default: 'center',
   },
 })
+
+//TODO: close the highest level dialog when pressing esc
+/*onMounted(() => {
+  window.addEventListener('keydown', handleKeyPress)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleKeyPress)
+})
+
+const handleKeyPress = (e: KeyboardEvent): void => {
+  console.log('handleKeyPress', e)
+  if (e.key === 'Escape') {
+    close()
+  }
+}*/
+const close = () => {
+  emits('close')
+}
 </script>
 
 <template>
@@ -31,7 +50,7 @@ const props = defineProps({
             <slot name="title"></slot>
           </div>
 
-          <close-button-component v-if="!hideCloseButton" @close="emits('close')" />
+          <close-button-component v-if="!hideCloseButton" @close="close" />
         </div>
         <div class="text-md px-4 text-neutral-800 dark:border-neutral-600 dark:text-gray-300">
           <slot />

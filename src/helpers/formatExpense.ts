@@ -24,6 +24,7 @@ export const formatExpense = (expense: Expense): ViewExpense => {
   const viewExpense: ViewExpense = {
     id: expense.id,
     value: formatValue(expense.value, expense.currency),
+    numericValue: expense.value / 100,
     currency: expense.currency || '',
     date: formattedExpenseData,
     unixDate: expense.date,

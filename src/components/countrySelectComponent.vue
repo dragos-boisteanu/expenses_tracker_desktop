@@ -6,7 +6,19 @@ import { onClickOutside } from '@vueuse/core'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import { VList } from 'virtua/vue'
 
-const emits = defineEmits(['countrySelected'])
+const props = withDefaults(
+  defineProps<{
+    currency?: string
+    isEditing?: boolean
+  }>(),
+  {
+    isEditing: false,
+  },
+)
+
+const emits = defineEmits<{
+  (e: 'countrySelected', value: Country): void
+}>()
 
 const countries = ref<Country[]>([])
 const countrySearchInput = ref<string>('')
@@ -21,6 +33,19 @@ const filteredCountries = computed(() => {
 })
 const countriesListRef = ref<HTMLInputElement | null>(null)
 
+const [initializeScrollbars] = useOverlayScrollbars({
+  defer: true,
+  options: {
+    scrollbars: {
+      visibility: 'visible',
+    },
+    overflow: {
+      x: 'hidden',
+      y: 'scroll',
+    },
+  },
+})
+
 watch(
   () => filteredCountries.value,
   (value) => {
@@ -33,24 +58,34 @@ watch(
       }
   },
 )
+
 const selectedCountry = ref<Country | null>(null)
+
 const getCountries = async () => {
   try {
     const response = await fetch('data/countries.json')
     countries.value = await response.json()
 
-    const selectedCountryCode = localStorage.getItem('selectedCountryCode') || 'RON'
+    const selectedCountryCode =
+      props.currency || localStorage.getItem('selectedCountryCode') || 'RON'
+
     const defaultSelectedCountry = countries.value.find(
       (country) => country.code === selectedCountryCode,
     )
+
     selectCountry(defaultSelectedCountry)
   } catch (error) {
     console.error('Failed to load countries', error)
   }
 }
+
 const selectCountry = (country: Country) => {
   selectedCountry.value = country
-  localStorage.setItem('selectedCountryCode', country.code)
+
+  if (!props.isEditing) {
+    localStorage.setItem('selectedCountryCode', country.code)
+  }
+
   emits('countrySelected', country)
   if (showCountriesList.value) {
     toggleCountriesList()
@@ -58,39 +93,31 @@ const selectCountry = (country: Country) => {
 }
 const showCountriesList = ref<boolean>(false)
 const toggleCountriesList = async () => {
-  showCountriesList.value = !showCountriesList.value
-
   if (showCountriesList.value) {
+    countrySearchInput.value = ''
+    showCountriesList.value = false
+  } else {
+    showCountriesList.value = true
     await nextTick()
+
+    if (countrySearchInputRef.value) {
+      countrySearchInputRef.value.focus()
+    }
 
     const root = rootRef.value
     if (!root) return
 
-    const [initialize] = useOverlayScrollbars({
-      defer: true,
-      options: {
-        scrollbars: {
-          visibility: 'visible',
-        },
-        overflow: {
-          x: 'hidden',
-          y: 'scroll',
-        },
-      },
-    })
-
-    initialize({
+    initializeScrollbars({
       target: root,
       elements: {
         viewport: root.firstElementChild as HTMLElement,
       },
     })
-  } else {
-    countrySearchInput.value = ''
   }
 }
 
 const rootRef = ref<HTMLDivElement | null>(null)
+const countrySearchInputRef = ref<HTMLInputElement | null>(null)
 
 onMounted(() => {
   getCountries()
@@ -106,11 +133,12 @@ onMounted(() => {
     </button>
     <div
       ref="countriesListRef"
-      v-if="showCountriesList"
+      v-show="showCountriesList"
       class="absolute top-0 -left-12 z-10 w-24 overflow-hidden rounded-2xl bg-neutral-100 shadow dark:bg-neutral-700"
     >
       <div class="p-2">
         <input
+          ref="countrySearchInputRef"
           v-model="countrySearchInput"
           :placeholder="selectedCountry?.code"
           type="text"
@@ -118,7 +146,7 @@ onMounted(() => {
         />
       </div>
 
-      <div ref="rootRef" data-overlayscrollbars-initialize="" class="h-[200px]">
+      <div ref="rootRef" data-overlayscrollbars-initialize="" class="h-50">
         <VList :data="filteredCountries" :style="{ height: 'none' }" #default="{ item }">
           <button
             @click="selectCountry(item)"

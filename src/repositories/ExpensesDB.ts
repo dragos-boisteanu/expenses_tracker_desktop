@@ -46,7 +46,20 @@ export default class ExpensesDB implements IExpensesSource {
     return await this.db.getExpensesForDate(date)
   }
 
-  async updateExpense(id: number, description: string, updatedAt: number): Promise<number> {
-    return await this.db.updateExpense(id, description, updatedAt)
+  async updateExpenseDescription(
+    id: number,
+    description: string,
+    updatedAt: number,
+  ): Promise<number> {
+    return await this.db.updateExpenseDescription(id, description, updatedAt)
+  }
+
+  async updateExpenseValue(
+    id: number,
+    value: number,
+    currency: string,
+    updatedAt: number,
+  ): Promise<number> {
+    return await this.db.updateExpenseValue(id, value, currency, updatedAt)
   }
 }

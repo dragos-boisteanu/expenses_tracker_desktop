@@ -386,7 +386,7 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
 })
 
 ipcMain.handle(
-  'updateExpense',
+  'updateExpenseDescription',
   (event, payload: { id: number; description: string; updatedAt: number }) => {
     const updateExpenseStatement = db.prepare(
       'UPDATE  expenses SET description = @description, updated_at = @updatedAt WHERE id = @id',
@@ -402,6 +402,23 @@ ipcMain.handle(
   },
 )
 
+ipcMain.handle(
+  'updateExpenseValue',
+  (event, payload: { id: number; value: number; currency: string; updatedAt: number }) => {
+    const updateExpenseStatement = db.prepare(
+      'UPDATE expenses SET value = @value, updated_at = @updatedAt, currency = @currency  WHERE id = @id',
+    )
+
+    const result = updateExpenseStatement.run({
+      id: payload.id,
+      value: payload.value,
+      currency: payload.currency,
+      updatedAt: payload.updatedAt,
+    })
+
+    return result.changes
+  },
+)
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
 

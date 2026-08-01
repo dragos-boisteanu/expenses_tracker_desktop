@@ -82,7 +82,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  const updateExpense = async (id: number, description: JSONContent) => {
+  const updateExpenseDescription = async (id: number, description: JSONContent) => {
     try {
       const expenseIndex = list.value.findIndex((expense) => expense.id === id)
       if (expenseIndex === -1) {
@@ -93,10 +93,34 @@ export const useExpensesStore = defineStore('expenses', () => {
 
       const updatedAtDayJs = dayjs()
       const updatedAt = updatedAtDayJs.unix()
-      await dataSource.updateExpense(id, JSON.stringify(description), updatedAt)
+      await dataSource.updateExpenseDescription(id, JSON.stringify(description), updatedAt)
 
       list.value[expenseIndex].description = description
       list.value[expenseIndex].updatedAt = updatedAtDayJs.format('DD/MM/YYYY HH:mm')
+    } catch (e) {
+      throw e
+    }
+  }
+
+  const updateExpenseValue = async (id: number, value: number, currency: string) => {
+    try {
+      const expenseIndex = list.value.findIndex((expense) => expense.id === id)
+      if (expenseIndex === -1) {
+        return
+      }
+
+      const dataSource = ExpensesDB.instance
+
+      const databaseValue = toDatabaseValue(value, currency)
+
+      const updatedAtDayJs = dayjs()
+      const updatedAt = updatedAtDayJs.unix()
+      await dataSource.updateExpenseValue(id, databaseValue, currency, updatedAt)
+
+      list.value[expenseIndex].numericValue = value
+      list.value[expenseIndex].value = formatValue(databaseValue, currency)
+      list.value[expenseIndex].updatedAt = updatedAtDayJs.format('DD/MM/YYYY HH:mm')
+      list.value[expenseIndex].currency = currency
     } catch (e) {
       throw e
     }
@@ -154,7 +178,9 @@ export const useExpensesStore = defineStore('expenses', () => {
 
     getExpenses,
     addExpense,
-    updateExpense,
+    updateExpenseDescription,
+    updateExpenseValue,
+
     removeExpense,
     deleteAll,
 

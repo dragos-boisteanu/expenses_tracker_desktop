@@ -15,6 +15,7 @@ const expensesStore = useExpensesStore()
 
 const showDeleteDialog = ref<boolean>(false)
 const selectedExpense = ref<ViewExpense>({
+  numericValue: 0,
   createdAt: '',
   description: undefined,
   updatedAt: '',
@@ -41,6 +42,7 @@ const closeDeleteDialog = () => {
     date: '',
     unixDate: null,
     unixCreatedAt: 0,
+    numericValue: 0,
   }
   showDeleteDialog.value = false
 }
