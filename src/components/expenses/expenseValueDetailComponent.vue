@@ -24,7 +24,7 @@ const toggleEdit = () => {
     :currency="props.currency"
     @close="toggleEdit"
   />
-  <div class="flex-1 rounded-xl bg-neutral-100 p-3 shadow dark:bg-neutral-900">
+  <div class="flex-1 rounded-xl bg-neutral-100 p-3 shadow dark:bg-neutral-900 ">
     <div class="flex items-center justify-between">
       <div class="font-semibold text-neutral-800 dark:text-neutral-100">Value</div>
       <button @click="toggleEdit" class="cursor-pointer">

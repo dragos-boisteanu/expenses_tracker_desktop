@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@import '@vuepic/vue-datepicker/dist/main.css';
+@import "Vue3DatePickerCustomColors.css";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:where(.dark, .dark *));
@@ -35,3 +37,4 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+

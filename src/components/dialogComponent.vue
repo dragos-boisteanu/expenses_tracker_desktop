@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CloseButtonComponent from '@/components/buttons/closeButtonComponent.vue'
-import { onBeforeUnmount, onMounted, PropType } from 'vue'
+import { PropType } from 'vue'
 
 const emits = defineEmits(['close'])
 
