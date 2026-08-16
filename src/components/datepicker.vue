@@ -8,24 +8,30 @@ import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vu
 
 const emits = defineEmits<{
   (e: 'close'): void
+  (e: 'dateUpdated', value: number): void
 }>()
 
-const date = ref(null)
+const props = defineProps<{
+  date: number
+}>()
+
+const tempDate = ref<number | null>(props.date ? props.date * 1000 : null)
+
 const isDarkTheme = ref<boolean>(false)
 
 const themeStore = useThemeStore()
 isDarkTheme.value = themeStore.theme === 'dark'
 
-const handleDateSelected = (date: any): void => {
-  console.log('handleDateSelected', date)
+const handleDateSelected = (date: number): void => {
+  emits('dateUpdated', date)
 }
 </script>
 
 <template>
-  <dialog-component @close="emits('close')" :hideCloseButton="true">
+  <dialog-component :datepicker="true" @close="emits('close')" :hideCloseButton="true">
     <template #default>
       <VueDatePicker
-        :value="date"
+        v-model="tempDate"
         model-type="timestamp"
         :dark="isDarkTheme"
         :flow="{ steps: ['calendar', 'time'] }"
