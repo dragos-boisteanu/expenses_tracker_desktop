@@ -104,6 +104,8 @@ export const useExpensesStore = defineStore('expenses', () => {
         throw new Error("Failed to update Expense's Description")
       }
 
+      console.log('response', response)
+
       list.value[expenseIndex].description = description
       list.value[expenseIndex].updatedAt = dayjs
         .unix(response.updated_at)

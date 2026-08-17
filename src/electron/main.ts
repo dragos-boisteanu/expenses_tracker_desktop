@@ -393,7 +393,7 @@ ipcMain.handle(
   (event, payload: { id: number; description: string }): UpdateExpenseResult | undefined => {
     const updateExpenseStatement = db.prepare(`
       UPDATE  expenses
-      SET description = @description
+      SET description = @description, updated_at = unixepoch()
       WHERE id = @id
       RETURNING updated_at
   `)
@@ -413,7 +413,7 @@ ipcMain.handle(
   ): UpdateExpenseResult | undefined => {
     const updateExpenseStatement = db.prepare(`
       UPDATE expenses
-      SET value = @value, currency = @currency
+      SET value = @value, currency = @currency, updated_at = unixepoch()
       WHERE id = @id
       RETURNING updated_at
     `)
@@ -431,7 +431,7 @@ ipcMain.handle(
   (event, payload: { id: number; date: number }): UpdateExpenseResult | undefined => {
     const updateExpenseStatement = db.prepare(`
     UPDATE expenses
-    SET date = @date
+    SET date = @date, updated_at = unixepoch()
     WHERE id = @id
     RETURNING updated_at
   `)
