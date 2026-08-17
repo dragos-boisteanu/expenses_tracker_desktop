@@ -9,7 +9,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import { useToastStore } from '@/stores/toast'
 
 const props = defineProps<{
-  description: JSONContent
+  description?: JSONContent
   id: number
 }>()
 

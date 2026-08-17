@@ -9,7 +9,7 @@ import EditExpenseDescriptionDialog from '@/components/expenses/editExpenseDescr
 
 const props = defineProps<{
   id: number
-  description?: JSONContent | undefined
+  description?: JSONContent
 }>()
 
 const HTMLDescription = computed(() => {
