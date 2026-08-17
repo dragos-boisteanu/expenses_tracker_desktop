@@ -9,6 +9,7 @@ import ExpensesDB from '@/repositories/ExpensesDB'
 import { ExpenseForDateType } from '@/types/ExpenseForDateType'
 import { JSONContent } from '@tiptap/vue-3'
 import { toDatabaseValue } from '@/helpers/toDatabaseValue'
+import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -63,7 +64,6 @@ export const useExpensesStore = defineStore('expenses', () => {
         value: formatedValue,
         currency: code,
         date: unixDate,
-        created_at: unixDate,
       }
 
       if (description) {
@@ -72,9 +72,13 @@ export const useExpensesStore = defineStore('expenses', () => {
 
       const dataSource = ExpensesDB.instance
 
-      const id = await dataSource.add(expense)
+      const response: InsertExpenseResultType = await dataSource.add(expense)
 
-      const viewExpense: ViewExpense = formatExpense({ ...expense, id })
+      const viewExpense: ViewExpense = formatExpense({
+        ...expense,
+        id: response.id,
+        created_at: response.created_at,
+      })
 
       list.value.unshift(viewExpense)
     } catch (error) {

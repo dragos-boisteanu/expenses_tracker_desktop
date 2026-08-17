@@ -12,6 +12,8 @@ import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
 import * as fs from 'node:fs'
+import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
+
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
 const { autoUpdater } = electronUpdater
@@ -365,24 +367,24 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
 
 // EXPENSES
 ipcMain.handle('insertExpense', (event, expense: Expense) => {
-  const insertExpenseStatement = db.prepare(
-    'INSERT INTO expenses (value, currency, date, description, created_at) VALUES (@value, @currency, @date, @description, @created_at)',
-  )
+  const insertExpenseStatement = db.prepare(`
+    INSERT INTO expenses (value, currency, date, description)
+    VALUES (@value, @currency, @date, @description)
+    RETURNING id, created_at
+  `)
   let description: string = ''
 
   if (expense.description) {
     description = expense.description
   }
 
-  const result = insertExpenseStatement.run({
+  return insertExpenseStatement.get({
     value: expense.value,
     currency: expense.currency,
     date: expense.date.toString(),
     description,
     created_at: expense.created_at,
-  })
-
-  return result.lastInsertRowid
+  }) as InsertExpenseResultType
 })
 
 ipcMain.handle(
@@ -431,7 +433,7 @@ ipcMain.handle('updateExpenseDate', (event, payload: { id: number; date: number 
   const result = updateExpenseStatement.get({
     id: payload.id,
     date: payload.date,
-  }) as { id: number; date: number; updated_at: number } | undefined
+  }) as { updated_at: number } | undefined
 
   return result ? result.updated_at : null
 })
@@ -443,6 +445,7 @@ ipcMain.handle('deleteExpense', (event, expenseId: number) => {
 
   return result.changes
 })
+
 ipcMain.handle('deleteAllData', async () => {
   //TODO: make it a transaction and delete notifications too
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses')
@@ -451,6 +454,7 @@ ipcMain.handle('deleteAllData', async () => {
 
   return result.changes
 })
+
 ipcMain.handle('getExpenses', (event, payload) => {
   const getExpensesListStatement = db.prepare(
     'SELECT * FROM expenses ORDER BY expenses.date DESC LIMIT @limit OFFSET @offset',
@@ -460,6 +464,7 @@ ipcMain.handle('getExpenses', (event, payload) => {
     limit: payload.limit,
   })
 })
+
 ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
     const limit = 25
@@ -519,6 +524,7 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
     console.error('exportExpensesError', error)
   }
 })
+
 ipcMain.handle(
   'importExpenses',
   async (event, expenses: ImportedExpense[]): Promise<DbImportResult> => {
