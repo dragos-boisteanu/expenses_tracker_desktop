@@ -23,7 +23,7 @@ const themeStore = useThemeStore()
 isDarkTheme.value = themeStore.theme === 'dark'
 
 const handleDateSelected = (date: number): void => {
-  emits('dateUpdated', date)
+  emits('dateUpdated', Math.floor(date / 1000))
 }
 </script>
 

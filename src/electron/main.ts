@@ -419,6 +419,23 @@ ipcMain.handle(
     return result.changes
   },
 )
+
+ipcMain.handle('updateExpenseDate', (event, payload: { id: number; date: number }) => {
+  const updateExpenseStatement = db.prepare(`
+    UPDATE expenses
+    SET date = @date, updated_at = unixepoch()
+    WHERE id = @id
+    RETURNING updated_at
+  `)
+
+  const result = updateExpenseStatement.get({
+    id: payload.id,
+    date: payload.date,
+  }) as { id: number; date: number; updated_at: number } | undefined
+
+  return result ? result.updated_at : null
+})
+
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
 

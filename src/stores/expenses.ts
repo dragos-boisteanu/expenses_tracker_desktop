@@ -126,6 +126,34 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
+  const updateExpenseDate = async (id: number, date: number) => {
+    try {
+      const expenseIndex = list.value.findIndex((expense) => expense.id === id)
+      if (expenseIndex === -1) {
+        return
+      }
+
+      const dataSource = ExpensesDB.instance
+
+      const response = await dataSource.updateDate(id, date)
+
+      list.value[expenseIndex].unixDate = date
+      list.value[expenseIndex].date = dayjs.unix(date).format('HH:mm')
+
+      let updatedAt = ''
+      if (response) {
+        updatedAt = dayjs.unix(response).format('DD/MM/YYYY HH:mm')
+      } else {
+        updatedAt = dayjs().format('DD/MM/YYYY HH:mm')
+      }
+      list.value[expenseIndex].updatedAt = updatedAt
+
+      list.value = list.value.sort((a, b) => b.unixDate - a.unixDate)
+    } catch (e) {
+      throw e
+    }
+  }
+
   const removeExpense = async (id: number) => {
     try {
       const dataSource = ExpensesDB.instance
@@ -180,6 +208,7 @@ export const useExpensesStore = defineStore('expenses', () => {
     addExpense,
     updateExpenseDescription,
     updateExpenseValue,
+    updateExpenseDate,
 
     removeExpense,
     deleteAll,

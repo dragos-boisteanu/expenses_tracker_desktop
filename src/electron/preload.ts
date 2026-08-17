@@ -42,6 +42,8 @@ contextBridge.exposeInMainWorld('db', {
     ipcRenderer.invoke('updateExpenseDescription', { id, description, updatedAt }),
   updateExpenseValue: (id: number, value: number, currency: string, updatedAt: number): number =>
     ipcRenderer.invoke('updateExpenseValue', { id, value, currency, updatedAt }),
+  updateExpenseDate: (id: number, date: number): number | null =>
+    ipcRenderer.invoke('updateExpenseDate', { id, date }),
 
   getNotifications: (offset: number, limit: number) =>
     ipcRenderer.invoke('getNotifications', { offset, limit }),

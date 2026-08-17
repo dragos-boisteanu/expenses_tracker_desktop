@@ -3,8 +3,11 @@ import { computed, ref } from 'vue'
 import dayjs from '@/plugins/dayjs'
 import Datepicker from '@/components/datepicker.vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
+import { useExpensesStore } from '@/stores/expenses'
+import { useToastStore } from '@/stores/toast'
 
 const props = defineProps<{
+  id: number
   unixDate: number
 }>()
 
@@ -15,9 +18,34 @@ const toggleDatepickerDialog = () => {
   showDatepickerDialog.value = !showDatepickerDialog.value
 }
 
-const handleDateUpdated = (date: number): void => {
-  toggleDatepickerDialog()
-  console.log('handleDateUpdated', date)
+let isUpdating = false
+const handleDateUpdated = async (date: number): Promise<void> => {
+  if (isUpdating) {
+    return
+  }
+
+  isUpdating = true
+
+  const toastStore = useToastStore()
+
+  try {
+    const expensesStore = useExpensesStore()
+
+    await expensesStore.updateExpenseDate(props.id, date)
+
+    toastStore.add({
+      text: 'Successfully updated date',
+    })
+
+    toggleDatepickerDialog()
+  } catch (e) {
+    console.error('updateExpenseDescription', e)
+    toastStore.add({
+      text: 'Failed to update date',
+    })
+  } finally {
+    isUpdating = false
+  }
 }
 </script>
 

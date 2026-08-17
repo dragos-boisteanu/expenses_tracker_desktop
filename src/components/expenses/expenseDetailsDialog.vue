@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
-import {  ref } from 'vue'
+import { ref } from 'vue'
 import type { ViewExpense } from '@/types/viewExpense'
 import DangerButtonComponent from '@/components/buttons/dangerButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
@@ -20,7 +20,6 @@ const close = () => {
   }
   emits('close')
 }
-
 
 const showConfirmDialog = ref<boolean>(false)
 const toggleConfirmDialog = () => {
@@ -54,7 +53,7 @@ const isEditing = ref<boolean>(false)
           :numericValue="expense.numericValue"
           :currency="expense.currency"
         />
-        <expense-date-detail-component :unix-date="props.expense.unixDate"/>
+        <expense-date-detail-component :id="props.expense.id" :unix-date="props.expense.unixDate" />
       </div>
       <expense-details-description :id="expense.id" :description="expense.description" />
 
