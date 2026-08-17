@@ -2,6 +2,7 @@ import type { Expense } from '@/types/expense'
 import type { IExpensesSource } from '@/interfaces/IExpensesSource'
 import type { ImportedExpense } from '@/types/importedExpense'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
+import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
 
 export default class ExpensesDB implements IExpensesSource {
   private db
@@ -50,21 +51,19 @@ export default class ExpensesDB implements IExpensesSource {
   async updateExpenseDescription(
     id: number,
     description: string,
-    updatedAt: number,
-  ): Promise<number> {
-    return await this.db.updateExpenseDescription(id, description, updatedAt)
+  ): Promise<UpdateExpenseResult | undefined> {
+    return await this.db.updateExpenseDescription(id, description)
   }
 
   async updateExpenseValue(
     id: number,
     value: number,
     currency: string,
-    updatedAt: number,
-  ): Promise<number> {
-    return await this.db.updateExpenseValue(id, value, currency, updatedAt)
+  ): Promise<UpdateExpenseResult | undefined> {
+    return await this.db.updateExpenseValue(id, value, currency)
   }
 
-  async updateDate(id: number, date: number): Promise<number | null> {
+  async updateDate(id: number, date: number): Promise<UpdateExpenseResult | undefined> {
     return await this.db.updateExpenseDate(id, date)
   }
 }

@@ -10,6 +10,7 @@ import { ExpenseForDateType } from '@/types/ExpenseForDateType'
 import { JSONContent } from '@tiptap/vue-3'
 import { toDatabaseValue } from '@/helpers/toDatabaseValue'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
+import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -95,12 +96,18 @@ export const useExpensesStore = defineStore('expenses', () => {
 
       const dataSource = ExpensesDB.instance
 
-      const updatedAtDayJs = dayjs()
-      const updatedAt = updatedAtDayJs.unix()
-      await dataSource.updateExpenseDescription(id, JSON.stringify(description), updatedAt)
+      const response: UpdateExpenseResult | undefined = await dataSource.updateExpenseDescription(
+        id,
+        JSON.stringify(description),
+      )
+      if (!response) {
+        throw new Error("Failed to update Expense's Description")
+      }
 
       list.value[expenseIndex].description = description
-      list.value[expenseIndex].updatedAt = updatedAtDayJs.format('DD/MM/YYYY HH:mm')
+      list.value[expenseIndex].updatedAt = dayjs
+        .unix(response.updated_at)
+        .format('DD/MM/YYYY HH:mm')
     } catch (e) {
       throw e
     }
@@ -117,13 +124,16 @@ export const useExpensesStore = defineStore('expenses', () => {
 
       const databaseValue = toDatabaseValue(value, currency)
 
-      const updatedAtDayJs = dayjs()
-      const updatedAt = updatedAtDayJs.unix()
-      await dataSource.updateExpenseValue(id, databaseValue, currency, updatedAt)
+      const response = await dataSource.updateExpenseValue(id, databaseValue, currency)
+      if (!response) {
+        throw new Error("Failed to update Expense's Value")
+      }
 
       list.value[expenseIndex].numericValue = value
       list.value[expenseIndex].value = formatValue(databaseValue, currency)
-      list.value[expenseIndex].updatedAt = updatedAtDayJs.format('DD/MM/YYYY HH:mm')
+      list.value[expenseIndex].updatedAt = dayjs
+        .unix(response.updated_at)
+        .format('DD/MM/YYYY HH:mm')
       list.value[expenseIndex].currency = currency
     } catch (e) {
       throw e
@@ -140,13 +150,16 @@ export const useExpensesStore = defineStore('expenses', () => {
       const dataSource = ExpensesDB.instance
 
       const response = await dataSource.updateDate(id, date)
+      if (!response) {
+        throw new Error("Failed to update Expense's Date")
+      }
 
       list.value[expenseIndex].unixDate = date
       list.value[expenseIndex].date = dayjs.unix(date).format('HH:mm')
 
       let updatedAt = ''
       if (response) {
-        updatedAt = dayjs.unix(response).format('DD/MM/YYYY HH:mm')
+        updatedAt = dayjs.unix(response.updated_at).format('DD/MM/YYYY HH:mm')
       } else {
         updatedAt = dayjs().format('DD/MM/YYYY HH:mm')
       }

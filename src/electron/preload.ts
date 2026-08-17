@@ -3,6 +3,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 type Expense = import('../types/expense').Expense
 type InsertExpenseResultType = import('../types/InserExpenseResultType').InsertExpenseResultType
+type UpdateExpenseResult = import('../types/UpdateExpenseResult').UpdateExpenseResult
 
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
@@ -42,11 +43,15 @@ contextBridge.exposeInMainWorld('db', {
   getList: (offset: number, limit: number) => ipcRenderer.invoke('getExpenses', { offset, limit }),
   exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
   importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
-  updateExpenseDescription: (id: number, description: string, updatedAt: number): number =>
-    ipcRenderer.invoke('updateExpenseDescription', { id, description, updatedAt }),
-  updateExpenseValue: (id: number, value: number, currency: string, updatedAt: number): number =>
-    ipcRenderer.invoke('updateExpenseValue', { id, value, currency, updatedAt }),
-  updateExpenseDate: (id: number, date: number): number | null =>
+  updateExpenseDescription: (id: number, description: string): UpdateExpenseResult | undefined =>
+    ipcRenderer.invoke('updateExpenseDescription', { id, description }),
+  updateExpenseValue: (
+    id: number,
+    value: number,
+    currency: string,
+  ): UpdateExpenseResult | undefined =>
+    ipcRenderer.invoke('updateExpenseValue', { id, value, currency }),
+  updateExpenseDate: (id: number, date: number): UpdateExpenseResult | undefined =>
     ipcRenderer.invoke('updateExpenseDate', { id, date }),
 
   getNotifications: (offset: number, limit: number) =>

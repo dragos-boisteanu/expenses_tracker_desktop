@@ -13,6 +13,7 @@ import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
 import * as fs from 'node:fs'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
+import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -389,54 +390,58 @@ ipcMain.handle('insertExpense', (event, expense: Expense) => {
 
 ipcMain.handle(
   'updateExpenseDescription',
-  (event, payload: { id: number; description: string; updatedAt: number }) => {
-    const updateExpenseStatement = db.prepare(
-      'UPDATE  expenses SET description = @description, updated_at = @updatedAt WHERE id = @id',
-    )
+  (event, payload: { id: number; description: string }): UpdateExpenseResult | undefined => {
+    const updateExpenseStatement = db.prepare(`
+      UPDATE  expenses
+      SET description = @description
+      WHERE id = @id
+      RETURNING updated_at
+  `)
 
-    const result = updateExpenseStatement.run({
+    return updateExpenseStatement.get({
       id: payload.id,
       description: payload.description,
-      updatedAt: payload.updatedAt,
-    })
-
-    return result.changes
+    }) as UpdateExpenseResult | undefined
   },
 )
 
 ipcMain.handle(
   'updateExpenseValue',
-  (event, payload: { id: number; value: number; currency: string; updatedAt: number }) => {
-    const updateExpenseStatement = db.prepare(
-      'UPDATE expenses SET value = @value, updated_at = @updatedAt, currency = @currency  WHERE id = @id',
-    )
+  (
+    event,
+    payload: { id: number; value: number; currency: string },
+  ): UpdateExpenseResult | undefined => {
+    const updateExpenseStatement = db.prepare(`
+      UPDATE expenses
+      SET value = @value, currency = @currency
+      WHERE id = @id
+      RETURNING updated_at
+    `)
 
-    const result = updateExpenseStatement.run({
+    return updateExpenseStatement.get({
       id: payload.id,
       value: payload.value,
       currency: payload.currency,
-      updatedAt: payload.updatedAt,
-    })
-
-    return result.changes
+    }) as UpdateExpenseResult | undefined
   },
 )
 
-ipcMain.handle('updateExpenseDate', (event, payload: { id: number; date: number }) => {
-  const updateExpenseStatement = db.prepare(`
+ipcMain.handle(
+  'updateExpenseDate',
+  (event, payload: { id: number; date: number }): UpdateExpenseResult | undefined => {
+    const updateExpenseStatement = db.prepare(`
     UPDATE expenses
-    SET date = @date, updated_at = unixepoch()
+    SET date = @date
     WHERE id = @id
     RETURNING updated_at
   `)
 
-  const result = updateExpenseStatement.get({
-    id: payload.id,
-    date: payload.date,
-  }) as { updated_at: number } | undefined
-
-  return result ? result.updated_at : null
-})
+    return updateExpenseStatement.get({
+      id: payload.id,
+      date: payload.date,
+    }) as UpdateExpenseResult | undefined
+  },
+)
 
 ipcMain.handle('deleteExpense', (event, expenseId: number) => {
   const deleteExpenseStatement = db.prepare('DELETE FROM expenses WHERE id = @id')
