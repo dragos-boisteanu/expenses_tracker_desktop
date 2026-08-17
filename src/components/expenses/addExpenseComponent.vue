@@ -79,6 +79,7 @@ const toggleExtraDetailsDialog = () => {
         v-model="value"
         :error="hasError"
         :success="isSuccess"
+        @add="addExpense(null)"
         @countrySelected="handleCountrySelected"
       />
       <Transition name="slide-down">
