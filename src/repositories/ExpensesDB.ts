@@ -3,6 +3,7 @@ import type { IExpensesSource } from '@/interfaces/IExpensesSource'
 import type { ImportedExpense } from '@/types/importedExpense'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
 import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
+import { InsertExpensePayloadType } from '@/types/InsertExpensePayloadType'
 
 export default class ExpensesDB implements IExpensesSource {
   private db
@@ -32,7 +33,7 @@ export default class ExpensesDB implements IExpensesSource {
     return await this.db.importExpenses(expenses)
   }
 
-  async add(expense: Expense): Promise<InsertExpenseResultType> {
+  async add(expense: InsertExpensePayloadType): Promise<InsertExpenseResultType> {
     return await this.db.insert(expense)
   }
 

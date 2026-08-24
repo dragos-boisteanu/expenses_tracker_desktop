@@ -1,9 +1,9 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const { contextBridge, ipcRenderer } = require('electron')
 
-type Expense = import('../types/expense').Expense
 type InsertExpenseResultType = import('../types/InserExpenseResultType').InsertExpenseResultType
 type UpdateExpenseResult = import('../types/UpdateExpenseResult').UpdateExpenseResult
+type InsertExpensePayloadType = import('../types/InsertExpensePayloadType').InsertExpensePayloadType
 
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
@@ -36,7 +36,7 @@ contextBridge.exposeInMainWorld('app', {
 
 // TODO: handle errors for all calls
 contextBridge.exposeInMainWorld('db', {
-  insert: (expense: Expense): Promise<InsertExpenseResultType> =>
+  insert: (expense: InsertExpensePayloadType): Promise<InsertExpenseResultType> =>
     ipcRenderer.invoke('insertExpense', expense),
   delete: (expenseId: number) => ipcRenderer.invoke('deleteExpense', expenseId),
   deleteAllData: () => ipcRenderer.invoke('deleteAllData'),

@@ -11,6 +11,7 @@ import { JSONContent } from '@tiptap/vue-3'
 import { toDatabaseValue } from '@/helpers/toDatabaseValue'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
 import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
+import { InsertExpensePayloadType } from '@/types/InsertExpensePayloadType'
 
 export const useExpensesStore = defineStore('expenses', () => {
   const list = ref<ViewExpense[]>([])
@@ -55,16 +56,19 @@ export const useExpensesStore = defineStore('expenses', () => {
     }
   }
 
-  const addExpense = async (value: number, code: string, description?: JSONContent) => {
+  const addExpense = async (
+    value: number,
+    code: string,
+    date?: number,
+    description?: JSONContent,
+  ) => {
     try {
-      const expenseDate = dayjs()
-      const unixDate = expenseDate.unix()
       const formatedValue = toDatabaseValue(value, code)
 
-      const expense: Expense = {
+      const expense: InsertExpensePayloadType = {
         value: formatedValue,
         currency: code,
-        date: unixDate,
+        date,
       }
 
       if (description) {
@@ -79,6 +83,7 @@ export const useExpensesStore = defineStore('expenses', () => {
         ...expense,
         id: response.id,
         created_at: response.created_at,
+        date: response.date,
       })
 
       list.value.unshift(viewExpense)

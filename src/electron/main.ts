@@ -14,6 +14,8 @@ import runMigrations from '../migrations/runMigrations.js'
 import * as fs from 'node:fs'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
 import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
+import { InsertExpensePayloadType } from '@/types/InsertExpensePayloadType'
+import dayjs from 'dayjs'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -367,25 +369,35 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
 })
 
 // EXPENSES
-ipcMain.handle('insertExpense', (event, expense: Expense) => {
+ipcMain.handle('insertExpense', (event, expense: InsertExpensePayloadType) => {
   const insertExpenseStatement = db.prepare(`
     INSERT INTO expenses (value, currency, date, description)
     VALUES (@value, @currency, @date, @description)
     RETURNING id, created_at
   `)
+
   let description: string = ''
 
   if (expense.description) {
     description = expense.description
   }
 
-  return insertExpenseStatement.get({
+  let date = expense.date
+  if (!date) {
+    date = dayjs().unix()
+  }
+
+  const insertResult = insertExpenseStatement.get({
     value: expense.value,
     currency: expense.currency,
-    date: expense.date.toString(),
+    date,
     description,
-    created_at: expense.created_at,
   }) as InsertExpenseResultType
+
+  return {
+    ...insertResult,
+    date,
+  }
 })
 
 ipcMain.handle(

@@ -6,6 +6,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import ExpenseDescriptionInput from '@/components/expenses/expenseDescriptionInput.vue'
 import { JSONContent } from '@tiptap/vue-3'
 import ExpenseValueInput from '@/components/expenses/expenseValueInput.vue'
+import { DescriptionAndDateType } from '@/types/descriptionAndDateType'
 
 const value = ref<number | null>(null)
 const hasError = ref<boolean>(false)
@@ -14,7 +15,7 @@ const isSuccess = ref<boolean>(false)
 const successTimeout = ref<number>(0)
 const errorTimeout = ref<number>(0)
 
-const addExpense = async (event: never | null, description?: JSONContent) => {
+const addExpense = async (event: never | null, payload?: DescriptionAndDateType) => {
   if (!selectedCountry.value) {
     return
   }
@@ -37,8 +38,16 @@ const addExpense = async (event: never | null, description?: JSONContent) => {
       throw new Error('Expense might have a value, either negative or positive')
     }
 
+    let description: JSONContent
+    let date: number
+    if (payload) {
+      description = payload.description
+      date = payload.date
+    }
+
     const expenseStore = useExpensesStore()
-    await expenseStore.addExpense(numericValue, selectedCountry.value.code, description)
+    await expenseStore.addExpense(numericValue, selectedCountry.value.code, date, description)
+
     value.value = null
     hasError.value = false
     isSuccess.value = true
@@ -88,7 +97,7 @@ const toggleExtraDetailsDialog = () => {
           @click="toggleExtraDetailsDialog"
           class="absolute top-full left-0 z-10 w-full cursor-pointer overflow-hidden rounded-b-2xl border-b-2 border-transparent bg-indigo-600 p-0.5 text-center text-xs text-neutral-50 shadow transition-colors hover:bg-indigo-700 active:bg-indigo-500"
         >
-          Description
+          Description & Date
         </div>
       </Transition>
     </div>

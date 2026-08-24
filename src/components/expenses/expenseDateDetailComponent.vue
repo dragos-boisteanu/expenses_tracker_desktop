@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import dayjs from '@/plugins/dayjs'
-import Datepicker from '@/components/datepicker.vue'
+import DateAndTimePicker from '@/components/dateAndTimePicker.vue'
 import { PencilIcon } from '@heroicons/vue/24/outline'
 import { useExpensesStore } from '@/stores/expenses'
 import { useToastStore } from '@/stores/toast'
@@ -50,7 +50,7 @@ const handleDateUpdated = async (date: number): Promise<void> => {
 </script>
 
 <template>
-  <datepicker
+  <date-and-time-picker
     v-if="showDatepickerDialog"
     @close="toggleDatepickerDialog"
     @dateUpdated="handleDateUpdated"

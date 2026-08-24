@@ -6,10 +6,10 @@ import addDescriptionToExpenses from './01_42_56_04_07_2026_add_description_to_e
 import addUpdatedAtToExpenses from './20_30_03_28_07_2026_add_updated_at_to_expenses.js'
 import addCreatedAtToExpenses from './20_31_23_28_07_2026_add_created_at_to_expenses.js'
 import convertExpenseDateToInteger from './23_38_29_28_07_2026_convert_expense_date_to_integer.js'
-import setExpenseCreatedAt from './22_46_18_29_07_2026_set_expense_created_at.js'
 import addDefaultCreatedAtToExpenses from './22_35_23_17_08_2026_add_default_created_at_to_expenses.js'
 import createExpensesTriggerSetUpdatedAt from './22_41_26_17_08_2026_create_expenses_trigger_set_updated_at.js'
 import dropExpensesUpdatedAtTrigger from './23_25_34_17_08_2026_drop_expenses_updated_at_trigger.js'
+import makeCreatedAtDefaultUnixepoch from './23_43_02_24_08_2026_make_created_at_default_unixepoch.js'
 
 export default [
   { name: 'create_expenses_table', up: createExpensesTable },
@@ -19,10 +19,10 @@ export default [
   { name: 'add_updated_at_to_expenses', up: addUpdatedAtToExpenses },
   { name: 'add_created_at_to_expenses', up: addCreatedAtToExpenses },
   { name: 'convert_expense_date_to_integer', up: convertExpenseDateToInteger },
-  { name: 'set_expense_created_at', up: setExpenseCreatedAt },
   { name: 'add_default_created_at_to_expense', up: addDefaultCreatedAtToExpenses },
   { name: 'create_expenses_trigger_set_updated_at', up: createExpensesTriggerSetUpdatedAt },
   { name: 'drop_expenses_updated_at_trigger', up: dropExpensesUpdatedAtTrigger },
+  { name: 'make_created_at_default_unixepoch', up: makeCreatedAtDefaultUnixepoch },
 
   // 👉 Indexes come AFTER tables
   { name: 'create_expenses_id_date_unique_index', up: createExpensesIdValueUniqueIndex },

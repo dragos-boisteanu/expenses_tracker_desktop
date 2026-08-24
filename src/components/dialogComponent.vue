@@ -12,6 +12,11 @@ const props = defineProps({
     required: false,
     default: false,
   },
+  noTitle: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
   position: {
     type: String as PropType<'top' | 'center' | 'button'>,
     required: false,
@@ -52,7 +57,10 @@ const close = () => {
       :class="{ 'items-start pt-8': props.position === 'top' }"
     >
       <div class="max-w-[90%] min-w-[90%] rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800">
-        <div v-if="!props.datepicker" class="flex items-center justify-between p-4">
+        <div
+          v-if="!props.datepicker && !props.noTitle"
+          class="flex items-center justify-between p-4"
+        >
           <div class="text-xl font-semibold text-neutral-800 dark:text-gray-300">
             <slot name="title"></slot>
           </div>
