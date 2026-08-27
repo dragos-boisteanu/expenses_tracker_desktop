@@ -87,6 +87,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       })
 
       list.value.unshift(viewExpense)
+      list.value = sortExpenses()
     } catch (error) {
       throw error
     }
@@ -172,7 +173,7 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
       list.value[expenseIndex].updatedAt = updatedAt
 
-      list.value = list.value.sort((a, b) => b.unixDate - a.unixDate)
+      list.value = sortExpenses()
     } catch (e) {
       throw e
     }
@@ -222,6 +223,10 @@ export const useExpensesStore = defineStore('expenses', () => {
     } catch (error) {
       throw error
     }
+  }
+
+  const sortExpenses = (): ViewExpense[] => {
+    return list.value.sort((a: ViewExpense, b: ViewExpense) => b.unixDate - a.unixDate)
   }
 
   return {
