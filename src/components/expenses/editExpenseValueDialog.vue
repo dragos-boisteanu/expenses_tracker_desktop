@@ -7,7 +7,6 @@ import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vu
 import { Country } from '@/types/country'
 import { useExpensesStore } from '@/stores/expenses'
 import { useToastStore } from '@/stores/toast'
-import sleep from '@/helpers/sleep'
 
 const props = defineProps<{
   id: number

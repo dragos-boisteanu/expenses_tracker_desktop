@@ -4,6 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 type InsertExpenseResultType = import('../types/InserExpenseResultType').InsertExpenseResultType
 type UpdateExpenseResult = import('../types/UpdateExpenseResult').UpdateExpenseResult
 type InsertExpensePayloadType = import('../types/InsertExpensePayloadType').InsertExpensePayloadType
+type Expense = import('../types/expense').Expense
 
 contextBridge.exposeInMainWorld('app', {
   close: () => ipcRenderer.send('closeApp'),
@@ -40,9 +41,10 @@ contextBridge.exposeInMainWorld('db', {
     ipcRenderer.invoke('insertExpense', expense),
   delete: (expenseId: number) => ipcRenderer.invoke('deleteExpense', expenseId),
   deleteAllData: () => ipcRenderer.invoke('deleteAllData'),
-  getList: (offset: number, limit: number) => ipcRenderer.invoke('getExpenses', { offset, limit }),
+  getList: (offset: number, limit: number): Expense[] =>
+    ipcRenderer.invoke('getExpenses', { offset, limit }),
   exportExpenses: (fileName: string) => ipcRenderer.invoke('exportExpenses', fileName),
-  importExpenses: (expenses) => ipcRenderer.invoke('importExpenses', expenses),
+  importExpenses: (expenses: Expense[]) => ipcRenderer.invoke('importExpenses', expenses),
   updateExpenseDescription: (id: number, description: string): UpdateExpenseResult | undefined =>
     ipcRenderer.invoke('updateExpenseDescription', { id, description }),
   updateExpenseValue: (

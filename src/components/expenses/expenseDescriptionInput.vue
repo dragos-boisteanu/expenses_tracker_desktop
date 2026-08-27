@@ -46,14 +46,17 @@ const dayjs = useDayjs()
 
 date.value = dayjs().unix()
 
-//TODO: dedicated time and date picker based on where the user clicks
+const pickerMode = ref<'both' | 'calendar' | 'time'>('both')
+
 const showDatepickerDialog = ref<boolean>(false)
-const toggleDatepickerDialog = () => {
+const toggleDatepickerDialog = (picker: 'both' | 'calendar' | 'time' = 'both') => {
   showDatepickerDialog.value = !showDatepickerDialog.value
+  pickerMode.value = picker
 }
 
 const handleDateUpdated = (newDate: number): void => {
   date.value = newDate
+
   toggleDatepickerDialog()
 }
 </script>
@@ -64,6 +67,7 @@ const handleDateUpdated = (newDate: number): void => {
       <date-and-time-picker
         @close="toggleDatepickerDialog"
         @dateUpdated="handleDateUpdated"
+        :pickerMode="pickerMode"
         :date="date"
       />
     </template>
@@ -73,22 +77,26 @@ const handleDateUpdated = (newDate: number): void => {
       <div class="w-full pt-4">
         <div class="font-semibold text-neutral-800 dark:text-neutral-300">Date & Time</div>
         <div
-          class="mt-1 flex cursor-pointer items-center justify-between rounded-2xl bg-neutral-50 p-3 px-6 shadow outline-0 dark:bg-neutral-900"
-          @click="toggleDatepickerDialog"
+          class="mt-1 flex cursor-pointer items-center justify-between rounded-2xl bg-neutral-50 shadow outline-0 dark:bg-neutral-900"
         >
-          <div class="flex items-center gap-x-2">
-            <button class="pointer-events-none">
-              <CalendarDaysIcon class="size-6 text-neutral-800 dark:text-neutral-300" />
-            </button>
+          <div
+            class="flex flex-1 items-center gap-x-2 px-6 py-3"
+            @click="toggleDatepickerDialog('calendar')"
+          >
+            <CalendarDaysIcon
+              class="size-6 justify-center text-neutral-800 dark:text-neutral-300"
+            />
             <div class="text-neutral-800 dark:text-neutral-300">
               {{ formattedDate }}
             </div>
           </div>
 
-          <div class="flex items-center gap-x-2">
-            <button class="pointer-events-none">
-              <ClockIcon class="size-6 text-neutral-800 dark:text-neutral-300" />
-            </button>
+          <div
+            class="flex flex-1 items-center justify-center gap-x-2 px-6 py-3"
+            @click="toggleDatepickerDialog('time')"
+          >
+            <ClockIcon class="size-6 text-neutral-800 dark:text-neutral-300" />
+
             <div class="text-neutral-800 dark:text-neutral-300">
               {{ formattedTime }}
             </div>

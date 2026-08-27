@@ -11,13 +11,21 @@ const emits = defineEmits<{
   (e: 'dateUpdated', value: number): void
 }>()
 
-const props = defineProps<{
-  date: number
-}>()
+const props = withDefaults(
+  defineProps<{ date: number; pickerMode?: 'calendar' | 'time' | 'both' }>(),
+  {
+    pickerMode: 'both',
+  },
+)
 
 const tempDate = ref<number | null>(props.date ? props.date * 1000 : null)
 
 const isDarkTheme = ref<boolean>(false)
+
+const isTimeOnly = props.pickerMode === 'time'
+const timeConfig = {
+  enableTimePicker: props.pickerMode === 'both',
+}
 
 const themeStore = useThemeStore()
 isDarkTheme.value = themeStore.theme === 'dark'
@@ -32,9 +40,10 @@ const handleDateSelected = (date: number): void => {
     <template #default>
       <VueDatePicker
         v-model="tempDate"
+        :time-picker="isTimeOnly"
+        :time-config="timeConfig"
         model-type="timestamp"
         :dark="isDarkTheme"
-        :flow="{ steps: ['calendar', 'time'] }"
         inline
         @update:model-value="handleDateSelected"
         placeholder="Select date and time..."

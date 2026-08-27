@@ -20,7 +20,7 @@ import dayjs from 'dayjs'
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
 const { autoUpdater } = electronUpdater
-let autoCheckFoUpdateInterval: any | null = null
+let autoCheckFoUpdateInterval: NodeJS.Timeout | null = null
 const AUTO_UPDATE_CHECK_TIME = 60 * 60000
 
 const __filename = fileURLToPath(import.meta.url)

@@ -53,7 +53,7 @@ const isEditing = ref<boolean>(false)
           :numericValue="expense.numericValue"
           :currency="expense.currency"
         />
-        <expense-date-detail-component :id="props.expense.id" :unix-date="props.expense.unixDate" />
+        <expense-date-detail-component :id="props.expense.id" :unixDate="props.expense.unixDate" />
       </div>
       <expense-details-description :id="expense.id" :description="expense.description" />
 
