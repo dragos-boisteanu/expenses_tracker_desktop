@@ -10,7 +10,6 @@ import addDefaultCreatedAtToExpenses from './22_35_23_17_08_2026_add_default_cre
 import createExpensesTriggerSetUpdatedAt from './22_41_26_17_08_2026_create_expenses_trigger_set_updated_at.js'
 import dropExpensesUpdatedAtTrigger from './23_25_34_17_08_2026_drop_expenses_updated_at_trigger.js'
 import makeCreatedAtDefaultUnixEpoch from './23_43_02_24_08_2026_make_created_at_default_unixepoch.js'
-import castExpenseDateToInteger from './01_35_31_27_08_2026_cast_expense_date_to_integer.js'
 
 export default [
   { name: 'create_expenses_table', up: createExpensesTable },
@@ -24,7 +23,6 @@ export default [
   { name: 'create_expenses_trigger_set_updated_at', up: createExpensesTriggerSetUpdatedAt },
   { name: 'drop_expenses_updated_at_trigger', up: dropExpensesUpdatedAtTrigger },
   { name: 'make_created_at_default_unixepoch', up: makeCreatedAtDefaultUnixEpoch },
-  { name: 'cast_expense_date_to_integer', up: castExpenseDateToInteger },
 
   // 👉 Indexes come AFTER tables
   { name: 'create_expenses_id_date_unique_index', up: createExpensesIdValueUniqueIndex },

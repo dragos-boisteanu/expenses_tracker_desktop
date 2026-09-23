@@ -15,7 +15,6 @@ import * as fs from 'node:fs'
 import { InsertExpenseResultType } from '@/types/InserExpenseResultType'
 import { UpdateExpenseResult } from '@/types/UpdateExpenseResult'
 import { InsertExpensePayloadType } from '@/types/InsertExpensePayloadType'
-import dayjs from 'dayjs'
 
 const isDev = process.env.npm_lifecycle_event === 'desktop:dev'
 
@@ -372,8 +371,8 @@ ipcMain.on('setLaunchAtSystemStartup', (event, payload: boolean) => {
 ipcMain.handle('insertExpense', (event, expense: InsertExpensePayloadType) => {
   const insertExpenseStatement = db.prepare(`
     INSERT INTO expenses (value, currency, date, description)
-    VALUES (@value, @currency, @date, @description)
-    RETURNING id, created_at
+    VALUES (@value, @currency, COALESCE(@date, unixepoch()), @description)
+    RETURNING id, created_at, date
   `)
 
   let description: string = ''
@@ -382,22 +381,12 @@ ipcMain.handle('insertExpense', (event, expense: InsertExpensePayloadType) => {
     description = expense.description
   }
 
-  let date = expense.date
-  if (!date) {
-    date = dayjs().unix()
-  }
-
-  const insertResult = insertExpenseStatement.get({
+  return insertExpenseStatement.get({
     value: expense.value,
     currency: expense.currency,
-    date,
+    date: expense.date ?? null,
     description,
   }) as InsertExpenseResultType
-
-  return {
-    ...insertResult,
-    date,
-  }
 })
 
 ipcMain.handle(
