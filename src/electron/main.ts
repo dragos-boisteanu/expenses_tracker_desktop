@@ -489,7 +489,6 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
     if (expensesCount > 0) {
       const csvBlob = await dataToCsv(expenses)
       const csvArrayBuffer = await csvBlob.arrayBuffer()
-
       const buffer = Buffer.from(csvArrayBuffer)
 
       await saveFile({
@@ -524,8 +523,6 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
         }
       }
     }
-
-    await sleep(5000)
   } catch (error) {
     console.error('exportExpensesError', error)
   }

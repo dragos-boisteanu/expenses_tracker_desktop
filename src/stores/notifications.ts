@@ -73,8 +73,6 @@ export const useNotificationStore = defineStore('notifications', () => {
         list.value = placeholders
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
-
       const notificationsDB = NotificationsDB.instance
 
       const notifications = await notificationsDB.getNotifications(offset, limit)
@@ -115,7 +113,6 @@ export const useNotificationStore = defineStore('notifications', () => {
 
   const markAsRead = async (id: number) => {
     try {
-
       const notificationIndex = list.value.findIndex((n) => n.id === id)
       if (notificationIndex > -1) {
         if (list.value[notificationIndex]) {

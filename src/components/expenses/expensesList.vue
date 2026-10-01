@@ -97,8 +97,6 @@ const handleOnScroll = async (e) => {
 
     if (e + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
-      await new Promise((resolve) => setTimeout(resolve, 3000)) //TODO: TO BE REMOVED IN FINAL VERSION
-
       await expensesStore.getExpenses(false, true)
     }
   } catch (error) {

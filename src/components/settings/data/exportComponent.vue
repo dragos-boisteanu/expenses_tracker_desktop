@@ -14,14 +14,15 @@ const exportStore = useExportStore()
 const notificationStore = useNotificationStore()
 
 const exportData = async () => {
-
-
   try {
     toastStore.add({
       text: 'Export in progress. Do not close the app !',
     })
 
     await exportStore.exportExpenses()
+
+    // TODO: only show the notification if the app is not focused when the
+    // export finishes
     notificationStore
       .addNotification({
         title: 'Export successfully completed',
@@ -32,6 +33,8 @@ const exportData = async () => {
       })
       .catch((error) => console.error('addNotificationError', error))
 
+    // TODO: only show the toast if the app is focused when the
+    // export finishes
     toastStore.add({
       text: 'Export successfully completed',
     })
