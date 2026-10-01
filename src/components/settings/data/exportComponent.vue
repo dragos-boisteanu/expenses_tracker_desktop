@@ -6,6 +6,7 @@ import { useExportStore } from '@/stores/export'
 import { useImportStore } from '@/stores/import'
 import { useToastStore } from '@/stores/toast'
 import { useNotificationStore } from '@/stores/notifications'
+import sleep from '@/helpers/sleep'
 
 const expensesStore = useExpensesStore()
 const importStore = useImportStore()
@@ -21,23 +22,26 @@ const exportData = async () => {
 
     await exportStore.exportExpenses()
 
-    // TODO: only show the notification if the app is not focused when the
-    // export finishes
-    notificationStore
-      .addNotification({
-        title: 'Export successfully completed',
-        content: 'You expenses list was successfully exported!',
-        type: 'data',
-        isError: false,
-        isNew: false,
-      })
-      .catch((error) => console.error('addNotificationError', error))
+    const appBridge = window['app']
 
-    // TODO: only show the toast if the app is focused when the
-    // export finishes
-    toastStore.add({
-      text: 'Export successfully completed',
-    })
+    const isAppFocused = await appBridge.getIsFocused()
+    const title = 'Export successfully completed'
+
+    if (isAppFocused) {
+      toastStore.add({
+        text: title,
+      })
+    } else {
+      notificationStore
+        .addNotification({
+          title,
+          content: 'You expenses list was successfully exported!',
+          type: 'data',
+          isError: false,
+          isNew: false,
+        })
+        .catch((error) => console.error('addNotificationError', error))
+    }
   } catch (error) {
     toastStore.add({
       text: 'Error while exporting expenses',

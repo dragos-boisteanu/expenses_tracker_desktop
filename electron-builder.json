@@ -1,12 +1,13 @@
 {
-  "appId": "expensesTracker",
+  "appId": "com.dragos.expensestracker",
+  "productName": "Expense Tracker",
   "asar": true,
   "directories": {
     "buildResources": "assets",
     "output": "release"
   },
   "buildDependenciesFromSource": true,
-  "files": ["dist"],
+  "files": ["dist/**/*"],
   "win": {
     "target": [
       {

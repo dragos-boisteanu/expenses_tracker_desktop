@@ -24,6 +24,8 @@ contextBridge.exposeInMainWorld('app', {
   setAutoUpdate: (value: boolean) => ipcRenderer.invoke('setAutoUpdate', value),
   setAutoRestart: (value: boolean) => ipcRenderer.invoke('setAutoRestart', value),
 
+  getIsFocused: () => ipcRenderer.invoke('getIsFocused'),
+
   mainMessage: (handler: (payload: { data: unknown; type: string }) => void) => {
     const listener = (_event: Electron.IpcRendererEvent, payload: never) => handler(payload)
     ipcRenderer.on('mainMessage', listener)

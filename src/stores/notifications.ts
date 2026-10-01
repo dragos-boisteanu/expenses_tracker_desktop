@@ -5,6 +5,7 @@ import dayjs from '@/plugins/dayjs'
 import NotificationsDB from '@/repositories/NotificationDB'
 import type { Notification } from '@/types/notification'
 import type { AddNotificationType } from '@/types/addNotificationType'
+import uniqueId from 'lodash-es/uniqueId.js'
 
 export const useNotificationStore = defineStore('notifications', () => {
   const list = ref<ViewNotification[]>([])
@@ -39,6 +40,11 @@ export const useNotificationStore = defineStore('notifications', () => {
         isError: notification.isError,
         createdAt: notification.createdAt,
         formattedCreatedAt: dayjs(notification.createdAt).format('MM/DD/YYYY HH:mm').toString(),
+      })
+
+      new Notification(notification.title, {
+        tag: `${notification.type}-${uniqueId()}`,
+        body: notification.content,
       })
     } catch (error) {
       throw error

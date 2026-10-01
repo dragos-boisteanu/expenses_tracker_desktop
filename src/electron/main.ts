@@ -7,7 +7,6 @@ import electronUpdater from 'electron-updater'
 import fsp from 'fs/promises'
 import { ImportedExpense } from '../types/importedExpense'
 import { DbImportResult } from '../types/dbImportResult'
-import sleep from '../helpers/sleep.js'
 import { Notification } from '../types/notification'
 import { dataToCsv } from '../helpers/dataToCsv.js'
 import runMigrations from '../migrations/runMigrations.js'
@@ -31,8 +30,14 @@ if (isDev) {
   dbPath = 'expenses.db'
 }
 
+const DEFAULT_CONFIG: Record<string, any> = {
+  theme: 'system',
+  language: 'en',
+}
+
 const dataPath = app.getPath('userData')
 const configFilePath = path.join(dataPath, 'config.json')
+
 async function writeConfigData(key: string, value: string | boolean) {
   const content = parseConfigData()
   content[key] = value
@@ -45,8 +50,26 @@ function readConfigData(key: string) {
 }
 
 function parseConfigData() {
-  const dataFromFile = fs.readFileSync(configFilePath, 'utf8')
-  return JSON.parse(dataFromFile)
+  // 1. If file missing, create directory + default file
+  if (!fs.existsSync(configFilePath)) {
+    const dirPath = path.dirname(configFilePath)
+
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true })
+    }
+
+    fs.writeFileSync(configFilePath, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf8')
+    return DEFAULT_CONFIG
+  }
+
+  // 2. Read existing file safely
+  try {
+    const dataFromFile = fs.readFileSync(configFilePath, 'utf8')
+    return JSON.parse(dataFromFile)
+  } catch (error) {
+    // Fallback if the file is corrupted or invalid JSON
+    return DEFAULT_CONFIG
+  }
 }
 
 let isHardwareAccelerationEnabled: boolean = false
@@ -155,6 +178,12 @@ if (gotTheLock) {
       mainWindow.focus()
     }
   })
+
+  // Force Electron to use the spaced name in dev mode
+  app.name = 'Expense Tracker'
+
+  // Register the AUMID for Windows toast notifications
+  app.setAppUserModelId('com.dragos.expensestracker')
 
   app.whenReady().then(async () => {
     db = new Database(dbPath, {})
@@ -268,6 +297,16 @@ ipcMain.handle('requestAutoRestartValue', async () => {
     } catch (error) {
       reject(error)
     }
+  })
+})
+
+ipcMain.handle('getIsFocused', () => {
+  return new Promise<boolean>((resolve, reject) => {
+    if (!mainWindow) {
+      reject('Window error')
+    }
+
+    resolve(mainWindow.isFocused())
   })
 })
 

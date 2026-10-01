@@ -1,5 +1,6 @@
 {
-  "name": "ExpensesTracker",
+  "name": "expense-tracker",
+  "productName": "Expense Tracker",
   "version": "0.0.24",
   "private": true,
   "author": "Dragos",
