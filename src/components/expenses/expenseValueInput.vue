@@ -31,7 +31,8 @@ onMounted(() => {
 
 <template>
   <div
-    class="flex w-full items-center gap-x-2 border-b-2 border-transparent bg-neutral-50 p-4 shadow transition-all duration-300 ease-in-out dark:bg-neutral-800"
+    class="flex w-full items-center gap-x-2 bg-neutral-50 h-14 p-4 shadow transition-all
+      duration-300 ease-in-out dark:bg-neutral-800"
     :class="[
       value ? 'rounded-t-2xl rounded-b-none' : 'rounded-2xl',
 

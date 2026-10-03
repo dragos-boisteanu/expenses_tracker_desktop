@@ -18,7 +18,7 @@ const version = import.meta.env.VITE_APP_VERSION
         <window-controls-component />
       </div>
     </div>
-    <div class="flex size-full flex-col items-center gap-7 px-4 py-4">
+    <div class="flex size-full flex-col items-center gap-y-12 px-4 py-4">
       <div class="w-full">
         <add-expense-component />
       </div>
