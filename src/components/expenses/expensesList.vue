@@ -7,8 +7,8 @@ import type { ViewExpense } from '@/types/viewExpense'
 import { VList } from 'virtua/vue'
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import LoadingIndicator from '@/components/loadingIndicator.vue'
-import { DayTotalType } from '@/types/DayTotalType'
-import { DateClickedPayloadType } from '@/types/DateClickedPayloadType'
+import type { DayTotalType } from '@/types/DayTotalType'
+import type { DateClickedPayloadType } from '@/types/DateClickedPayloadType'
 import DayTotalsDialog from '@/components/expenses/dayTotalsDialog.vue'
 
 const expensesStore = useExpensesStore()
@@ -31,6 +31,7 @@ const handleExpenseSelected = (expense: ViewExpense) => {
   selectedExpense.value = expense
   showDeleteDialog.value = true
 }
+
 const closeDeleteDialog = () => {
   selectedExpense.value = {
     createdAt: undefined,
@@ -47,18 +48,19 @@ const closeDeleteDialog = () => {
   showDeleteDialog.value = false
 }
 
-// console.log('initialize', initialize)
 const rootRef = ref<HTMLDivElement | null>(null)
+const virtualListRef = ref<any>(null)
 
 onMounted(() => {
   if (!rootRef.value) return
 
-  const root = rootRef.value
+  // Initialize OverlayScrollbars on the outer padded card container
   const [initialize] = useOverlayScrollbars({
     defer: false,
     options: {
       scrollbars: {
         visibility: 'visible',
+        autoHide: 'leave',
       },
       overflow: {
         x: 'hidden',
@@ -67,40 +69,32 @@ onMounted(() => {
     },
   })
 
+  // Target rootRef so scrollbar stays inside card paddings
   initialize({
-    target: root,
+    target: rootRef.value,
     elements: {
-      viewport: root.firstElementChild as HTMLElement,
+      viewport: virtualListRef.value?.$el || rootRef.value,
     },
   })
 })
 
-const virtualListRef = ref(null)
-
 const isLoadingMore = ref(false)
-const handleOnScroll = async (e) => {
-  if (!virtualListRef.value) {
-    return
-  }
-  if (isLoadingMore.value) {
+const handleOnScroll = async (offset: number) => {
+  if (!virtualListRef.value || isLoadingMore.value || expensesStore.allLoaded) {
     return
   }
 
   try {
-    if (expensesStore.allLoaded) {
-      return
-    }
-
-    const threshold = 10
+    const threshold = 20
     const scrollSize = virtualListRef.value.scrollSize
-    const clientHeight = virtualListRef.value.$el.clientHeight
+    const clientHeight = virtualListRef.value.$el?.clientHeight || 0
 
-    if (e + clientHeight >= scrollSize - threshold) {
+    if (offset + clientHeight >= scrollSize - threshold) {
       isLoadingMore.value = true
       await expensesStore.getExpenses(false, true)
     }
   } catch (error) {
-    console.log('loadMoreExpenses', error)
+    console.error('loadMoreExpenses', error)
   } finally {
     isLoadingMore.value = false
   }
@@ -114,12 +108,20 @@ const handleDateClicked = async (payload: DateClickedPayloadType) => {
     date: payload.formattedDate,
   }
 }
+
 const closeTotals = () => (dayTotals.value = null)
 </script>
 
 <template>
   <day-totals-dialog v-if="dayTotals" :totals="dayTotals" @close="closeTotals" />
-  <div class="relative size-full flex-col rounded-2xl bg-neutral-50 p-2 shadow dark:bg-neutral-800">
+
+  <!-- Outer Card with padding (p-3 pr-1 gives scrollbar space away from edges) -->
+  <div
+    ref="rootRef"
+    data-overlayscrollbars-initialize=""
+    class="relative flex h-full w-full flex-col overflow-hidden rounded-2xl bg-neutral-50 p-2.5
+      dark:bg-neutral-800 shadow"
+  >
     <expense-details-dialog
       v-if="showDeleteDialog"
       @close="closeDeleteDialog"
@@ -128,35 +130,26 @@ const closeTotals = () => (dayTotals.value = null)
     <div class="absolute bottom-2 z-99 flex size-8 w-full justify-center" v-if="isLoadingMore">
       <loading-indicator />
     </div>
-    <div ref="rootRef" data-overlayscrollbars-initialize="" class="flex h-full">
-      <VList
-        ref="virtualListRef"
-        :data="expensesStore.list"
-        :style="{ height: 'none' }"
-        class="rounded-2xl"
-        #default="{ item, index }"
-        @scroll="handleOnScroll"
-      >
-        <expense-component
-          :index="index"
-          :date="item.date"
-          :unixDate="Number.parseInt(item.unixDate)"
-          :value="item.value"
-          :currency="item.currency"
-          :id="item.id"
-          @dateClicked="handleDateClicked"
-          @select="handleExpenseSelected(item)"
-        />
-      </VList>
-      <!--      <div ref="skeletonLoaderRef" class="flex h-full flex-1 flex-col gap-y-2 overflow-y-auto">
-        <div
-          v-for="index in 10"
-          :key="index"
-          class="h-9 w-full animate-pulse rounded-2xl bg-neutral-500"
-        ></div>
-      </div>-->
-    </div>
+
+    <!-- Virtualized List with right-padding gap (pr-2.5) -->
+    <VList
+      ref="virtualListRef"
+      :data="expensesStore.list"
+      :style="{ height: '100%' }"
+      class="h-full w-full pr-2.5"
+      #default="{ item, index }"
+      @scroll="handleOnScroll"
+    >
+      <expense-component
+        :index="index"
+        :date="item.date"
+        :unixDate="Number.parseInt(item.unixDate)"
+        :value="item.value"
+        :currency="item.currency"
+        :id="item.id"
+        @dateClicked="handleDateClicked"
+        @select="handleExpenseSelected(item)"
+      />
+    </VList>
   </div>
 </template>
-
-<style></style>
