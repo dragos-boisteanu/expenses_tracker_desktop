@@ -3,10 +3,10 @@ import DialogComponent from '@/components/dialogComponent.vue'
 import { JSONContent } from '@tiptap/vue-3'
 import TiptapEditor from '@/components/TiptapEditor.vue'
 import { ref } from 'vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import { useExpensesStore } from '@/stores/expenses'
 import { useToastStore } from '@/stores/toast'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const props = defineProps<{
   description?: JSONContent
@@ -64,7 +64,7 @@ const close = () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <confirm-button-component @click="save">Save</confirm-button-component>
+      <general-button-component @click="save">Save</general-button-component>
     </template>
   </dialog-component>
 </template>

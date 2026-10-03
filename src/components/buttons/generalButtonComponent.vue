@@ -10,10 +10,12 @@ const emits = defineEmits(['click'])
 
 <template>
   <button
-    class="align-center group hover-bg-neutral-200 hover flex min-w-16 cursor-pointer justify-center overflow-hidden rounded-lg bg-neutral-300/50 p-2 text-ellipsis hover:bg-neutral-300/75 active:scale-95 active:bg-neutral-300 dark:bg-neutral-600/50 dark:hover:bg-neutral-600/70 dark:active:bg-neutral-600"
+    class="group bg-indigo-50/80 dark:bg-indigo-400/10 hover:dark:bg-indigo-400/20
+      active:dark:bg-indigo-600/40 hover:bg-indigo-100 py-1.5 px-3 rounded-xl cursor-pointer
+      duration-150 active:scale-95 transition-all active:bg-indigo-200 active:inset-shadow-md"
     @click="emits('click')"
     :class="{
-      'pointer-events-none !bg-neutral-200 dark:!bg-neutral-700': props.disabled,
+      'pointer-events-none bg-neutral-200! dark:bg-neutral-700!': props.disabled,
       'pointer-events-none': props.loading,
     }"
   >
@@ -22,8 +24,11 @@ const emits = defineEmits(['click'])
     </div>
     <span
       v-else
-      class="max-w-40 min-w-fit overflow-hidden text-ellipsis whitespace-nowrap text-neutral-700 dark:text-neutral-200"
-      :class="{ '!text-neutral-300 dark:!text-neutral-400': props.disabled }"
+      class="max-w-40 text-sm font-semibold min-w-fit overflow-hidden text-ellipsis
+        whitespace-nowrap text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500
+        group-hover:dark:text-indigo-400 group-active:dark:text-indigo-400
+        group-active:text-indigo-800"
+      :class="{ 'text-neutral-300! dark:text-neutral-400!': props.disabled }"
     >
       <slot></slot>
     </span>

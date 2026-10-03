@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { VueDatePicker } from '@vuepic/vue-datepicker'
 import DialogComponent from '@/components/dialogComponent.vue'
 import { useThemeStore } from '@/stores/theme'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const emits = defineEmits<{
   (e: 'close'): void
@@ -51,7 +51,7 @@ const handleDateSelected = (date: number): void => {
         <template #action-row="{ selectDate }">
           <div class="flex w-full items-center justify-end gap-x-4">
             <cancel-button-component @click="emits('close')">Cancel</cancel-button-component>
-            <confirm-button-component @click="selectDate">Save</confirm-button-component>
+            <general-button-component @click="selectDate">Save</general-button-component>
           </div>
         </template>
       </VueDatePicker>

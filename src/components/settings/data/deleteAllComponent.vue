@@ -85,13 +85,13 @@ const isDisabled = computed(() => {
         Delete all app local stored data
       </div>
     </div>
-    <general-button-component
+    <danger-button-component
       :disabled="isDisabled"
       :loading="expensesStore.isDeletingAllData"
       @click="toggleDeleteAllDialog"
     >
       Delete All
-    </general-button-component>
+    </danger-button-component>
   </div>
 </template>
 

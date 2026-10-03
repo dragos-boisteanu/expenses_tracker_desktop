@@ -2,11 +2,11 @@
 import { ref } from 'vue'
 import ExpenseValueInput from '@/components/expenses/expenseValueInput.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import { Country } from '@/types/country'
 import { useExpensesStore } from '@/stores/expenses'
 import { useToastStore } from '@/stores/toast'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const props = defineProps<{
   id: number
@@ -93,7 +93,7 @@ const save = async () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <confirm-button-component @click="save">Save</confirm-button-component>
+      <general-button-component @click="save">Save</general-button-component>
     </template>
   </dialog-component>
 </template>

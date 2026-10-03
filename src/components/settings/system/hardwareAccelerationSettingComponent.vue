@@ -4,7 +4,7 @@ import { ref } from 'vue'
 import { useSystemStore } from '@/stores/system'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
 import DialogComponent from '@/components/dialogComponent.vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const systemStore = useSystemStore()
 const isHardwareAccelerationEnabled = ref<boolean>(false)
@@ -48,7 +48,7 @@ const restartNow = () => {
       </template>
       <template #actions>
         <cancel-button-component @click="toggleRestartNowDialog">Cancel</cancel-button-component>
-        <confirm-button-component @click="restartNow"> Restart </confirm-button-component>
+        <general-button-component @click="restartNow"> Restart </general-button-component>
       </template>
     </dialog-component>
     <div>

@@ -3,13 +3,13 @@ import { ref, computed } from 'vue'
 import type { JSONContent } from '@tiptap/vue-3'
 import DialogComponent from '@/components/dialogComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import TiptapEditor from '@/components/TiptapEditor.vue'
 import { useDayjs } from '@/composable/useDayjs' // Adjust path to where you saved it
 import CalendarDaysIcon from '@heroicons/vue/16/solid/CalendarDaysIcon'
 import ClockIcon from '@heroicons/vue/16/solid/ClockIcon'
 import DateAndTimePicker from '@/components/dateAndTimePicker.vue'
 import { DescriptionAndDateType } from '@/types/descriptionAndDateType'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 // If you want to open this dialog to EDIT existing content, accept it as a prop
 const props = defineProps<{
@@ -77,7 +77,8 @@ const handleDateUpdated = (newDate: number): void => {
       <div class="w-full pt-4">
         <div class="font-semibold text-neutral-800 dark:text-neutral-300">Date & Time</div>
         <div
-          class="mt-1 flex cursor-pointer items-center justify-between rounded-2xl bg-neutral-50 shadow outline-0 dark:bg-neutral-900"
+          class="mt-1 flex cursor-pointer items-center justify-between rounded-2xl bg-neutral-50
+            shadow outline-0 dark:bg-neutral-900"
         >
           <div
             class="flex flex-1 items-center gap-x-2 px-6 py-3"
@@ -118,7 +119,7 @@ const handleDateUpdated = (newDate: number): void => {
 
     <template #actions>
       <cancel-button-component @click="close()"> Cancel </cancel-button-component>
-      <confirm-button-component @click="add()"> Save </confirm-button-component>
+      <general-button-component @click="add()"> Save </general-button-component>
     </template>
   </dialog-component>
 </template>

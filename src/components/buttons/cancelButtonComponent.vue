@@ -1,9 +1,15 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const emits = defineEmits(['click'])
+</script>
 
 <!--TODO: add props for disabled-->
 <template>
   <button
-    class="cursor-pointer rounded-lg p-2 text-neutral-800 hover:bg-neutral-300/30 active:scale-95 active:bg-neutral-300/20 dark:text-neutral-300 dark:hover:bg-neutral-500/10 dark:active:bg-neutral-500/20"
+    @click="emits('click')"
+    class="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer
+      active:scale-95 bg-neutral-100 text-neutral-700 hover:bg-neutral-200/80 active:bg-neutral-200
+      dark:bg-neutral-500/15 dark:text-neutral-400 dark:hover:bg-neutral-500/25
+      dark:hover:text-neutral-300 dark:active:bg-neutral-500/35 dark:active:text-neutral-200"
   >
     <slot></slot>
   </button>

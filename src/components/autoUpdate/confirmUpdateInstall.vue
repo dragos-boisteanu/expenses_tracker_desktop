@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
-import ConfirmButtonComponent from '@/components/buttons/confirmButtonComponent.vue'
 import CancelButtonComponent from '@/components/buttons/cancelButtonComponent.vue'
+import GeneralButtonComponent from '@/components/buttons/generalButtonComponent.vue'
 
 const emits = defineEmits(['close'])
 const close = () => emits('close')
@@ -20,7 +20,7 @@ const restartApp = () => {
     </template>
     <template #actions>
       <cancel-button-component @click="close">Cancel</cancel-button-component>
-      <confirm-button-component @click="restartApp"> Restart now </confirm-button-component>
+      <general-button-component @click="restartApp"> Restart now </general-button-component>
     </template>
   </dialog-component>
 </template>

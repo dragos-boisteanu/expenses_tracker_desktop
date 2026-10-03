@@ -56,17 +56,17 @@ const downloadUpdate = async () => {
       v-if="updateStore.isUpdateDownloaded"
       @click="toggleConfirmRestartDialog"
     >
-      Install update
+      Install
     </general-button-component>
     <general-button-component
       v-else-if="updateStore.isUpdateAvailable"
       :loading="isDownloadingUpdate"
       @click="downloadUpdate"
     >
-      Download update
+      Download
     </general-button-component>
     <general-button-component v-else :loading="checkingForUpdate" @click="checkForUpdate">
-      Check for update
+      Update
     </general-button-component>
   </div>
 </template>

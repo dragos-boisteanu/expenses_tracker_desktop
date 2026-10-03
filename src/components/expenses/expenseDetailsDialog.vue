@@ -72,8 +72,8 @@ const isEditing = ref<boolean>(false)
     </div>
 
     <template #actions>
-      <cancel-button-component @click="close">Close</cancel-button-component>
       <danger-button-component @click="toggleConfirmDialog"> Delete </danger-button-component>
+      <cancel-button-component @click="close">Close</cancel-button-component>
     </template>
     <template #dialog v-if="showConfirmDialog">
       <dialog-component @close="toggleConfirmDialog">
@@ -81,7 +81,6 @@ const isEditing = ref<boolean>(false)
         <template #default> Are you sure you want to delete this entry ? </template>
         <template #actions>
           <cancel-button-component @click="toggleConfirmDialog">Close</cancel-button-component>
-
           <danger-button-component @click="remove"> Delete </danger-button-component>
         </template>
       </dialog-component>

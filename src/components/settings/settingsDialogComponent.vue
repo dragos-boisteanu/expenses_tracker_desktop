@@ -16,18 +16,16 @@ const emits = defineEmits(['close'])
 const autoUpdateStore = useAutoUpdateStore()
 
 const rootRef = ref<HTMLDivElement | null>(null)
-onMounted(() => {
-  if (!rootRef.value) {
-    return
-  }
 
-  const root = rootRef.value
+onMounted(() => {
+  if (!rootRef.value) return
 
   const [initialize] = useOverlayScrollbars({
     defer: false,
     options: {
       scrollbars: {
         visibility: 'auto',
+        autoHide: 'leave', // Hides scrollbar when not hovering for a cleaner look
       },
       overflow: {
         x: 'hidden',
@@ -36,13 +34,10 @@ onMounted(() => {
     },
   })
 
-  initialize({
-    target: root,
-    elements: {
-      viewport: root.firstElementChild as HTMLElement,
-    },
-  })
+  // Initialize directly on the root element
+  initialize(rootRef.value)
 })
+
 const close = () => {
   emits('close')
 }
@@ -51,17 +46,22 @@ const close = () => {
 <template>
   <dialog-component @close="close">
     <template #title>Settings</template>
+
     <template #default>
-      <div ref="rootRef" class="h-96">
-        <div class="flex size-full flex-col gap-y-4 pr-4!">
+      <!-- Scroll container with internal padding -->
+      <div ref="rootRef" class="h-96 pr-3 pl-1 py-1">
+        <div class="flex flex-col gap-y-4 pr-2">
           <data-setting-component />
-          <hr class="text-neutral-300 dark:text-neutral-600" />
+          <hr class="border-neutral-200 dark:border-neutral-700" />
+
           <theme-toggle-component />
-          <hr class="text-neutral-300 dark:text-neutral-600" />
+          <hr class="border-neutral-200 dark:border-neutral-700" />
+
           <auto-update-component />
           <auto-install-update-component v-if="autoUpdateStore.autoUpdate" />
           <check-for-update-component />
-          <hr class="text-neutral-300 dark:text-neutral-600" />
+          <hr class="border-neutral-200 dark:border-neutral-700" />
+
           <system-start-up />
           <hardware-acceleration-setting-component />
         </div>
@@ -69,5 +69,3 @@ const close = () => {
     </template>
   </dialog-component>
 </template>
-
-<style scoped></style>
