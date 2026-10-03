@@ -7,6 +7,7 @@ import ExpenseDescriptionInput from '@/components/expenses/expenseDescriptionInp
 import { JSONContent } from '@tiptap/vue-3'
 import ExpenseValueInput from '@/components/expenses/expenseValueInput.vue'
 import { DescriptionAndDateType } from '@/types/descriptionAndDateType'
+import { useToastStore } from '@/stores/toast'
 
 const value = ref<number | null>(null)
 const hasError = ref<boolean>(false)
@@ -31,11 +32,18 @@ const addExpense = async (event: never | null, payload?: DescriptionAndDateType)
   }
 
   try {
-    if (Number.isNaN(numericValue)) {
-      throw new Error('Expense value must be a number')
+    if (Number.isNaN(numericValue) || !numericValue) {
+      throw new Error('Expense value must be a number', {
+        cause: 'message',
+      })
     }
+
+    console.log('numericValue', numericValue)
+
     if (numericValue === 0) {
-      throw new Error('Expense might have a value, either negative or positive')
+      throw new Error('Expense must have a positive value', {
+        cause: 'message',
+      })
     }
 
     let description: JSONContent
@@ -58,6 +66,18 @@ const addExpense = async (event: never | null, payload?: DescriptionAndDateType)
     }, 1000)
   } catch (error) {
     console.error('addExpenseError', error)
+
+    const toastStore = useToastStore()
+    if (error.cause === 'message') {
+      toastStore.add({
+        text: error.message,
+      })
+    } else {
+      toastStore.add({
+        text: 'Failed to add expense',
+      })
+    }
+
     hasError.value = true
     errorTimeout.value = window.setTimeout(() => {
       hasError.value = false

@@ -51,11 +51,16 @@ const save = async () => {
       numericValue = localValue.value
     }
 
-    if (Number.isNaN(numericValue)) {
-      throw new Error('Expense value must be a number')
+    if (Number.isNaN(numericValue) || !numericValue) {
+      throw new Error('Expense value must be a number', {
+        cause: 'message',
+      })
     }
+
     if (numericValue === 0) {
-      throw new Error('Expense might have a value, either negative or positive')
+      throw new Error('Expense must have a positive value', {
+        cause: 'message',
+      })
     }
 
     const expenseStore = useExpensesStore()
@@ -68,9 +73,16 @@ const save = async () => {
     close()
   } catch (e) {
     console.error('editValue', e)
-    toastStore.add({
-      text: 'Failed to update value',
-    })
+
+    if (e.cause === 'message') {
+      toastStore.add({
+        text: e.message,
+      })
+    } else {
+      toastStore.add({
+        text: 'Failed to update value',
+      })
+    }
   } finally {
     isUpdating = false
   }
