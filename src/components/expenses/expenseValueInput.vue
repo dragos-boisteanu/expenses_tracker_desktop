@@ -49,7 +49,7 @@ onMounted(() => {
       class="size-full bg-transparent text-xl text-gray-700 outline-none dark:text-gray-200"
       v-model="value"
       type="number"
-      placeholder="Enter value"
+      placeholder="Value"
       @keydown.enter="emit('add')"
     />
     <country-select-component

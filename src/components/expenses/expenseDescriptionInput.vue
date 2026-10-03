@@ -77,31 +77,51 @@ const handleDateUpdated = (newDate: number): void => {
       <div class="w-full pt-4">
         <div class="font-semibold text-neutral-800 dark:text-neutral-300">Date & Time</div>
         <div
-          class="mt-1 flex cursor-pointer items-center justify-between rounded-2xl bg-neutral-50
-            shadow outline-0 dark:bg-neutral-900"
+          class="mt-1 flex cursor-pointer items-center divide-x divide-indigo-100
+            dark:divide-indigo-500/20 justify-between rounded-2xl shadow outline-0"
         >
-          <div
-            class="flex flex-1 items-center gap-x-2 px-6 py-3"
+          <button
+            class="group flex flex-1 items-center justify-center gap-x-2 px-6 py-3 bg-indigo-50/80
+              dark:bg-indigo-400/10 rounded-l-2xl hover:dark:bg-indigo-400/20 cursor-pointer
+              hover:bg-indigo-100 active:dark:bg-indigo-600/40 transition-all duration-150
+              active:bg-indigo-200 active:inset-shadow-md"
             @click="toggleDatepickerDialog('calendar')"
           >
             <CalendarDaysIcon
-              class="size-6 justify-center text-neutral-800 dark:text-neutral-300"
+              class="size-6 justify-center text-indigo-600 dark:text-indigo-400
+                group-hover:text-indigo-500 group-hover:dark:text-indigo-300
+                group-active:dark:text-indigo-400 group-active:text-indigo-800"
             />
-            <div class="text-neutral-800 dark:text-neutral-300">
+            <span
+              class="text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500
+                group-hover:dark:text-indigo-300 group-active:dark:text-indigo-400
+                group-active:text-indigo-800"
+            >
               {{ formattedDate }}
-            </div>
-          </div>
+            </span>
+          </button>
 
-          <div
-            class="flex flex-1 items-center justify-center gap-x-2 px-6 py-3"
+          <button
+            class="group flex flex-1 items-center justify-center gap-x-2 px-6 py-3 bg-indigo-50/80
+              dark:bg-indigo-400/10 rounded-r-2xl hover:dark:bg-indigo-400/20 cursor-pointer
+              hover:bg-indigo-100 active:dark:bg-indigo-600/40 transition-all duration-150
+              active:bg-indigo-200 active:inset-shadow-md"
             @click="toggleDatepickerDialog('time')"
           >
-            <ClockIcon class="size-6 text-neutral-800 dark:text-neutral-300" />
+            <ClockIcon
+              class="size-6 text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500
+                group-hover:dark:text-indigo-300 group-active:dark:text-indigo-400
+                group-active:text-indigo-800"
+            />
 
-            <div class="text-neutral-800 dark:text-neutral-300">
+            <span
+              class="text-indigo-600 dark:text-indigo-400 group-hover:text-indigo-500
+                group-hover:dark:text-indigo-300 group-active:dark:text-indigo-400
+                group-active:text-indigo-800"
+            >
               {{ formattedTime }}
-            </div>
-          </div>
+            </span>
+          </button>
         </div>
 
         <div class="mt-4">
@@ -112,8 +132,6 @@ const handleDateUpdated = (newDate: number): void => {
             <TiptapEditor v-model="descriptionContent" />
           </div>
         </div>
-
-        <!-- Reusable Editor Component using v-model -->
       </div>
     </template>
 

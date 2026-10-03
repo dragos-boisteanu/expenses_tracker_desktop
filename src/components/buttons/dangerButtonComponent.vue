@@ -20,13 +20,13 @@ const emits = defineEmits(['click'])
       'pointer-events-none': props.loading,
     }"
   >
-    <div class="size-4" v-if="props.loading">
+    <span class="size-4" v-if="props.loading">
       <loading-indicator />
-    </div>
+    </span>
     <span
       v-else
       class="max-w-40 text-sm font-semibold min-w-fit overflow-hidden text-ellipsis
-        whitespace-nowrap text-red-600 dark:text-red-400 group-hover:dark:text-red-500
+        whitespace-nowrap text-red-600 dark:text-red-400 group-hover:dark:text-red-300
         group-active:dark:text-red-600 group-hover:text-red-500 group-active:text-red-700"
       :class="{ 'text-neutral-300! dark:text-neutral-400!': props.disabled }"
     >
