@@ -1,14 +1,29 @@
 {
   "appId": "com.dragos.expensestracker",
-  "productName": "Expense Tracker",
+  "productName": "Expenses Tracker",
   "asar": true,
   "directories": {
-    "buildResources": "assets",
+    "buildResources": "src/assets",
     "output": "release"
   },
   "buildDependenciesFromSource": true,
-  "files": ["dist/**/*"],
+  "files": [
+    "dist/**/*",
+    {
+      "from": "src/assets",
+      "to": "assets",
+      "filter": ["**/*"]
+    }
+  ],
+  "extraResources": [
+    {
+      "from": "src/assets",
+      "to": "assets",
+      "filter": ["**/*"]
+    }
+  ],
   "win": {
+    "icon": "src/assets/windows/icon.ico",
     "target": [
       {
         "target": "nsis",

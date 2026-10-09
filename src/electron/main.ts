@@ -1,5 +1,5 @@
 import path, { join } from 'path'
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage } from 'electron'
 import { fileURLToPath } from 'url'
 import Database from 'better-sqlite3'
 import { Expense } from '../types/expense'
@@ -93,18 +93,28 @@ let mainWindow: BrowserWindow | undefined
 const createWindow = () => {
   return new Promise((resolve, reject) => {
     try {
+      const assetPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'assets')
+        : path.join(__dirname, '../assets')
+
+      let iconPath = ''
+      if (process.platform === 'win32') {
+        iconPath = path.join(assetPath, 'windows/icon.ico')
+      } else if (process.platform === 'linux') {
+        iconPath = path.join(assetPath, 'linux/512x512.png')
+      }
+
       // Create the browser window.
       mainWindow = new BrowserWindow({
         width: 400,
         height: 624,
         resizable: false,
         frame: false,
+        icon: iconPath ? nativeImage.createFromPath(iconPath) : undefined,
         webPreferences: {
           preload: join(__dirname, './preload.js'),
         },
       })
-
-      // and load the index.html of the app.
 
       if (isDev) {
         mainWindow.loadURL('http://localhost:5173/')
@@ -113,12 +123,18 @@ const createWindow = () => {
       } else {
         mainWindow.loadFile(join(__dirname, '../index.html'))
       }
+
       // mainWindow.loadURL('chrome://gpu')
       // mainWindow.webContents.openDevTools()
 
       mainWindow.on('closed', () => {
         mainWindow = undefined
       })
+
+      // macOS - set in package.json or electron-builder config
+      // "mac": {
+      //   "icon": "assets/macos/icon.icns"
+      // }
 
       mainWindow.on('ready-to-show', () => {
         sendLogToRender('readyToShow', 'log')
