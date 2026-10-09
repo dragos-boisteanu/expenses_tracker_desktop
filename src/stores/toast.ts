@@ -9,15 +9,20 @@ export const useToastStore = defineStore('toasts', () => {
   const list = ref<ToastType[]>([])
 
   const add = (payload: ToastType) => {
-
     payload.id = list.value.length + 1
     payload.duration = DEFAULT_DURATION
 
     if (list.value.length < MAX_TOASTS) {
+      console.log()
       list.value.unshift(payload)
     } else {
-      list.value.splice(list.value.length - 1, 1)
-      list.value.unshift(payload)
+      setTimeout(() => {
+        list.value.splice(list.value.length - 1, 1)
+
+        setTimeout(() => {
+          list.value.unshift(payload)
+        }, DEFAULT_DURATION / 3)
+      }, DEFAULT_DURATION / 2)
     }
   }
   const remove = (id: number) => {
