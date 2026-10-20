@@ -1,7 +1,8 @@
 <template>
   <svg
     aria-hidden="true"
-    class="size-full animate-spin fill-indigo-600 text-gray-300 dark:fill-indigo-400 dark:text-gray-500"
+    class="size-full animate-spin fill-indigo-600 text-gray-300 dark:fill-indigo-400
+      dark:text-gray-500"
     viewBox="0 0 100 101"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

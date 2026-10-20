@@ -19,7 +19,7 @@ const emits = defineEmits(['click'])
       'pointer-events-none': props.loading,
     }"
   >
-    <span class="size-4" v-if="props.loading">
+    <span class="size-5 block" v-if="props.loading">
       <loading-indicator />
     </span>
     <span
