@@ -16,18 +16,29 @@ const emit = defineEmits<{
 }>()
 
 // v-model bound to `number | null` (stores standard number, e.g. 12.5)
-const value = defineModel<number | null>()
+const value = defineModel<number | string | null>()
 
 // Store internal value as raw integer cents (12.50 -> 1250)
-const rawCents = ref<number>(
-  value.value !== null && value.value !== undefined ? Math.round(value.value * 100) : 0,
-)
+
+const numericValue = computed(() => {
+  if (value.value === null || value.value === undefined || value.value === '') {
+    return 0
+  }
+
+  if (typeof value.value === 'string') {
+    return Number(value.value)
+  }
+
+  return value.value
+})
+
+const rawCents = ref<number>(Math.round(numericValue.value * 100))
 
 // Synchronize if parent changes `value` externally
 watch(
-  () => value.value,
+  () => numericValue.value,
   (newVal) => {
-    const nextCents = newVal !== null && newVal !== undefined ? Math.round(newVal * 100) : 0
+    const nextCents = newVal ? Math.round(newVal * 100) : 0
     if (nextCents !== rawCents.value) {
       rawCents.value = nextCents
     }
