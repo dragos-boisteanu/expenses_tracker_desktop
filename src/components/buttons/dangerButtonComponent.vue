@@ -10,9 +10,9 @@ const emits = defineEmits(['click'])
 
 <template>
   <button
-    class="min-w-20 group dark:bg-red-400/10 hover:dark:bg-red-400/20 flex justify-center
-      items-center bg-red-50/80 hover:bg-red-100 py-1.5 px-3 rounded-xl cursor-pointer duration-150
-      active:scale-95 transition-all active:bg-red-200 active:dark:bg-red-600/40
+    class="group dark:bg-red-400/10 hover:dark:bg-red-400/20 flex justify-center items-center
+      bg-red-50/80 hover:bg-red-100 py-1.5 px-3 rounded-xl cursor-pointer duration-150
+      active:scale-95 transition-all active:bg-red-200 active:dark:bg-red-600/20
       active:inset-shadow-md"
     @click="emits('click')"
     :class="{
@@ -20,14 +20,14 @@ const emits = defineEmits(['click'])
       'pointer-events-none': props.loading,
     }"
   >
-    <span class="size-4" v-if="props.loading">
+    <span class="size-4 block" v-if="props.loading">
       <loading-indicator />
     </span>
     <span
       v-else
       class="max-w-40 text-sm font-semibold min-w-fit overflow-hidden text-ellipsis
         whitespace-nowrap text-red-600 dark:text-red-400 group-hover:dark:text-red-300
-        group-active:dark:text-red-600 group-hover:text-red-500 group-active:text-red-700"
+        group-active:dark:text-red-400 group-hover:text-red-500 group-active:text-red-800"
       :class="{ 'text-neutral-300! dark:text-neutral-400!': props.disabled }"
     >
       <slot></slot>
