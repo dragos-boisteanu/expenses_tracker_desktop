@@ -1,7 +1,4 @@
-ignoredBuiltDependencies:
-  - electron-winstaller
-  - vue-demi
-
-onlyBuiltDependencies:
-  - better-sqlite3
-  - electron
+allowBuilds:
+  electron: true
+  electron-winstaller: false
+  vue-demi: false
