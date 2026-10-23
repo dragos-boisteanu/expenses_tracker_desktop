@@ -6,7 +6,6 @@ export const useThemeStore = defineStore('theme', () => {
 
   const setTheme = (payload: string) => {
     theme.value = payload
-    localStorage.setItem('theme', payload)
 
     if (payload === 'dark') {
       document.body.classList.add('dark')

@@ -38,8 +38,6 @@ const addExpense = async (event: never | null, payload?: DescriptionAndDateType)
       })
     }
 
-    console.log('numericValue', numericValue)
-
     if (numericValue === 0) {
       throw new Error('Expense must have a positive value', {
         cause: 'message',

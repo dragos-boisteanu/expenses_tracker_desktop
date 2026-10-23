@@ -1,5 +1,5 @@
 import path, { join } from 'path'
-import { app, BrowserWindow, ipcMain, nativeImage } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage, nativeTheme } from 'electron'
 import { fileURLToPath } from 'url'
 import Database from 'better-sqlite3'
 import { Expense } from '../types/expense'
@@ -87,6 +87,7 @@ if (
 
 // @ts-ignore
 let db: Database | undefined
+nativeTheme.themeSource = 'dark'
 
 let mainWindow: BrowserWindow | undefined
 
@@ -111,7 +112,12 @@ const createWindow = () => {
         resizable: false,
         frame: false,
         icon: iconPath ? nativeImage.createFromPath(iconPath) : undefined,
+        transparent: false,
+        backgroundColor: '#00000000',
         webPreferences: {
+          contextIsolation: true,
+          nodeIntegration: false,
+          sandbox: true,
           preload: join(__dirname, './preload.js'),
         },
       })

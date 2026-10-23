@@ -10,7 +10,7 @@
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
-    "desktop:dev": "tsc && concurrently  \"vite\" \"electron .\" \"tsc -w\"",
+    "desktop:dev": "tsc && concurrently -k \"vite --host 127.0.0.1 --strictPort\" \"wait-on http://127.0.0.1:5173 && electron .\" \"tsc -w\"",
     "desktop:build": "cross-env VITE_TARGET=desktop npm run build && tsc && electron-builder",
     "preview": "vite preview",
     "rebuild-sqlite3": "electron-rebuild -f -w better-sqlite3",
@@ -65,6 +65,7 @@
     "vite": "^8.1.5",
     "vue": "^3.5.17",
     "vue-router": "^4.5.1",
-    "vue-tsc": "^2.2.10"
+    "vue-tsc": "^2.2.10",
+    "wait-on": "^9.5.1"
   }
 }

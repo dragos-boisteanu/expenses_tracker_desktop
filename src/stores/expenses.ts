@@ -76,7 +76,6 @@ export const useExpensesStore = defineStore('expenses', () => {
       }
 
       const dataSource = ExpensesDB.instance
-
       const response: InsertExpenseResultType = await dataSource.add(expense)
 
       const viewExpense: ViewExpense = formatExpense({

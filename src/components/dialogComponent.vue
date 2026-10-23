@@ -53,10 +53,11 @@ const close = () => {
   <Teleport to="#app-container">
     <slot name="dialog"></slot>
     <div
-      class="fixed top-0 left-0 z-10 flex size-full items-center justify-center overflow-hidden bg-black/65"
+      class="absolute inset-0 z-10 flex items-center justify-center bg-neutral-900/70
+        backdrop-blur-sm"
       :class="{ 'items-start pt-8': props.position === 'top' }"
     >
-      <div class="max-w-[90%] min-w-[90%] rounded-2xl bg-neutral-50 shadow dark:bg-neutral-800">
+      <div class="max-w-[90%] min-w-[90%] rounded-2xl bg-neutral-50 shadow-xl dark:bg-neutral-800">
         <div
           v-if="!props.datepicker && !props.noTitle"
           class="flex items-center justify-between p-4"

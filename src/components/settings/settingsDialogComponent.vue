@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DialogComponent from '@/components/dialogComponent.vue'
 import DataSettingComponent from '@/components/settings/data/dataSettingComponent.vue'
-import ThemeToggleComponent from '@/components/themeToggleComponent.vue'
+import ThemeToggleComponent from '@/components/settings/themeToggleComponent.vue'
 import SystemStartUp from '@/components/settings/system/systemStartUp.vue'
 import AutoUpdateComponent from '@/components/settings/system/updates/autoUpdateComponent.vue'
 import CheckForUpdateComponent from '@/components/settings/system/updates/checkForUpdateComponent.vue'

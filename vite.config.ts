@@ -13,4 +13,8 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
+  server: {
+    port: 5173, // Sets your desired port
+    strictPort: true, // Forces Vite to fail if port 5173 is in use, rather than jumping to 5174
+  },
 })
