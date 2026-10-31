@@ -3,7 +3,6 @@ import AddExpenseComponent from '@/components/expenses/addExpenseComponent.vue'
 import ExpensesList from '@/components/expenses/expensesList.vue'
 import WindowControlsComponent from '@/components/windowControlsComponent.vue'
 import SettingsContainerComponent from '@/components/settings/settingsContainerComponent.vue'
-import NotificationIcon from '@/components/notification/notificationIcon.vue'
 
 const version = import.meta.env.VITE_APP_VERSION
 </script>
@@ -14,7 +13,8 @@ const version = import.meta.env.VITE_APP_VERSION
       <settings-container-component class="drag--disabled" />
 
       <div class="drag--disabled flex items-center gap-x-4">
-        <notification-icon />
+        <!--        TODO: replace notifications with a "past actions" list for: export, import, delete-->
+        <!--        <notification-icon />-->
         <window-controls-component />
       </div>
     </div>
