@@ -21,6 +21,7 @@ export const useImportStore = defineStore('importStore', () => {
       let insertedCount = 0
       let duplicatedCount = 0
 
+      const rows = []
       Papa.parse(file, {
         header: true,
         chunkSize: Papa.LocalChunkSize,
@@ -28,24 +29,28 @@ export const useImportStore = defineStore('importStore', () => {
           try {
             parser.pause()
 
-            const cleanData = results.data.map((row: any) => {
-              let cleanDate = row.date ? String(row.date).trim() : ''
-              cleanDate = cleanDate.replace(/"/g, '')
+            const cleanData = results.data
+              .map((row: any) => {
+                let cleanDate = row.date ? String(row.date).trim() : ''
+                cleanDate = cleanDate.replace(/"/g, '')
 
-              if (cleanDate.endsWith('.0')) {
-                cleanDate = cleanDate.slice(0, -2)
-              }
+                if (cleanDate.endsWith('.0')) {
+                  cleanDate = cleanDate.slice(0, -2)
+                }
 
-              return {
-                ...row,
-                date: cleanDate,
-              }
-            })
+                rows.push(row)
+
+                return {
+                  ...row,
+                  date: cleanDate,
+                }
+              })
+              .filter((row: any) => row.value && row.date) // Ensure row isn't completely empty
 
             const importResult: DbImportResult = await expensesDb.import(cleanData)
             if (importResult.errors.length > 0) {
               console.error('importErrors', importResult.errors[1])
-              return
+              throw new Error('importError', importResult.errors[1])
             }
 
             duplicatedCount += importResult.duplicates
@@ -57,7 +62,7 @@ export const useImportStore = defineStore('importStore', () => {
             parser.resume()
           }
         },
-        complete: (results: ParseStepResult<any>, file: File) => {
+        complete: () => {
           /* console.log('parsedComplete')
              console.log('insertedCount', insertedCount)
              console.log('duplicatedCount', duplicatedCount)*/

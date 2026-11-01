@@ -9,8 +9,8 @@ export const useExportStore = defineStore('export', () => {
   const exportExpenses = async () => {
     try {
       isExporting.value = true
-      const fileName = `expenses_${dayjs().format('DD_MM_YYYY_hh_mm_ss')}.csv`
 
+      const fileName = `expenses_${dayjs().format('DD_MM_YYYY_HH_mm_ss')}.csv`
       const expensesDb = ExpensesDB.instance
 
       await expensesDb.export(fileName)

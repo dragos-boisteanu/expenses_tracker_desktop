@@ -535,24 +535,31 @@ ipcMain.handle('getExpenses', (event, payload) => {
 
 ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
-    const limit = 25
+    const limit = 500
     let offset = 0
     let isFirstBatch = true
 
     const getExpensesListStatement = db.prepare(
-      'SELECT value, currency, date FROM expenses ORDER BY CAST(date AS REAL) ASC LIMIT @limit OFFSET @offset',
+      'SELECT value, currency, date, description, created_at, updated_at FROM expenses ORDER BY CAST(date AS REAL) ASC LIMIT @limit OFFSET @offset',
     )
 
-    let expenses = getExpensesListStatement.all({
-      limit,
-      offset,
-    }) as Expense[]
+    const fetchBatch = db.transaction((l: number, o: number) => {
+      return getExpensesListStatement.all({ limit: l, offset: o }) as Expense[]
+    })
+
+    let expenses = fetchBatch(limit, offset)
 
     while (expenses.length > 0) {
       // Pass true for header ONLY on the first batch, false for subsequent batches
       const csvBlob = await dataToCsv(expenses, isFirstBatch)
       const csvArrayBuffer = await csvBlob.arrayBuffer()
-      const buffer = Buffer.from(csvArrayBuffer)
+
+      let buffer = Buffer.from(csvArrayBuffer)
+
+      // Ensure the buffer ends with a newline character so the next chunk starts on a fresh line
+      if (!buffer.toString('utf-8').endsWith('\n')) {
+        buffer = Buffer.concat([buffer, Buffer.from('\n')])
+      }
 
       await saveFile({
         fileName,
@@ -563,7 +570,8 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
 
       isFirstBatch = false
       offset += limit
-      expenses = getExpensesListStatement.all({ limit, offset }) as Expense[]
+
+      expenses = fetchBatch(limit, offset)
     }
   } catch (error) {
     console.error('exportExpensesError', error)
@@ -577,7 +585,7 @@ ipcMain.handle(
     const errors: any[] = []
 
     const insert = db.prepare(
-      'INSERT INTO expenses (value, currency, date) VALUES(@value, @currency, @date)',
+      'INSERT INTO expenses (value, currency, description, date, created_at, updated_at) VALUES(@value, @currency, @description, @date, @updated_at, @created_at)',
     )
     const transaction = db.transaction((expenses: ImportedExpense[]) => {
       return expenses
@@ -586,6 +594,9 @@ ipcMain.handle(
             const result = insert.run({
               value: expense.value,
               currency: expense.currency,
+              description: expense.description,
+              created_at: expense.created_at,
+              updated_at: expense.updated_at,
               date: expense.date,
             })
 
@@ -610,6 +621,7 @@ ipcMain.handle(
     }
   },
 )
+
 ipcMain.handle('getExpensesForDate', async (event, date) => {
   const getExpensesListStatement = db.prepare(
     `SELECT SUM(value) as total, currency FROM expenses

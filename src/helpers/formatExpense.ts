@@ -5,7 +5,7 @@ import formatValue from '@/helpers/formatValue'
 import { JSONContent } from '@tiptap/vue-3'
 
 export const formatExpense = (expense: Expense): ViewExpense => {
-  const expenseDate = dayjs.unix(expense.date)
+  const expenseDate = dayjs.unix(Number(expense.date))
   const formattedExpenseData = expenseDate.format('HH:mm')
 
   let createdAt: string = ''
