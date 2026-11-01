@@ -74,6 +74,7 @@ function parseConfigData() {
 
 let isHardwareAccelerationEnabled: boolean = false
 isHardwareAccelerationEnabled = readConfigData('hardwareAcceleration')
+
 if (
   isHardwareAccelerationEnabled === undefined ||
   (typeof isHardwareAccelerationEnabled === 'boolean' && isHardwareAccelerationEnabled)
