@@ -35,13 +35,15 @@ const DEFAULT_CONFIG: Record<string, any> = {
   language: 'en',
 }
 
-const dataPath = app.getPath('userData')
-const configFilePath = path.join(dataPath, 'config.json')
+const getConfigFilePath = () => {
+  const dataPath = app.getPath('userData')
+  return path.join(dataPath, 'config.json')
+}
 
 async function writeConfigData(key: string, value: string | boolean) {
   const content = parseConfigData()
   content[key] = value
-  fs.writeFileSync(configFilePath, JSON.stringify(content, null, 2))
+  fs.writeFileSync(getConfigFilePath(), JSON.stringify(content, null, 2))
 }
 
 function readConfigData(key: string) {
@@ -50,21 +52,23 @@ function readConfigData(key: string) {
 }
 
 function parseConfigData() {
+  const configPath = getConfigFilePath()
+
   // 1. If file missing, create directory + default file
-  if (!fs.existsSync(configFilePath)) {
-    const dirPath = path.dirname(configFilePath)
+  if (!fs.existsSync(configPath)) {
+    const dirPath = path.dirname(configPath)
 
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath, { recursive: true })
     }
 
-    fs.writeFileSync(configFilePath, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf8')
-    return DEFAULT_CONFIG
+    fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2), 'utf8')
+    return { ...DEFAULT_CONFIG }
   }
 
   // 2. Read existing file safely
   try {
-    const dataFromFile = fs.readFileSync(configFilePath, 'utf8')
+    const dataFromFile = fs.readFileSync(configPath, 'utf8')
     return JSON.parse(dataFromFile)
   } catch (error) {
     // Fallback if the file is corrupted or invalid JSON
