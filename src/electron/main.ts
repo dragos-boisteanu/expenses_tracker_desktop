@@ -537,9 +537,10 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
   try {
     const limit = 25
     let offset = 0
+    let isFirstBatch = true
 
     const getExpensesListStatement = db.prepare(
-      'SELECT value, currency, date FROM expenses LIMIT @limit OFFSET @offset',
+      'SELECT value, currency, date FROM expenses ORDER BY CAST(date AS REAL) ASC LIMIT @limit OFFSET @offset',
     )
 
     let expenses = getExpensesListStatement.all({
@@ -547,9 +548,9 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
       offset,
     }) as Expense[]
 
-    let expensesCount = expenses.length
-    if (expensesCount > 0) {
-      const csvBlob = await dataToCsv(expenses)
+    while (expenses.length > 0) {
+      // Pass true for header ONLY on the first batch, false for subsequent batches
+      const csvBlob = await dataToCsv(expenses, isFirstBatch)
       const csvArrayBuffer = await csvBlob.arrayBuffer()
       const buffer = Buffer.from(csvArrayBuffer)
 
@@ -557,33 +558,12 @@ ipcMain.handle('exportExpenses', async (event, fileName: string) => {
         fileName,
         buffer,
         increment: 0,
+        append: !isFirstBatch, // Overwrite on first batch, append on later batches
       })
 
-      while (expensesCount >= limit) {
-        offset += limit
-
-        expenses = getExpensesListStatement.all({
-          limit,
-          offset,
-        }) as Expense[]
-
-        expensesCount = expenses.length
-        if (expensesCount > 0) {
-          const csvBlob = await dataToCsv(expenses, false)
-          const csvArrayBuffer = await csvBlob.arrayBuffer()
-          let buffer = Buffer.from(csvArrayBuffer)
-          buffer = Buffer.concat([buffer, Buffer.from('\n')])
-
-          // TODO: find a way to not add an empty row at the end
-
-          await saveFile({
-            fileName,
-            buffer,
-            increment: 0,
-            append: true,
-          })
-        }
-      }
+      isFirstBatch = false
+      offset += limit
+      expenses = getExpensesListStatement.all({ limit, offset }) as Expense[]
     }
   } catch (error) {
     console.error('exportExpensesError', error)
