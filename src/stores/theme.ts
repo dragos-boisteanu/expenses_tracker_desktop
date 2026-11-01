@@ -4,7 +4,15 @@ import { defineStore } from 'pinia'
 export const useThemeStore = defineStore('theme', () => {
   const theme = ref<string>('light')
 
-  const setTheme = (payload: string) => {
+  const getThemeFromConfig = async () => {
+    try {
+      return await window['app']?.getTheme()
+    } catch (error) {
+      console.error('getTheme', error)
+    }
+  }
+
+  const setTheme = (payload: string, saveToConfig: boolean = false) => {
     theme.value = payload
 
     if (payload === 'dark') {
@@ -12,10 +20,15 @@ export const useThemeStore = defineStore('theme', () => {
     } else {
       document.body.classList.remove('dark')
     }
+
+    if (saveToConfig) {
+      window['app']?.setTheme(payload)
+    }
   }
 
   return {
     theme,
     setTheme,
+    getThemeFromConfig,
   }
 })

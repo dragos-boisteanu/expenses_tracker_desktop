@@ -337,6 +337,14 @@ ipcMain.handle('getIsFocused', () => {
   })
 })
 
+ipcMain.handle('getTheme', () => {
+  return readConfigData('theme')
+})
+
+ipcMain.on('setTheme', (_event: any, theme: string) => {
+  writeConfigData('theme', theme).then((error) => console.error(error))
+})
+
 async function readAutoRestartConfig(): Promise<boolean> {
   try {
     const autoRestart = await readConfigData('autoRestart')

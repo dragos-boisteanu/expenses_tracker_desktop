@@ -8,11 +8,14 @@ const themeStore = useThemeStore()
 const isDarkTheme = ref<boolean>(false)
 isDarkTheme.value = themeStore.theme === 'dark'
 const setTheme = () => {
+  let theme: string
   if (themeStore.theme === 'dark') {
-    themeStore.setTheme('light')
+    theme = 'light'
   } else {
-    themeStore.setTheme('dark')
+    theme = 'dark'
   }
+
+  themeStore.setTheme(theme, true)
 }
 </script>
 

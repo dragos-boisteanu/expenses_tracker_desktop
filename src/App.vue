@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { useTimeStore } from '@/stores/time'
-import { useThemeStore } from '@/stores/theme'
 import { useSystemStore } from '@/stores/system'
 import { useAutoUpdateStore } from '@/stores/autoUpdate'
 import ConfirmUpdateInstall from '@/components/autoUpdate/confirmUpdateInstall.vue'
@@ -10,6 +9,7 @@ import { useExpensesStore } from '@/stores/expenses'
 import { useNotificationStore } from '@/stores/notifications'
 import { useToastStore } from '@/stores/toast'
 import ToastContainerComponent from '@/components/toast/toastContainerComponent.vue'
+import { useThemeStore } from '@/stores/theme'
 
 const timeStore = useTimeStore()
 timeStore.startTimer()
@@ -33,12 +33,6 @@ const toastStore = useToastStore()
 //   })
 // }, 4000)
 
-const themeStore = useThemeStore()
-const theme = localStorage.getItem('theme')
-if (theme) {
-  themeStore.setTheme(theme)
-}
-
 const notificationStore = useNotificationStore()
 notificationStore.getNotifications().catch((error) => console.error('GetNotifications', error))
 
@@ -53,6 +47,11 @@ onBeforeUnmount(() => timeStore.stopTimer())
 
 const systemStore = useSystemStore()
 const autoUpdateStore = useAutoUpdateStore()
+
+const themeStore = useThemeStore()
+themeStore.getThemeFromConfig().then((theme: string) => {
+  themeStore.setTheme(theme)
+})
 
 const app = window['app']
 if (app) {
